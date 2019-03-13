@@ -3,4 +3,9 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+    //MainTheme
+    <color name="mainThemeColorPrimary">#ff5722</color>
+    <color name="mainThemeColorPrimaryDark">#c41c00</color>
+    <color name="mainThemeColorLight">#ff8a50</color>
 </resources>
