@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Go4Lunch</string>
+    //Bottom Menu
     <string name="map_view">Map View</string>
     <string name="list_view">List View</string>
     <string name="workmates">Workmates</string>
+    //Toolbar Menu
+    <string name="search">Search</string>
 </resources>
