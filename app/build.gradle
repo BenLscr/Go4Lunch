@@ -38,6 +38,9 @@ dependencies {
     //FIREBASE
     implementation "com.google.firebase:firebase-core:16.0.7"
 
+    //FirebaseUI
+    implementation 'com.firebaseui:firebase-ui-auth:4.3.1'
+
     //BUTTERKNIFE
     implementation 'com.jakewharton:butterknife:10.1.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'

@@ -6,14 +6,18 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.ui.auth.AuthMethodPickerLayout;
+import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import java.util.Arrays;
 
-public class MainActivity extends AppCompatActivity {
+import androidx.annotation.NonNull;
+
+public class MainActivity extends BaseActivity {
 
     private TextView mTextMessage;
+    private static final int RC_SIGN_IN = 123;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
         mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        this.checkUserIsLogged();
     }
 
     //BOTTOM TOOLBAR\\
@@ -69,6 +75,34 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    //LOGIN\\
+    private void checkUserIsLogged(){
+        if (!this.isCurrentUserLogged()){
+            this.startSignInActivity();
+        }
+    }
+
+    private void startSignInActivity(){
+        AuthMethodPickerLayout customLayout = new AuthMethodPickerLayout
+                .Builder(R.layout.activity_auth)
+                .setGoogleButtonId(R.id.button_google)
+                .setEmailButtonId(R.id.button_facebook)
+                .build();
+
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setTheme(R.style.LoginTheme)
+                        .setAuthMethodPickerLayout(customLayout)
+                        .setAvailableProviders(
+                                Arrays.asList(new AuthUI.IdpConfig.GoogleBuilder().build(),
+                                        new AuthUI.IdpConfig.EmailBuilder().build()))
+                        .setIsSmartLockEnabled(false, true)
+                        .setLogo(R.drawable.go4lunch_ic_sign)
+                        .build(),
+                RC_SIGN_IN);
     }
 
 }
