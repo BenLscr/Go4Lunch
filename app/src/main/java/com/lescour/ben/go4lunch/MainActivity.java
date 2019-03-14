@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthMethodPickerLayout;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
@@ -29,6 +30,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private TextView mTextMessage;
     private static final int RC_SIGN_IN = 123;
+    private static final int SIGN_OUT_TASK = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         this.checkUserIsLogged();
 
         this.configureDrawerLayout();
+        this.configureNavigationView();
     }
 
     private void configureToolbar() {
@@ -149,6 +152,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             case R.id.activity_main_drawer_settings:
                 break;
             case R.id.activity_main_drawer_logout:
+                this.signOutUserFromFirebase();
                 break;
             default:
                 break;
@@ -167,6 +171,24 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         } else {
             super.onBackPressed();
         }
+    }
+
+    private void signOutUserFromFirebase(){
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
+    }
+
+    private OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted(final int origin){
+        return aVoid -> {
+            switch (origin){
+                case SIGN_OUT_TASK:
+                    this.startSignInActivity();
+                    break;
+                default:
+                    break;
+            }
+        };
     }
 
 }
