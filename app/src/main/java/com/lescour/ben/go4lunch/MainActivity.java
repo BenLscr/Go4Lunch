@@ -111,7 +111,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         AuthMethodPickerLayout customLayout = new AuthMethodPickerLayout
                 .Builder(R.layout.activity_auth)
                 .setGoogleButtonId(R.id.button_google)
-                .setEmailButtonId(R.id.button_facebook)
+                .setFacebookButtonId(R.id.button_facebook)
                 .build();
 
         startActivityForResult(
@@ -121,7 +121,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         .setAuthMethodPickerLayout(customLayout)
                         .setAvailableProviders(
                                 Arrays.asList(new AuthUI.IdpConfig.GoogleBuilder().build(),
-                                        new AuthUI.IdpConfig.EmailBuilder().build()))
+                                        new AuthUI.IdpConfig.FacebookBuilder().build()))
                         .setIsSmartLockEnabled(false, true)
                         .setLogo(R.drawable.go4lunch_ic_sign)
                         .build(),
