@@ -6,4 +6,11 @@
     <string name="workmates">Workmates</string>
     //Toolbar Menu
     <string name="search">Search</string>
+    //Main Menu
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="image_restaurant">image_restaurant</string>
+    <string name="your_lunch">YOUR LUNCH</string>
+    <string name="settings">SETTINGS</string>
+    <string name="logout">LOGOUT</string>
 </resources>
