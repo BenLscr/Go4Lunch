@@ -108,20 +108,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void startSignInActivity(){
-        AuthMethodPickerLayout customLayout = new AuthMethodPickerLayout
-                .Builder(R.layout.activity_auth)
-                .setGoogleButtonId(R.id.button_google)
-                .setFacebookButtonId(R.id.button_facebook)
-                .build();
-
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
                         .setTheme(R.style.LoginTheme)
-                        .setAuthMethodPickerLayout(customLayout)
                         .setAvailableProviders(
-                                Arrays.asList(new AuthUI.IdpConfig.GoogleBuilder().build(),
-                                        new AuthUI.IdpConfig.FacebookBuilder().build()))
+                                Arrays.asList(
+                                        new AuthUI.IdpConfig.FacebookBuilder().build(),
+                                        new AuthUI.IdpConfig.GoogleBuilder().build()))
                         .setIsSmartLockEnabled(false, true)
                         .setLogo(R.drawable.go4lunch_ic_sign)
                         .build(),

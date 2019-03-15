@@ -11,9 +11,9 @@
     android:id="@+id/activity_main_drawer_layout">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/main_activity_coordinator_layout"
         tools:context=".MainActivity">
 
         <include
