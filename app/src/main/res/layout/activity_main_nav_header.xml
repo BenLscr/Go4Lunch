@@ -2,7 +2,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="200dp">
+    android:layout_height="200dp"
+    android:id="@+id/header_view">
 
     <ImageView
     android:layout_width="match_parent"
@@ -35,8 +36,8 @@
 
             <ImageView
                 android:id="@+id/user_image"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
                 android:src="@drawable/baseline_account_circle_white_24"
                 android:contentDescription="@string/user_image"/>
 
@@ -63,7 +64,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/user_mail"
                     android:textColor="@android:color/white"
-                    android:textSize="16sp"/>
+                    android:textSize="14sp"/>
 
             </LinearLayout>
 

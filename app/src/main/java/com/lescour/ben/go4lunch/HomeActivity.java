@@ -1,18 +1,24 @@
 package com.lescour.ben.go4lunch;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.ui.auth.AuthMethodPickerLayout;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
-
-import java.util.Arrays;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -22,32 +28,36 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
+/**
+ * Created by benja on 15/03/2019.
+ */
+public class HomeActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener{
 
-    @BindView(R.id.activity_main_toolbar) Toolbar toolbar;
-    @BindView(R.id.activity_main_drawer_layout) DrawerLayout drawerLayout;
-    @BindView(R.id.activity_main_nav_view) NavigationView navigationView;
+    @BindView(R.id.activity_home_toolbar) Toolbar toolbar;
+    @BindView(R.id.activity_home_drawer_layout) DrawerLayout drawerLayout;
+    @BindView(R.id.activity_home_nav_view) NavigationView navigationView;
+    @BindView(R.id.navigation) BottomNavigationView navigation;
 
-    private TextView mTextMessage;
-    private static final int RC_SIGN_IN = 123;
+    private ProgressDialog mProgress;
+    private View header;
+
     private static final int SIGN_OUT_TASK = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
 
         this.configureToolbar();
 
-        mTextMessage = (TextView) findViewById(R.id.message);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-        this.checkUserIsLogged();
 
         this.configureDrawerLayout();
         this.configureNavigationView();
+
+        this.initProgressDialog();
+        this.updateMainMenuWithUserInfo();
     }
 
     private void configureToolbar() {
@@ -62,13 +72,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_map:
-                    mTextMessage.setText(R.string.map_view);
                     return true;
                 case R.id.navigation_list_view:
-                    mTextMessage.setText(R.string.list_view);
                     return true;
                 case R.id.navigation_workmates:
-                    mTextMessage.setText(R.string.workmates);
                     return true;
             }
             return false;
@@ -92,34 +99,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_activity_main_search:
+            case R.id.menu_activity_home_search:
                 Toast.makeText(this, "Button not available", Toast.LENGTH_LONG).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    //LOGIN\\
-    private void checkUserIsLogged(){
-        if (!this.isCurrentUserLogged()){
-            this.startSignInActivity();
-        }
-    }
-
-    private void startSignInActivity(){
-        startActivityForResult(
-                AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setTheme(R.style.LoginTheme)
-                        .setAvailableProviders(
-                                Arrays.asList(
-                                        new AuthUI.IdpConfig.FacebookBuilder().build(),
-                                        new AuthUI.IdpConfig.GoogleBuilder().build()))
-                        .setIsSmartLockEnabled(false, true)
-                        .setLogo(R.drawable.go4lunch_ic_sign)
-                        .build(),
-                RC_SIGN_IN);
     }
 
     //MAIN MENU\\
@@ -132,6 +117,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void configureNavigationView(){
         navigationView.setNavigationItemSelectedListener(this);
+        header = navigationView.getHeaderView(0);
     }
 
     /**
@@ -141,11 +127,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         switch (id){
-            case R.id.activity_main_drawer_your_lunch:
+            case R.id.activity_home_drawer_your_lunch:
                 break;
-            case R.id.activity_main_drawer_settings:
+            case R.id.activity_home_drawer_settings:
                 break;
-            case R.id.activity_main_drawer_logout:
+            case R.id.activity_home_drawer_logout:
+                mProgress.show();
                 this.signOutUserFromFirebase();
                 break;
             default:
@@ -177,7 +164,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         return aVoid -> {
             switch (origin){
                 case SIGN_OUT_TASK:
-                    this.startSignInActivity();
+                    mProgress.dismiss();
+                    finish();
                     break;
                 default:
                     break;
@@ -185,4 +173,43 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         };
     }
 
+    private void initProgressDialog(){
+        mProgress = new ProgressDialog(this);
+        mProgress.setTitle("Processing...");
+        mProgress.setMessage("Please wait...");
+        mProgress.setCancelable(false);
+        mProgress.setIndeterminate(true);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.e("ondestroy", "destroy");
+    }
+
+    private void updateMainMenuWithUserInfo(){
+
+        if (this.getCurrentUser() != null) {
+
+            ImageView userImage = (ImageView) header.findViewById(R.id.user_image);
+            //Get picture URL from Firebase
+            if (this.getCurrentUser().getPhotoUrl() != null) {
+                Glide.with(this)
+                        .load(this.getCurrentUser().getPhotoUrl())
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(userImage);
+            }
+            //Get email & username from Firebase
+            String email = TextUtils.isEmpty(getCurrentUser().getEmail()) ? getString(R.string.info_no_email_found) : this.getCurrentUser().getEmail();
+            String name = TextUtils.isEmpty(getCurrentUser().getDisplayName()) ? getString(R.string.info_no_name_found) : this.getCurrentUser().getDisplayName();
+
+            //Update views with data
+            TextView userMail = (TextView) header.findViewById(R.id.user_mail);
+            userMail.setText(email);
+
+            TextView userName = (TextView) header.findViewById(R.id.user_name);
+            userName.setText(name);
+        }
+    }
 }
