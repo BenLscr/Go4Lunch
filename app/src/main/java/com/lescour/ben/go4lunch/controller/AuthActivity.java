@@ -1,4 +1,4 @@
-package com.lescour.ben.go4lunch;
+package com.lescour.ben.go4lunch.controller;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,11 +7,9 @@ import android.util.Log;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
-import com.google.android.material.snackbar.Snackbar;
+import com.lescour.ben.go4lunch.R;
 
 import java.util.Arrays;
-
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 public class AuthActivity extends BaseActivity {
 

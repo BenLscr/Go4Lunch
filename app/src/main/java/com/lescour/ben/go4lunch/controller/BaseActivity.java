@@ -1,4 +1,4 @@
-package com.lescour.ben.go4lunch;
+package com.lescour.ben.go4lunch.controller;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

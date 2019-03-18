@@ -1,24 +1,18 @@
-package com.lescour.ben.go4lunch;
+package com.lescour.ben.go4lunch.controller;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.lescour.ben.go4lunch.R;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -39,7 +33,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     @BindView(R.id.navigation) BottomNavigationView navigation;
 
     private ProgressDialog mProgress;
-    private View header;
 
     private static final int SIGN_OUT_TASK = 10;
 
@@ -57,7 +50,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         this.configureNavigationView();
 
         this.initProgressDialog();
-        this.updateMainMenuWithUserInfo();
     }
 
     private void configureToolbar() {
@@ -117,7 +109,9 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void configureNavigationView(){
         navigationView.setNavigationItemSelectedListener(this);
-        header = navigationView.getHeaderView(0);
+        View header = navigationView.getHeaderView(0);
+        HeaderViewHolder headerViewHolder = new HeaderViewHolder(this, header);
+        headerViewHolder.updateMainMenuWithUserInfo();
     }
 
     /**
@@ -188,28 +182,4 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         Log.e("ondestroy", "destroy");
     }
 
-    private void updateMainMenuWithUserInfo(){
-
-        if (this.getCurrentUser() != null) {
-
-            ImageView userImage = (ImageView) header.findViewById(R.id.user_image);
-            //Get picture URL from Firebase
-            if (this.getCurrentUser().getPhotoUrl() != null) {
-                Glide.with(this)
-                        .load(this.getCurrentUser().getPhotoUrl())
-                        .apply(RequestOptions.circleCropTransform())
-                        .into(userImage);
-            }
-            //Get email & username from Firebase
-            String email = TextUtils.isEmpty(getCurrentUser().getEmail()) ? getString(R.string.info_no_email_found) : this.getCurrentUser().getEmail();
-            String name = TextUtils.isEmpty(getCurrentUser().getDisplayName()) ? getString(R.string.info_no_name_found) : this.getCurrentUser().getDisplayName();
-
-            //Update views with data
-            TextView userMail = (TextView) header.findViewById(R.id.user_mail);
-            userMail.setText(email);
-
-            TextView userName = (TextView) header.findViewById(R.id.user_name);
-            userName.setText(name);
-        }
-    }
 }
