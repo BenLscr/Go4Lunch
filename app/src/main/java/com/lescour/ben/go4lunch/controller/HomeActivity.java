@@ -13,25 +13,35 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.lescour.ben.go4lunch.R;
+import com.lescour.ben.go4lunch.controller.fragment.MapsFragment;
+import com.lescour.ben.go4lunch.controller.fragment.RestaurantListFragment;
+import com.lescour.ben.go4lunch.controller.fragment.WorkmatesListFragment;
+import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
  * Created by benja on 15/03/2019.
  */
-public class HomeActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class HomeActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener,
+        RestaurantListFragment.OnListFragmentInteractionListener,
+        WorkmatesListFragment.OnListFragmentInteractionListener {
 
     @BindView(R.id.activity_home_toolbar) Toolbar toolbar;
     @BindView(R.id.activity_home_drawer_layout) DrawerLayout drawerLayout;
     @BindView(R.id.activity_home_nav_view) NavigationView navigationView;
     @BindView(R.id.navigation) BottomNavigationView navigation;
 
+    private Fragment fragment;
     private ProgressDialog mProgress;
 
     private static final int SIGN_OUT_TASK = 10;
@@ -49,6 +59,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         this.configureDrawerLayout();
         this.configureNavigationView();
 
+        this.initFirstFragment();
+
         this.initProgressDialog();
     }
 
@@ -58,21 +70,43 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     //BOTTOM TOOLBAR\\
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+            = item -> {
+                if (fragment != null) {
+                    getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+                }
+                switch (item.getItemId()) {
+                    case R.id.navigation_map:
+                        fragment = MapsFragment.newInstance("param1", "param2");
+                        addFragment();
+                        return true;
+                    case R.id.navigation_list_restaurant:
+                        fragment = RestaurantListFragment.newInstance(0);
+                        addFragment();
+                        return true;
+                    case R.id.navigation_workmates:
+                        fragment = WorkmatesListFragment.newInstance(0);
+                        addFragment();
+                        return true;
+                }
+                return false;
+            };
 
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_map:
-                    return true;
-                case R.id.navigation_list_view:
-                    return true;
-                case R.id.navigation_workmates:
-                    return true;
-            }
-            return false;
-        }
-    };
+    //FRAGMENT\\
+    private void initFirstFragment() {
+        fragment = MapsFragment.newInstance("param1", "param2");
+        addFragment();
+    }
+
+    private void addFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.fragment_container, fragment).commit();
+    }
+
+    @Override
+    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+
+    }
 
     //MENU TOOLBAR\\
     /**
@@ -100,14 +134,14 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     //MAIN MENU\\
-    private void configureDrawerLayout(){
+    private void configureDrawerLayout() {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout,
                 toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
     }
 
-    private void configureNavigationView(){
+    private void configureNavigationView() {
         navigationView.setNavigationItemSelectedListener(this);
         View header = navigationView.getHeaderView(0);
         HeaderViewHolder headerViewHolder = new HeaderViewHolder(this, header);
@@ -148,7 +182,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
-    private void signOutUserFromFirebase(){
+    private void signOutUserFromFirebase() {
         AuthUI.getInstance()
                 .signOut(this)
                 .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
@@ -167,7 +201,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         };
     }
 
-    private void initProgressDialog(){
+    private void initProgressDialog() {
         mProgress = new ProgressDialog(this);
         mProgress.setTitle("Processing...");
         mProgress.setMessage("Please wait...");
@@ -181,5 +215,4 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         super.onDestroy();
         Log.e("ondestroy", "destroy");
     }
-
 }

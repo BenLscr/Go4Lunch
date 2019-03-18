@@ -23,13 +23,15 @@ public class HeaderViewHolder extends BaseActivity {
     @BindView(R.id.user_mail) TextView userMail;
 
     private Context context;
+    private View view;
 
     public HeaderViewHolder(Context context, View view) {
         this.context = context;
+        this.view = view;
         ButterKnife.bind(this, view);
     }
 
-    protected void updateMainMenuWithUserInfo(){
+    protected void updateMainMenuWithUserInfo() {
 
         if (this.getCurrentUser() != null) {
 

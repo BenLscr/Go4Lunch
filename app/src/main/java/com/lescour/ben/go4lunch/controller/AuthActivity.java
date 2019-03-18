@@ -21,7 +21,7 @@ public class AuthActivity extends BaseActivity {
         this.setContentView(R.layout.activity_auth);
     }
 
-    private void startSignInActivity(){
+    private void startSignInActivity() {
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
@@ -49,7 +49,7 @@ public class AuthActivity extends BaseActivity {
         }
     }
 
-    private void launchMainActivity(){
+    private void launchMainActivity() {
         Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);
     }
@@ -60,7 +60,7 @@ public class AuthActivity extends BaseActivity {
         this.handleResponseAfterSignIn(requestCode, resultCode, data);
     }
 
-    private void handleResponseAfterSignIn(int requestCode, int resultCode, Intent data){
+    private void handleResponseAfterSignIn(int requestCode, int resultCode, Intent data) {
 
         IdpResponse response = IdpResponse.fromResultIntent(data);
 

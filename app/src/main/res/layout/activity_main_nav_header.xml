@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
+    android:layout_height="220dp"
     android:id="@+id/header_view">
 
     <ImageView
@@ -25,7 +25,7 @@
             android:textSize="50sp"
             android:textColor="@android:color/white"
             android:textStyle="bold"
-            android:paddingTop="20dp"/>
+            android:paddingTop="40dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
