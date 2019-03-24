@@ -25,6 +25,7 @@ import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.lescour.ben.go4lunch.BuildConfig;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.controller.fragment.MapsFragment;
 import com.lescour.ben.go4lunch.controller.fragment.RestaurantListFragment;
@@ -234,7 +235,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     //TEST\\
     private void currentPlace() {
-        String apiKey = getString(R.string.places_api_key);
+        String apiKey = BuildConfig.API_KEY;
         Places.initialize(getApplicationContext(), apiKey);
 
         // Create a new Places client instance.
@@ -273,7 +274,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void placeDetails() {
-        String apiKey = getString(R.string.places_api_key);
+        String apiKey = BuildConfig.API_KEY;
         Places.initialize(getApplicationContext(), apiKey);
 
         // Create a new Places client instance.

@@ -10,6 +10,8 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+
+        buildConfigField("String", "API_KEY", places_api_key)
     }
     buildTypes {
         release {
@@ -37,7 +39,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0-alpha02'
 
     //FIREBASE
-    implementation "com.google.firebase:firebase-core:16.0.7"
+    implementation "com.google.firebase:firebase-core:16.0.8"
 
     //FirebaseUI
     implementation 'com.firebaseui:firebase-ui-auth:4.3.1'
