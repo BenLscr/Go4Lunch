@@ -2,12 +2,6 @@ package com.lescour.ben.go4lunch.controller.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +9,11 @@ import android.view.ViewGroup;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent;
 import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent.DummyItem;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * A fragment representing a list of Items.
@@ -106,5 +105,44 @@ public class RestaurantListFragment extends Fragment {
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
         void onListFragmentInteraction(DummyItem item);
+    }
+
+    private void currentPlace() {
+        /**Places.initialize(getApplicationContext(), apiKey);
+
+// Create a new Places client instance.
+        PlacesClient placesClient = Places.createClient(this);
+
+        // Use fields to define the data types to return.
+        List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME);
+
+// Use the builder to create a FindCurrentPlaceRequest.
+        FindCurrentPlaceRequest request =
+                FindCurrentPlaceRequest.builder(placeFields).build();
+
+// Call findCurrentPlace and handle the response (first check that the user has granted permission).
+        if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            Task<FindCurrentPlaceResponse> placeResponse = placesClient.findCurrentPlace(request);
+            placeResponse.addOnCompleteListener(task -> {
+                if (task.isSuccessful()){
+                    FindCurrentPlaceResponse response = task.getResult();
+                    for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
+                        Log.i(TAG, String.format("Place '%s' has likelihood: %f",
+                                placeLikelihood.getPlace().getName(),
+                                placeLikelihood.getLikelihood()));
+                    }
+                } else {
+                    Exception exception = task.getException();
+                    if (exception instanceof ApiException) {
+                        ApiException apiException = (ApiException) exception;
+                        Log.e(TAG, "Place not found: " + apiException.getStatusCode());
+                    }
+                }
+            });
+        } else {
+            // A local method to request required permissions;
+            // See https://developer.android.com/training/permissions/requesting
+            getLocationPermission();
+        }*/
     }
 }

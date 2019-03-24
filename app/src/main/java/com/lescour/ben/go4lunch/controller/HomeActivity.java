@@ -1,15 +1,28 @@
 package com.lescour.ben.go4lunch.controller;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.PlaceLikelihood;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.lescour.ben.go4lunch.R;
@@ -18,9 +31,14 @@ import com.lescour.ben.go4lunch.controller.fragment.RestaurantListFragment;
 import com.lescour.ben.go4lunch.controller.fragment.WorkmatesListFragment;
 import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent;
 
+import java.util.Arrays;
+import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -28,6 +46,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 /**
  * Created by benja on 15/03/2019.
@@ -44,13 +64,12 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private Fragment fragment;
     private ProgressDialog mProgress;
 
-    private static final int SIGN_OUT_TASK = 10;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
+        Log.e("HomeActivity", " onCreate");
 
         this.configureToolbar();
 
@@ -85,6 +104,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                         return true;
                     case R.id.navigation_workmates:
                         fragment = WorkmatesListFragment.newInstance(0);
+                        currentPlace();
+                        //placeDetails();
                         addFragment();
                         return true;
                 }
@@ -160,7 +181,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
             case R.id.activity_home_drawer_settings:
                 break;
             case R.id.activity_home_drawer_logout:
-                mProgress.show();
                 this.signOutUserFromFirebase();
                 break;
             default:
@@ -183,36 +203,105 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void signOutUserFromFirebase() {
+        mProgress.show();
         AuthUI.getInstance()
                 .signOut(this)
-                .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        mProgress.dismiss();
+                        finish();
+                    } else {
+                        Toast.makeText(HomeActivity.this, "Fetch Failed",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
-    private OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted(final int origin){
-        return aVoid -> {
-            switch (origin){
-                case SIGN_OUT_TASK:
-                    mProgress.dismiss();
-                    finish();
-                    break;
-                default:
-                    break;
-            }
-        };
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.e("Home", "Resume");
     }
 
     private void initProgressDialog() {
         mProgress = new ProgressDialog(this);
-        mProgress.setTitle("Processing...");
+        mProgress.setTitle("Your account will be disconnected...");
         mProgress.setMessage("Please wait...");
         mProgress.setCancelable(false);
         mProgress.setIndeterminate(true);
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.e("ondestroy", "destroy");
+    //TEST\\
+    private void currentPlace() {
+        String apiKey = getString(R.string.places_api_key);
+        Places.initialize(getApplicationContext(), apiKey);
+
+        // Create a new Places client instance.
+        PlacesClient placesClient = Places.createClient(this);
+
+        // Use fields to define the data types to return.
+        List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME);
+
+        // Use the builder to create a FindCurrentPlaceRequest.
+        FindCurrentPlaceRequest request = FindCurrentPlaceRequest.builder(placeFields).build();
+
+        // Call findCurrentPlace and handle the response (first check that the user has granted permission).
+        if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            Task<FindCurrentPlaceResponse> placeResponse = placesClient.findCurrentPlace(request);
+            placeResponse.addOnCompleteListener(task -> {
+                if (task.isSuccessful()){
+                    FindCurrentPlaceResponse response = task.getResult();
+                    for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
+                        Log.i("blabla", String.format("Place '%s' has likelihood: %f",
+                                placeLikelihood.getPlace().getName(),
+                                placeLikelihood.getLikelihood()));
+                    }
+                } else {
+                    Exception exception = task.getException();
+                    if (exception instanceof ApiException) {
+                        ApiException apiException = (ApiException) exception;
+                        Log.e("BLABLA", "Place not found: " + apiException.getStatusCode());
+                    }
+                }
+            });
+        } else {
+            // A local method to request required permissions;
+            // See https://developer.android.com/training/permissions/requesting
+            ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, 0);
+        }
     }
+
+    private void placeDetails() {
+        String apiKey = getString(R.string.places_api_key);
+        Places.initialize(getApplicationContext(), apiKey);
+
+        // Create a new Places client instance.
+        PlacesClient placesClient = Places.createClient(this);
+
+        // Define a Place ID.
+        String placeId = "ChIJwXbTHxKl4EcR-0Jyo2wNyys";
+        //String placeId = (String) Place.getId();
+
+        // Specify the fields to return (in this example all fields are returned).
+        //List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+        List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.TYPES);
+        //List<Place.Type> placeTypes = Arrays.asList(Place.Type.RESTAURANT);
+
+        // Construct a request object, passing the place ID and fields array.
+        FetchPlaceRequest request = FetchPlaceRequest.builder(placeId, placeFields).build();
+
+        placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
+            Place place = response.getPlace();
+            Log.i("blabla", "Place found: " + place.getName());
+        }).addOnFailureListener((exception) -> {
+            if (exception instanceof ApiException) {
+                ApiException apiException = (ApiException) exception;
+                int statusCode = apiException.getStatusCode();
+                // Handle error with given status code.
+                Log.e("blabla", "Place not found: " + exception.getMessage());
+            }
+        });
+    }
+
 }

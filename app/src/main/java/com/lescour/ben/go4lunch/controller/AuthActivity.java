@@ -7,9 +7,12 @@ import android.util.Log;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.firebase.auth.FirebaseAuth;
 import com.lescour.ben.go4lunch.R;
 
 import java.util.Arrays;
+
+import androidx.annotation.NonNull;
 
 public class AuthActivity extends BaseActivity {
 
@@ -19,6 +22,17 @@ public class AuthActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_auth);
+        if (this.isCurrentUserLogged()){
+            this.launchHomeActivity();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!this.isCurrentUserLogged()){
+            this.startSignInActivity();
+        }
     }
 
     private void startSignInActivity() {
@@ -34,24 +48,6 @@ public class AuthActivity extends BaseActivity {
                         .setLogo(R.drawable.go4lunch_ic_sign)
                         .build(),
                 RC_SIGN_IN);
-        Log.e("startSignIn", "dans la méthode");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (this.isCurrentUserLogged()){
-            Log.e("checkUserIsLog", "user found");
-            this.launchMainActivity();
-        } else {
-            Log.e("checkUserIsLog", "no user");
-            this.startSignInActivity();
-        }
-    }
-
-    private void launchMainActivity() {
-        Intent intent = new Intent(this, HomeActivity.class);
-        startActivity(intent);
     }
 
     @Override
@@ -64,16 +60,14 @@ public class AuthActivity extends BaseActivity {
 
         IdpResponse response = IdpResponse.fromResultIntent(data);
 
-        Log.e("handleResponseAfter", "after sign in");
-
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) { // SUCCESS
                 //this.createUserInFirestore();
-                this.launchMainActivity();
-                Log.e("ok", "main");
+                this.launchHomeActivity();
             } else { // ERRORS
                 if (response == null) {
                     //Toast.makeText(this, R.string.error_authentication_canceled, Toast.LENGTH_LONG).show();
+                    //TODO ESSAYER DE REMOVE LE CODE ERROR
                     Log.e("fail", "annulé");
                 } else if (response.getError().getErrorCode() == ErrorCodes.NO_NETWORK) {
                     //Toast.makeText(this, R.string.error_authentication_canceled, Toast.LENGTH_LONG).show();
@@ -84,6 +78,11 @@ public class AuthActivity extends BaseActivity {
                 }
             }
         }
+    }
+
+    private void launchHomeActivity() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
     }
 
 }
