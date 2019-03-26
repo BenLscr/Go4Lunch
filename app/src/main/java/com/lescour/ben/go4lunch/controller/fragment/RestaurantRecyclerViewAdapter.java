@@ -1,30 +1,28 @@
 package com.lescour.ben.go4lunch.controller.fragment;
 
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.controller.fragment.RestaurantListFragment.OnListFragmentInteractionListener;
-import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent.DummyItem;
+import com.lescour.ben.go4lunch.model.Result;
 
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
- */
+import androidx.recyclerview.widget.RecyclerView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<RestaurantRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
+    private List<Result> results;
     private final OnListFragmentInteractionListener mListener;
 
-    public RestaurantRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
-        mValues = items;
+    public RestaurantRecyclerViewAdapter(List<Result> results, OnListFragmentInteractionListener listener) {
+        this.results = results;
         mListener = listener;
     }
 
@@ -37,7 +35,7 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
+        holder.result = this.results.get(position);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,7 +43,7 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
+                    mListener.onListFragmentInteraction(holder.result);
                 }
             }
         });
@@ -53,25 +51,25 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return results.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
-        public DummyItem mItem;
+        @BindView(R.id.restaurant_name) TextView restaurantName;
+        @BindView(R.id.restaurant_address) TextView restaurantAddress;
+        @BindView(R.id.restaurant_open_hours) TextView restaurantOpenHours;
+        @BindView(R.id.restaurant_distance) TextView restaurantDistance;
+        @BindView(R.id.restaurant_number_of_person) TextView restaurantNumberOfPerson;
+        @BindView(R.id.restaurant_rate) ImageView restaurantRate;
+        @BindView(R.id.restaurant_image) ImageView restaurantImage;
+        public Result result;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.item_number);
-            mContentView = (TextView) view.findViewById(R.id.content);
-        }
-
-        @Override
-        public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            ButterKnife.bind(this, view);
         }
     }
+
 }

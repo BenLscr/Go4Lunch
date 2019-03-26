@@ -2,18 +2,26 @@ package com.lescour.ben.go4lunch.controller.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.lescour.ben.go4lunch.BuildConfig;
 import com.lescour.ben.go4lunch.R;
-import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent;
-import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent.DummyItem;
+import com.lescour.ben.go4lunch.model.GoogleResponse;
+import com.lescour.ben.go4lunch.model.Result;
+import com.lescour.ben.go4lunch.utils.GoogleStreams;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
 
 /**
  * A fragment representing a list of Items.
@@ -23,11 +31,18 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 public class RestaurantListFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+
+    private RecyclerView.Adapter mRecyclerViewAdapter;
+    private List<Result> results;
+    private Disposable disposable;
+
+    private String location = "49.8777814,1.2282439";
+    private int radius = 1500;
+    private String type = "restaurant";
+    private String apiKey = BuildConfig.PLACES_API_KEY;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -36,8 +51,6 @@ public class RestaurantListFragment extends Fragment {
     public RestaurantListFragment() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
     public static RestaurantListFragment newInstance(int columnCount) {
         RestaurantListFragment fragment = new RestaurantListFragment();
         Bundle args = new Bundle();
@@ -60,6 +73,8 @@ public class RestaurantListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_restaurant_list, container, false);
 
+        this.results = new ArrayList<>();
+
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
@@ -69,11 +84,38 @@ public class RestaurantListFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new RestaurantRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            this.mRecyclerViewAdapter = new RestaurantRecyclerViewAdapter(this.results, mListener);
+            recyclerView.setAdapter(this.mRecyclerViewAdapter);
         }
+        this.executeHttpRequestWithRetrofit();
         return view;
     }
 
+    private void executeHttpRequestWithRetrofit(){
+        this.disposable = GoogleStreams.streamFetchNearbySearch(location, radius, type, apiKey)
+                .subscribeWith(new DisposableObserver<GoogleResponse>() {
+            @Override
+            public void onNext(GoogleResponse googleResponse) {
+                Log.e("TAG","On Next");
+                updateUI(googleResponse);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e("TAG","On Error"+Log.getStackTraceString(e));
+            }
+
+            @Override
+            public void onComplete() {
+                Log.e("TAG","On Complete !!");
+            }
+        });
+    }
+
+    private void updateUI(GoogleResponse googleResponse) {
+        results.addAll(googleResponse.getResults());
+        mRecyclerViewAdapter.notifyDataSetChanged();
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -103,46 +145,8 @@ public class RestaurantListFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(Result result);
     }
 
-    private void currentPlace() {
-        /**Places.initialize(getApplicationContext(), apiKey);
 
-// Create a new Places client instance.
-        PlacesClient placesClient = Places.createClient(this);
-
-        // Use fields to define the data types to return.
-        List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME);
-
-// Use the builder to create a FindCurrentPlaceRequest.
-        FindCurrentPlaceRequest request =
-                FindCurrentPlaceRequest.builder(placeFields).build();
-
-// Call findCurrentPlace and handle the response (first check that the user has granted permission).
-        if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            Task<FindCurrentPlaceResponse> placeResponse = placesClient.findCurrentPlace(request);
-            placeResponse.addOnCompleteListener(task -> {
-                if (task.isSuccessful()){
-                    FindCurrentPlaceResponse response = task.getResult();
-                    for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
-                        Log.i(TAG, String.format("Place '%s' has likelihood: %f",
-                                placeLikelihood.getPlace().getName(),
-                                placeLikelihood.getLikelihood()));
-                    }
-                } else {
-                    Exception exception = task.getException();
-                    if (exception instanceof ApiException) {
-                        ApiException apiException = (ApiException) exception;
-                        Log.e(TAG, "Place not found: " + apiException.getStatusCode());
-                    }
-                }
-            });
-        } else {
-            // A local method to request required permissions;
-            // See https://developer.android.com/training/permissions/requesting
-            getLocationPermission();
-        }*/
-    }
 }

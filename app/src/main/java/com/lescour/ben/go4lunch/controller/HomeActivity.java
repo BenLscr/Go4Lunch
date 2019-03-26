@@ -1,45 +1,26 @@
 package com.lescour.ben.go4lunch.controller;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.model.PlaceLikelihood;
-import com.google.android.libraries.places.api.net.FetchPlaceRequest;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
-import com.lescour.ben.go4lunch.BuildConfig;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.controller.fragment.MapsFragment;
 import com.lescour.ben.go4lunch.controller.fragment.RestaurantListFragment;
 import com.lescour.ben.go4lunch.controller.fragment.WorkmatesListFragment;
 import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent;
-
-import java.util.Arrays;
-import java.util.List;
+import com.lescour.ben.go4lunch.model.Result;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -48,8 +29,6 @@ import androidx.fragment.app.FragmentTransaction;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-
 /**
  * Created by benja on 15/03/2019.
  */
@@ -57,13 +36,19 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         RestaurantListFragment.OnListFragmentInteractionListener,
         WorkmatesListFragment.OnListFragmentInteractionListener {
 
-    @BindView(R.id.activity_home_toolbar) Toolbar toolbar;
-    @BindView(R.id.activity_home_drawer_layout) DrawerLayout drawerLayout;
-    @BindView(R.id.activity_home_nav_view) NavigationView navigationView;
-    @BindView(R.id.navigation) BottomNavigationView navigation;
+    @BindView(R.id.activity_home_toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.activity_home_drawer_layout)
+    DrawerLayout drawerLayout;
+    @BindView(R.id.activity_home_nav_view)
+    NavigationView navigationView;
+    @BindView(R.id.navigation)
+    BottomNavigationView navigation;
 
     private Fragment fragment;
     private ProgressDialog mProgress;
+
+    private String provider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,27 +76,27 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     //BOTTOM TOOLBAR\\
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = item -> {
-                if (fragment != null) {
-                    getSupportFragmentManager().beginTransaction().remove(fragment).commit();
-                }
-                switch (item.getItemId()) {
-                    case R.id.navigation_map:
-                        fragment = MapsFragment.newInstance("param1", "param2");
-                        addFragment();
-                        return true;
-                    case R.id.navigation_list_restaurant:
-                        fragment = RestaurantListFragment.newInstance(0);
-                        addFragment();
-                        return true;
-                    case R.id.navigation_workmates:
-                        fragment = WorkmatesListFragment.newInstance(0);
-                        currentPlace();
-                        //placeDetails();
-                        addFragment();
-                        return true;
-                }
-                return false;
-            };
+        if (fragment != null) {
+            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+        }
+        switch (item.getItemId()) {
+            case R.id.navigation_map:
+                fragment = MapsFragment.newInstance("param1", "param2");
+                addFragment();
+                return true;
+            case R.id.navigation_list_restaurant:
+                fragment = RestaurantListFragment.newInstance(0);
+                addFragment();
+                return true;
+            case R.id.navigation_workmates:
+                fragment = WorkmatesListFragment.newInstance(0);
+                //currentPlace();
+                //placeDetails();
+                addFragment();
+                return true;
+        }
+        return false;
+    };
 
     //FRAGMENT\\
     private void initFirstFragment() {
@@ -130,7 +115,13 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     }
 
+    @Override
+    public void onListFragmentInteraction(Result result) {
+
+    }
+
     //MENU TOOLBAR\\
+
     /**
      * Inflate the menu and add it to the Toolbar.
      */
@@ -176,7 +167,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        switch (id){
+        switch (id) {
             case R.id.activity_home_drawer_your_lunch:
                 break;
             case R.id.activity_home_drawer_settings:
@@ -231,78 +222,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         mProgress.setCancelable(false);
         mProgress.setIndeterminate(true);
 
-    }
-
-    //TEST\\
-    private void currentPlace() {
-        String apiKey = BuildConfig.API_KEY;
-        Places.initialize(getApplicationContext(), apiKey);
-
-        // Create a new Places client instance.
-        PlacesClient placesClient = Places.createClient(this);
-
-        // Use fields to define the data types to return.
-        List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME);
-
-        // Use the builder to create a FindCurrentPlaceRequest.
-        FindCurrentPlaceRequest request = FindCurrentPlaceRequest.builder(placeFields).build();
-
-        // Call findCurrentPlace and handle the response (first check that the user has granted permission).
-        if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            Task<FindCurrentPlaceResponse> placeResponse = placesClient.findCurrentPlace(request);
-            placeResponse.addOnCompleteListener(task -> {
-                if (task.isSuccessful()){
-                    FindCurrentPlaceResponse response = task.getResult();
-                    for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
-                        Log.i("blabla", String.format("Place '%s' has likelihood: %f",
-                                placeLikelihood.getPlace().getName(),
-                                placeLikelihood.getLikelihood()));
-                    }
-                } else {
-                    Exception exception = task.getException();
-                    if (exception instanceof ApiException) {
-                        ApiException apiException = (ApiException) exception;
-                        Log.e("BLABLA", "Place not found: " + apiException.getStatusCode());
-                    }
-                }
-            });
-        } else {
-            // A local method to request required permissions;
-            // See https://developer.android.com/training/permissions/requesting
-            ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, 0);
-        }
-    }
-
-    private void placeDetails() {
-        String apiKey = BuildConfig.API_KEY;
-        Places.initialize(getApplicationContext(), apiKey);
-
-        // Create a new Places client instance.
-        PlacesClient placesClient = Places.createClient(this);
-
-        // Define a Place ID.
-        String placeId = "ChIJwXbTHxKl4EcR-0Jyo2wNyys";
-        //String placeId = (String) Place.getId();
-
-        // Specify the fields to return (in this example all fields are returned).
-        //List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
-        List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.TYPES);
-        //List<Place.Type> placeTypes = Arrays.asList(Place.Type.RESTAURANT);
-
-        // Construct a request object, passing the place ID and fields array.
-        FetchPlaceRequest request = FetchPlaceRequest.builder(placeId, placeFields).build();
-
-        placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
-            Place place = response.getPlace();
-            Log.i("blabla", "Place found: " + place.getName());
-        }).addOnFailureListener((exception) -> {
-            if (exception instanceof ApiException) {
-                ApiException apiException = (ApiException) exception;
-                int statusCode = apiException.getStatusCode();
-                // Handle error with given status code.
-                Log.e("blabla", "Place not found: " + exception.getMessage());
-            }
-        });
     }
 
 }
