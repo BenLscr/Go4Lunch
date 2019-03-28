@@ -1,4 +1,4 @@
-package com.lescour.ben.go4lunch.model;
+package com.lescour.ben.go4lunch.model.nearby;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -46,6 +46,9 @@ public class Result {
     @SerializedName("vicinity")
     @Expose
     private String vicinity;
+    @SerializedName("rating")
+    @Expose
+    private Double rating;
 
     public Geometry getGeometry() {
         return geometry;
@@ -141,6 +144,14 @@ public class Result {
 
     public void setVicinity(String vicinity) {
         this.vicinity = vicinity;
+    }
+
+    public Double getRating() {
+        return rating;
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
     }
 
 }

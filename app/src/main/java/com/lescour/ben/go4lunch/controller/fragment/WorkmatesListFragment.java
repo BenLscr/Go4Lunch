@@ -2,12 +2,6 @@ package com.lescour.ben.go4lunch.controller.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +9,11 @@ import android.view.ViewGroup;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent;
 import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent.DummyItem;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * A fragment representing a list of Items.
@@ -29,6 +28,8 @@ public class WorkmatesListFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+
+    private RecyclerView.Adapter mRecyclerViewAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -70,11 +71,11 @@ public class WorkmatesListFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new WorkmateRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            this.mRecyclerViewAdapter = new WorkmateRecyclerViewAdapter(DummyContent.ITEMS, mListener);
+            recyclerView.setAdapter(mRecyclerViewAdapter);
         }
         return view;
     }
-
 
     @Override
     public void onAttach(Context context) {

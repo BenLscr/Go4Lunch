@@ -1,4 +1,4 @@
-package com.lescour.ben.go4lunch.model;
+package com.lescour.ben.go4lunch.model.nearby;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by benja on 25/03/2019.
  */
-public class GoogleResponse {
+public class NearbyResponse {
     @SerializedName("html_attributions")
     @Expose
     private List<Object> htmlAttributions = null;

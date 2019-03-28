@@ -7,10 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.lescour.ben.go4lunch.BuildConfig;
 import com.lescour.ben.go4lunch.R;
-import com.lescour.ben.go4lunch.model.GoogleResponse;
-import com.lescour.ben.go4lunch.model.Result;
+import com.lescour.ben.go4lunch.model.details.DetailsResponse;
+import com.lescour.ben.go4lunch.model.nearby.NearbyResponse;
+import com.lescour.ben.go4lunch.model.nearby.Result;
 import com.lescour.ben.go4lunch.utils.GoogleStreams;
 
 import java.util.ArrayList;
@@ -36,14 +38,16 @@ public class RestaurantListFragment extends Fragment {
     private OnListFragmentInteractionListener mListener;
 
     private RecyclerView.Adapter mRecyclerViewAdapter;
-    private List<Result> results;
+    private List<Result> nearbyResults;
+    private List<DetailsResponse> detailsResponses;
     private Disposable disposable;
 
     private String location = "49.8777814,1.2282439";
-    private int radius = 1500;
+    private int radius = 3500;
     private String type = "restaurant";
     private String apiKey = BuildConfig.PLACES_API_KEY;
 
+    private int i = 0;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -73,7 +77,8 @@ public class RestaurantListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_restaurant_list, container, false);
 
-        this.results = new ArrayList<>();
+        this.nearbyResults = new ArrayList<>();
+        this.detailsResponses = new ArrayList<>();
 
         // Set the adapter
         if (view instanceof RecyclerView) {
@@ -84,37 +89,11 @@ public class RestaurantListFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            this.mRecyclerViewAdapter = new RestaurantRecyclerViewAdapter(this.results, mListener);
+            this.mRecyclerViewAdapter = new RestaurantRecyclerViewAdapter(this.nearbyResults, this.detailsResponses, mListener, Glide.with(this));
             recyclerView.setAdapter(this.mRecyclerViewAdapter);
         }
-        this.executeHttpRequestWithRetrofit();
+        this.executeHttpRequestWithRetrofit_NearbySearch();
         return view;
-    }
-
-    private void executeHttpRequestWithRetrofit(){
-        this.disposable = GoogleStreams.streamFetchNearbySearch(location, radius, type, apiKey)
-                .subscribeWith(new DisposableObserver<GoogleResponse>() {
-            @Override
-            public void onNext(GoogleResponse googleResponse) {
-                Log.e("TAG","On Next");
-                updateUI(googleResponse);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Log.e("TAG","On Error"+Log.getStackTraceString(e));
-            }
-
-            @Override
-            public void onComplete() {
-                Log.e("TAG","On Complete !!");
-            }
-        });
-    }
-
-    private void updateUI(GoogleResponse googleResponse) {
-        results.addAll(googleResponse.getResults());
-        mRecyclerViewAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -145,8 +124,67 @@ public class RestaurantListFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(Result result);
+        void onListFragmentInteraction(DetailsResponse detailsResponse);
     }
 
+    //LOCATION\\
 
+
+    //HTTP REQUEST\\
+    private void executeHttpRequestWithRetrofit_NearbySearch(){
+        this.disposable = GoogleStreams.streamFetchNearbySearch(location, radius, type, apiKey)
+                .subscribeWith(new DisposableObserver<NearbyResponse>() {
+                    @Override
+                    public void onNext(NearbyResponse nearbyResponse) {
+                        Log.e("TAG","On Next");
+                        updateUI(nearbyResponse);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("TAG","On Error"+Log.getStackTraceString(e));
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.e("TAG","On Complete !!");
+                    }
+                });
+    }
+
+    private void updateUI(NearbyResponse nearbyResponse) {
+        nearbyResults.addAll(nearbyResponse.getResults());
+        executeHttpRequestWithRetrofit_DetailsSearch(nearbyResults.get(i).getPlaceId());
+    }
+
+    private void executeHttpRequestWithRetrofit_DetailsSearch(String placeId){
+        this.disposable = GoogleStreams.streamFetchDetailsSearch(placeId, apiKey)
+                .subscribeWith(new DisposableObserver<DetailsResponse>() {
+                    @Override
+                    public void onNext(DetailsResponse detailsResponse) {
+                        Log.e("TAG","On Next");
+                        detailsResponses.add(detailsResponse);
+                        notifyRecyclerViewAdapter_WhenEveryRequestAreDone();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("TAG","On Error"+Log.getStackTraceString(e));
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.e("TAG","On Complete !!");
+                    }
+                });
+    }
+
+    private void notifyRecyclerViewAdapter_WhenEveryRequestAreDone() {
+        if (nearbyResults.size() == detailsResponses.size()) {
+            mRecyclerViewAdapter.notifyDataSetChanged();
+        } else {
+            i++;
+            executeHttpRequestWithRetrofit_DetailsSearch(nearbyResults.get(i).getPlaceId());
+        }
+    }
 }

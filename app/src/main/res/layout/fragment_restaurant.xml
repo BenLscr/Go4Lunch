@@ -16,6 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/restaurant"
+            android:textStyle="bold"
             android:id="@+id/restaurant_name"/>
 
         <TextView
@@ -30,6 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:text="@string/is_it_open"
+            android:textStyle="italic"
             android:id="@+id/restaurant_open_hours"/>
 
     </FrameLayout>
@@ -84,10 +86,28 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/baseline_star_rate_white_24"
                     android:tint="@color/quantum_yellow"
                     android:layout_gravity="bottom"
-                    android:id="@+id/restaurant_rate"
+                    android:id="@+id/restaurant_rate_1"
+                    android:src="@drawable/baseline_star_rate_white_24"
+                    android:contentDescription="@string/rate_stars"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:tint="@color/quantum_yellow"
+                    android:layout_gravity="bottom"
+                    android:id="@+id/restaurant_rate_2"
+                    android:src="@drawable/baseline_star_rate_white_24"
+                    android:contentDescription="@string/rate_stars"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:tint="@color/quantum_yellow"
+                    android:layout_gravity="bottom"
+                    android:id="@+id/restaurant_rate_3"
+                    android:src="@drawable/baseline_star_rate_white_24"
                     android:contentDescription="@string/rate_stars"/>
 
             </LinearLayout>
@@ -95,8 +115,8 @@
         </FrameLayout>
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="76dp"
+            android:layout_height="76dp"
             app:srcCompat="@drawable/ic_launcher_background"
             android:id="@+id/restaurant_image"
             android:contentDescription="@string/restaurant_image"/>

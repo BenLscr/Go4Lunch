@@ -16,7 +16,8 @@ import com.lescour.ben.go4lunch.controller.fragment.MapsFragment;
 import com.lescour.ben.go4lunch.controller.fragment.RestaurantListFragment;
 import com.lescour.ben.go4lunch.controller.fragment.WorkmatesListFragment;
 import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent;
-import com.lescour.ben.go4lunch.model.Result;
+import com.lescour.ben.go4lunch.model.details.DetailsResponse;
+import com.lescour.ben.go4lunch.model.nearby.Result;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -116,7 +117,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
-    public void onListFragmentInteraction(Result result) {
+    public void onListFragmentInteraction(DetailsResponse detailsResponse) {
 
     }
 

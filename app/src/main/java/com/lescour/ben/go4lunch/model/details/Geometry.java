@@ -1,16 +1,19 @@
-package com.lescour.ben.go4lunch.model;
+package com.lescour.ben.go4lunch.model.details;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by benja on 25/03/2019.
+ * Created by benja on 26/03/2019.
  */
 public class Geometry {
 
     @SerializedName("location")
     @Expose
     private Location location;
+    @SerializedName("viewport")
+    @Expose
+    private Viewport viewport;
 
     public Location getLocation() {
         return location;
@@ -18,6 +21,14 @@ public class Geometry {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public Viewport getViewport() {
+        return viewport;
+    }
+
+    public void setViewport(Viewport viewport) {
+        this.viewport = viewport;
     }
 
 }
