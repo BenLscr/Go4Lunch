@@ -1,6 +1,13 @@
 package com.lescour.ben.go4lunch.controller;
 
+import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -16,8 +23,8 @@ import com.lescour.ben.go4lunch.controller.fragment.MapsFragment;
 import com.lescour.ben.go4lunch.controller.fragment.RestaurantListFragment;
 import com.lescour.ben.go4lunch.controller.fragment.WorkmatesListFragment;
 import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent;
+import com.lescour.ben.go4lunch.model.ParcelableLocation;
 import com.lescour.ben.go4lunch.model.details.DetailsResponse;
-import com.lescour.ben.go4lunch.model.nearby.Result;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -37,19 +44,18 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         RestaurantListFragment.OnListFragmentInteractionListener,
         WorkmatesListFragment.OnListFragmentInteractionListener {
 
-    @BindView(R.id.activity_home_toolbar)
-    Toolbar toolbar;
-    @BindView(R.id.activity_home_drawer_layout)
-    DrawerLayout drawerLayout;
-    @BindView(R.id.activity_home_nav_view)
-    NavigationView navigationView;
-    @BindView(R.id.navigation)
-    BottomNavigationView navigation;
+    @BindView(R.id.activity_home_toolbar) Toolbar toolbar;
+    @BindView(R.id.activity_home_drawer_layout) DrawerLayout drawerLayout;
+    @BindView(R.id.activity_home_nav_view) NavigationView navigationView;
+    @BindView(R.id.navigation) BottomNavigationView navigation;
 
     private Fragment fragment;
     private ProgressDialog mProgress;
 
-    private String provider;
+
+    private ParcelableLocation mParcelableLocation;
+    private long MIN_TIME_FOR_UPDATES = 300;
+    private long MIN_DISTANCE_FOR_UPDATES = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,15 +74,58 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         this.initFirstFragment();
 
         this.initProgressDialog();
+
+        this.getMyCurrentLocation();
     }
 
     private void configureToolbar() {
         setSupportActionBar(toolbar);
     }
 
+    private void getMyCurrentLocation() {
+        mParcelableLocation = new ParcelableLocation();
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    Activity#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for Activity#requestPermissions for more details.
+                return;
+            }
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_FOR_UPDATES, MIN_DISTANCE_FOR_UPDATES, new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                mParcelableLocation.setLatitude(location.getLatitude());
+                mParcelableLocation.setLongitude(location.getLongitude());
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        });
+    }
+
     //BOTTOM TOOLBAR\\
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = item -> {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("HomeToFragment", mParcelableLocation);
         if (fragment != null) {
             getSupportFragmentManager().beginTransaction().remove(fragment).commit();
         }
@@ -87,6 +136,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                 return true;
             case R.id.navigation_list_restaurant:
                 fragment = RestaurantListFragment.newInstance(0);
+                fragment.setArguments(bundle);
                 addFragment();
                 return true;
             case R.id.navigation_workmates:

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
 import com.lescour.ben.go4lunch.BuildConfig;
 import com.lescour.ben.go4lunch.R;
+import com.lescour.ben.go4lunch.model.ParcelableLocation;
 import com.lescour.ben.go4lunch.model.details.DetailsResponse;
 import com.lescour.ben.go4lunch.model.nearby.NearbyResponse;
 import com.lescour.ben.go4lunch.model.nearby.Result;
@@ -42,12 +43,14 @@ public class RestaurantListFragment extends Fragment {
     private List<DetailsResponse> detailsResponses;
     private Disposable disposable;
 
-    private String location = "49.8777814,1.2282439";
+    private ParcelableLocation mParcelableLocation;
+    private String stringLocation;
     private int radius = 3500;
     private String type = "restaurant";
     private String apiKey = BuildConfig.PLACES_API_KEY;
 
     private int i = 0;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -92,6 +95,8 @@ public class RestaurantListFragment extends Fragment {
             this.mRecyclerViewAdapter = new RestaurantRecyclerViewAdapter(this.nearbyResults, this.detailsResponses, mListener, Glide.with(this));
             recyclerView.setAdapter(this.mRecyclerViewAdapter);
         }
+        this.setParcelableLocation();
+        this.buildStringLocation();
         this.executeHttpRequestWithRetrofit_NearbySearch();
         return view;
     }
@@ -127,12 +132,20 @@ public class RestaurantListFragment extends Fragment {
         void onListFragmentInteraction(DetailsResponse detailsResponse);
     }
 
-    //LOCATION\\
+    private void setParcelableLocation() {
+        Bundle bundle = getArguments();
+        if (bundle != null && bundle.containsKey("HomeToFragment")) {
+            mParcelableLocation = bundle.getParcelable("HomeToFragment");
+        }
+    }
 
+    private void buildStringLocation() {
+        stringLocation = mParcelableLocation.getLatitude() + "," + mParcelableLocation.getLongitude();
+    }
 
     //HTTP REQUEST\\
     private void executeHttpRequestWithRetrofit_NearbySearch(){
-        this.disposable = GoogleStreams.streamFetchNearbySearch(location, radius, type, apiKey)
+        this.disposable = GoogleStreams.streamFetchNearbySearch(stringLocation, radius, type, apiKey)
                 .subscribeWith(new DisposableObserver<NearbyResponse>() {
                     @Override
                     public void onNext(NearbyResponse nearbyResponse) {

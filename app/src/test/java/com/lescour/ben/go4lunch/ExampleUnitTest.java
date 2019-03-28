@@ -1,5 +1,7 @@
 package com.lescour.ben.go4lunch;
 
+import com.lescour.ben.go4lunch.controller.fragment.RestaurantListFragment;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;

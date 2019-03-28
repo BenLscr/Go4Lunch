@@ -62,29 +62,33 @@ public class ProcessRestaurantDetails {
     public String getRestaurantOpenHours() {
         if (mDetailsResponse.getResult().getOpeningHours() != null) {
             if (mDetailsResponse.getResult().getOpeningHours().getOpenNow()) {
-                Calendar calendar = Calendar.getInstance();
-                int day = calendar.get(Calendar.DAY_OF_WEEK);
-                String rawHours = null;
-                boolean getCloseFound= false;
-                int i = 0;
-                do {
-                    int dayFound = mDetailsResponse.getResult().getOpeningHours().getPeriods().get(i).getClose().getDay();
-                    if (dayFound == day -1) {
-                        rawHours = mDetailsResponse.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime();
-                        getCloseFound = true;
-                    } else {
-                        i++;
+                if (mDetailsResponse.getResult().getOpeningHours().getPeriods().size() == 1) {
+                    return "Open 24/7";
+                } else {
+                    Calendar calendar = Calendar.getInstance();
+                    int day = calendar.get(Calendar.DAY_OF_WEEK);
+                    String rawHours = null;
+                    boolean getCloseFound = false;
+                    int i = 0;
+                    do {
+                        int dayFound = mDetailsResponse.getResult().getOpeningHours().getPeriods().get(i).getClose().getDay();
+                        if (dayFound == day - 1) {
+                            rawHours = mDetailsResponse.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime();
+                            getCloseFound = true;
+                        } else {
+                            i++;
+                        }
+                    } while (!getCloseFound);
+                    SimpleDateFormat rawFormatHours = new SimpleDateFormat("hhmm", Locale.getDefault());
+                    SimpleDateFormat newFormatHours = new SimpleDateFormat("h.mma", Locale.getDefault());
+                    try {
+                        Date date = rawFormatHours.parse(rawHours);
+                        newHours = newFormatHours.format(date);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
                     }
-                } while (!getCloseFound);
-                SimpleDateFormat rawFormatHours = new SimpleDateFormat("hhmm", Locale.getDefault());
-                SimpleDateFormat newFormatHours = new SimpleDateFormat("h.mma", Locale.getDefault());
-                try {
-                    Date date = rawFormatHours.parse(rawHours);
-                    newHours = newFormatHours.format(date);
-                } catch (ParseException e) {
-                    e.printStackTrace();
+                    return "Open until " + newHours;
                 }
-                return "Open until " + newHours;
             } else {
                 return "Currently closed";
             }
