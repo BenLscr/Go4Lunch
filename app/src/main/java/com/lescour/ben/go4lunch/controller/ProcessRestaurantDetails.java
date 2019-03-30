@@ -98,7 +98,7 @@ public class ProcessRestaurantDetails {
     }
 
     public int getRestaurantRate1() {
-        if (mDetailsResponse.getResult().getRating() >= 2) {
+        if (mResult.getRating() >= 2) {
             return View.VISIBLE;
         } else {
             return View.GONE;
@@ -106,7 +106,7 @@ public class ProcessRestaurantDetails {
     }
 
     public int getRestaurantRate2() {
-        if (mDetailsResponse.getResult().getRating() >= 3) {
+        if (mResult.getRating() >= 3) {
             return View.VISIBLE;
         } else {
             return View.GONE;
@@ -114,7 +114,7 @@ public class ProcessRestaurantDetails {
     }
 
     public int getRestaurantRate3() {
-        if (mDetailsResponse.getResult().getRating() >= 4) {
+        if (mResult.getRating() >= 4) {
             return View.VISIBLE;
         } else {
             return View.GONE;
