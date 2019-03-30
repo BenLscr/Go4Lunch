@@ -1,5 +1,8 @@
 package com.lescour.ben.go4lunch.model.nearby;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -8,7 +11,7 @@ import java.util.List;
 /**
  * Created by benja on 25/03/2019.
  */
-public class Result {
+public class Result implements Parcelable {
 
     @SerializedName("geometry")
     @Expose
@@ -31,9 +34,6 @@ public class Result {
     @SerializedName("place_id")
     @Expose
     private String placeId;
-    @SerializedName("scope")
-    @Expose
-    private String scope;
     @SerializedName("alt_ids")
     @Expose
     private List<AltId> altIds = null;
@@ -43,12 +43,39 @@ public class Result {
     @SerializedName("types")
     @Expose
     private List<String> types = null;
-    @SerializedName("vicinity")
-    @Expose
-    private String vicinity;
     @SerializedName("rating")
     @Expose
     private Double rating;
+
+    protected Result(Parcel in) {
+        geometry = in.readParcelable(Geometry.class.getClassLoader());
+        icon = in.readString();
+        id = in.readString();
+        name = in.readString();
+        openingHours = in.readParcelable(OpeningHours.class.getClassLoader());
+        photos = in.createTypedArrayList(Photo.CREATOR);
+        placeId = in.readString();
+        altIds = in.createTypedArrayList(AltId.CREATOR);
+        reference = in.readString();
+        types = in.createStringArrayList();
+        if (in.readByte() == 0) {
+            rating = null;
+        } else {
+            rating = in.readDouble();
+        }
+    }
+
+    public static final Creator<Result> CREATOR = new Creator<Result>() {
+        @Override
+        public Result createFromParcel(Parcel in) {
+            return new Result(in);
+        }
+
+        @Override
+        public Result[] newArray(int size) {
+            return new Result[size];
+        }
+    };
 
     public Geometry getGeometry() {
         return geometry;
@@ -106,14 +133,6 @@ public class Result {
         this.placeId = placeId;
     }
 
-    public String getScope() {
-        return scope;
-    }
-
-    public void setScope(String scope) {
-        this.scope = scope;
-    }
-
     public List<AltId> getAltIds() {
         return altIds;
     }
@@ -138,14 +157,6 @@ public class Result {
         this.types = types;
     }
 
-    public String getVicinity() {
-        return vicinity;
-    }
-
-    public void setVicinity(String vicinity) {
-        this.vicinity = vicinity;
-    }
-
     public Double getRating() {
         return rating;
     }
@@ -154,4 +165,28 @@ public class Result {
         this.rating = rating;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(geometry, flags);
+        dest.writeString(icon);
+        dest.writeString(id);
+        dest.writeString(name);
+        dest.writeParcelable(openingHours, flags);
+        dest.writeTypedList(photos);
+        dest.writeString(placeId);
+        dest.writeTypedList(altIds);
+        dest.writeString(reference);
+        dest.writeStringList(types);
+        if (rating == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeDouble(rating);
+        }
+    }
 }

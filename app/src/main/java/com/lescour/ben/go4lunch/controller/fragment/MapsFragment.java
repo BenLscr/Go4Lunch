@@ -1,15 +1,17 @@
 package com.lescour.ben.go4lunch.controller.fragment;
 
 
+import android.content.Context;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.lescour.ben.go4lunch.R;
+
+import androidx.fragment.app.Fragment;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +27,10 @@ public class MapsFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private Context mContext;
+    private SupportMapFragment supportMapFragment;
+    private GoogleMap mMap;
 
 
     public MapsFragment() {

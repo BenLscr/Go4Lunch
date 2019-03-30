@@ -1,5 +1,8 @@
 package com.lescour.ben.go4lunch.model.nearby;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -8,36 +11,27 @@ import java.util.List;
 /**
  * Created by benja on 25/03/2019.
  */
-public class Photo {
+public class Photo implements Parcelable {
 
-    @SerializedName("height")
-    @Expose
-    private Integer height;
-    @SerializedName("html_attributions")
-    @Expose
-    private List<Object> htmlAttributions = null;
     @SerializedName("photo_reference")
     @Expose
     private String photoReference;
-    @SerializedName("width")
-    @Expose
-    private Integer width;
 
-    public Integer getHeight() {
-        return height;
+    protected Photo(Parcel in) {
+        photoReference = in.readString();
     }
 
-    public void setHeight(Integer height) {
-        this.height = height;
-    }
+    public static final Creator<Photo> CREATOR = new Creator<Photo>() {
+        @Override
+        public Photo createFromParcel(Parcel in) {
+            return new Photo(in);
+        }
 
-    public List<Object> getHtmlAttributions() {
-        return htmlAttributions;
-    }
-
-    public void setHtmlAttributions(List<Object> htmlAttributions) {
-        this.htmlAttributions = htmlAttributions;
-    }
+        @Override
+        public Photo[] newArray(int size) {
+            return new Photo[size];
+        }
+    };
 
     public String getPhotoReference() {
         return photoReference;
@@ -47,12 +41,13 @@ public class Photo {
         this.photoReference = photoReference;
     }
 
-    public Integer getWidth() {
-        return width;
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
-    public void setWidth(Integer width) {
-        this.width = width;
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(photoReference);
     }
-
 }

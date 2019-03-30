@@ -9,23 +9,10 @@ import java.util.List;
  * Created by benja on 25/03/2019.
  */
 public class NearbyResponse {
-    @SerializedName("html_attributions")
-    @Expose
-    private List<Object> htmlAttributions = null;
+
     @SerializedName("results")
     @Expose
     private List<Result> results = null;
-    @SerializedName("status")
-    @Expose
-    private String status;
-
-    public List<Object> getHtmlAttributions() {
-        return htmlAttributions;
-    }
-
-    public void setHtmlAttributions(List<Object> htmlAttributions) {
-        this.htmlAttributions = htmlAttributions;
-    }
 
     public List<Result> getResults() {
         return results;
@@ -35,11 +22,4 @@ public class NearbyResponse {
         this.results = results;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 }

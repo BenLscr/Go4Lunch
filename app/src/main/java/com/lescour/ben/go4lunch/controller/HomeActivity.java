@@ -18,13 +18,19 @@ import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.lescour.ben.go4lunch.BuildConfig;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.controller.fragment.MapsFragment;
 import com.lescour.ben.go4lunch.controller.fragment.RestaurantListFragment;
 import com.lescour.ben.go4lunch.controller.fragment.WorkmatesListFragment;
 import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent;
-import com.lescour.ben.go4lunch.model.ParcelableLocation;
+import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
 import com.lescour.ben.go4lunch.model.details.DetailsResponse;
+import com.lescour.ben.go4lunch.model.nearby.NearbyResponse;
+import com.lescour.ben.go4lunch.utils.GoogleStreams;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -36,6 +42,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
 
 /**
  * Created by benja on 15/03/2019.
@@ -52,10 +60,20 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private Fragment fragment;
     private ProgressDialog mProgress;
 
+    private Disposable disposable;
 
-    private ParcelableLocation mParcelableLocation;
+    private ParcelableRestaurantDetails mParcelableRestaurantDetails;
     private long MIN_TIME_FOR_UPDATES = 300;
     private long MIN_DISTANCE_FOR_UPDATES = 5;
+
+    private String stringLocation;
+    private int radius = 3500;
+    private String type = "restaurant";
+    private String apiKey = BuildConfig.PLACES_API_KEY;
+
+    private int i = 0;
+
+    private List<DetailsResponse> mDetailsResponses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +93,10 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
         this.initProgressDialog();
 
+        mParcelableRestaurantDetails = new ParcelableRestaurantDetails();
+        mParcelableRestaurantDetails.setNearbyResults(new ArrayList<>());
+        mParcelableRestaurantDetails.setDetailsResponses(new ArrayList<>());
+        mDetailsResponses = new ArrayList<>();
         this.getMyCurrentLocation();
     }
 
@@ -82,50 +104,11 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         setSupportActionBar(toolbar);
     }
 
-    private void getMyCurrentLocation() {
-        mParcelableLocation = new ParcelableLocation();
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    Activity#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for Activity#requestPermissions for more details.
-                return;
-            }
-        }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_FOR_UPDATES, MIN_DISTANCE_FOR_UPDATES, new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                mParcelableLocation.setLatitude(location.getLatitude());
-                mParcelableLocation.setLongitude(location.getLongitude());
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-        });
-    }
-
     //BOTTOM TOOLBAR\\
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = item -> {
         Bundle bundle = new Bundle();
-        bundle.putParcelable("HomeToFragment", mParcelableLocation);
+        bundle.putParcelable("HomeToFragment", mParcelableRestaurantDetails);
         if (fragment != null) {
             getSupportFragmentManager().beginTransaction().remove(fragment).commit();
         }
@@ -172,7 +155,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     //MENU TOOLBAR\\
-
     /**
      * Inflate the menu and add it to the Toolbar.
      */
@@ -273,6 +255,103 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         mProgress.setCancelable(false);
         mProgress.setIndeterminate(true);
 
+    }
+
+    //HTTP REQUEST\\
+    private void getMyCurrentLocation() {
+        mParcelableRestaurantDetails = new ParcelableRestaurantDetails();
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    Activity#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for Activity#requestPermissions for more details.
+                return;
+            }
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_FOR_UPDATES, MIN_DISTANCE_FOR_UPDATES, new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                stringLocation = location.getLatitude() + "," + location.getLongitude();
+                executeHttpRequestWithRetrofit_NearbySearch();
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        });
+    }
+
+    private void executeHttpRequestWithRetrofit_NearbySearch(){
+        this.disposable = GoogleStreams.streamFetchNearbySearch(stringLocation, radius, type, apiKey)
+                .subscribeWith(new DisposableObserver<NearbyResponse>() {
+                    @Override
+                    public void onNext(NearbyResponse nearbyResponse) {
+                        Log.e("TAG","On Next");
+                        updateUI(nearbyResponse);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("TAG","On Error"+Log.getStackTraceString(e));
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.e("TAG","On Complete !!");
+                    }
+                });
+    }
+
+    private void updateUI(NearbyResponse nearbyResponse) {
+        mParcelableRestaurantDetails.setNearbyResults(nearbyResponse.getResults());
+        executeHttpRequestWithRetrofit_DetailsSearch(mParcelableRestaurantDetails.getNearbyResults().get(i).getPlaceId());
+    }
+
+    private void executeHttpRequestWithRetrofit_DetailsSearch(String placeId){
+        this.disposable = GoogleStreams.streamFetchDetailsSearch(placeId, apiKey)
+                .subscribeWith(new DisposableObserver<DetailsResponse>() {
+                    @Override
+                    public void onNext(DetailsResponse detailsResponse) {
+                        Log.e("TAG","On Next");
+                        mDetailsResponses.add(detailsResponse);
+                        everyRestaurantDetails_isRequired();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("TAG","On Error"+Log.getStackTraceString(e));
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.e("TAG","On Complete !!");
+                    }
+                });
+    }
+
+    private void everyRestaurantDetails_isRequired() {
+        if (mParcelableRestaurantDetails.getNearbyResults().size() == mDetailsResponses.size()) {
+            mParcelableRestaurantDetails.setDetailsResponses(mDetailsResponses);
+        } else {
+            executeHttpRequestWithRetrofit_DetailsSearch(mParcelableRestaurantDetails.getNearbyResults().get(i).getPlaceId());
+            i++;
+        }
     }
 
 }

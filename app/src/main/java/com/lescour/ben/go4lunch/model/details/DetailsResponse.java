@@ -1,5 +1,8 @@
 package com.lescour.ben.go4lunch.model.details;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -8,25 +11,27 @@ import java.util.List;
 /**
  * Created by benja on 26/03/2019.
  */
-public class DetailsResponse {
+public class DetailsResponse implements Parcelable {
 
-    @SerializedName("html_attributions")
-    @Expose
-    private List<Object> htmlAttributions = null;
     @SerializedName("result")
     @Expose
     private Result result;
-    @SerializedName("status")
-    @Expose
-    private String status;
 
-    public List<Object> getHtmlAttributions() {
-        return htmlAttributions;
+    protected DetailsResponse(Parcel in) {
+        result = in.readParcelable(Result.class.getClassLoader());
     }
 
-    public void setHtmlAttributions(List<Object> htmlAttributions) {
-        this.htmlAttributions = htmlAttributions;
-    }
+    public static final Creator<DetailsResponse> CREATOR = new Creator<DetailsResponse>() {
+        @Override
+        public DetailsResponse createFromParcel(Parcel in) {
+            return new DetailsResponse(in);
+        }
+
+        @Override
+        public DetailsResponse[] newArray(int size) {
+            return new DetailsResponse[size];
+        }
+    };
 
     public Result getResult() {
         return result;
@@ -36,12 +41,13 @@ public class DetailsResponse {
         this.result = result;
     }
 
-    public String getStatus() {
-        return status;
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(result, flags);
     }
-
 }

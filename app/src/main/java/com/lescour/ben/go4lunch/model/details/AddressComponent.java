@@ -1,5 +1,8 @@
 package com.lescour.ben.go4lunch.model.details;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -8,7 +11,7 @@ import java.util.List;
 /**
  * Created by benja on 26/03/2019.
  */
-public class AddressComponent {
+public class AddressComponent implements Parcelable {
 
     @SerializedName("long_name")
     @Expose
@@ -19,6 +22,24 @@ public class AddressComponent {
     @SerializedName("types")
     @Expose
     private List<String> types = null;
+
+    protected AddressComponent(Parcel in) {
+        longName = in.readString();
+        shortName = in.readString();
+        types = in.createStringArrayList();
+    }
+
+    public static final Creator<AddressComponent> CREATOR = new Creator<AddressComponent>() {
+        @Override
+        public AddressComponent createFromParcel(Parcel in) {
+            return new AddressComponent(in);
+        }
+
+        @Override
+        public AddressComponent[] newArray(int size) {
+            return new AddressComponent[size];
+        }
+    };
 
     public String getLongName() {
         return longName;
@@ -44,4 +65,15 @@ public class AddressComponent {
         this.types = types;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(longName);
+        dest.writeString(shortName);
+        dest.writeStringList(types);
+    }
 }
