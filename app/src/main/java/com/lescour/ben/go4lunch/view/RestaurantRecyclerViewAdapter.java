@@ -48,8 +48,8 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
         ProcessRestaurantDetails restaurantDetails = new ProcessRestaurantDetails(holder.nearbyResult, holder.placeDetailsResponse);
         holder.restaurantName.setText(restaurantDetails.getRestaurantName());
         holder.restaurantAddress.setText(restaurantDetails.getRestaurantAddress());
-        /**holder.restaurantOpenHours.setText(restaurantDetails.getRestaurantOpenHours());
-        if (holder.nearbyResult.getRating() != null) {
+        holder.restaurantOpenHours.setText(restaurantDetails.getRestaurantOpenHours());
+        /**if (holder.nearbyResult.getRating() != null) {
             holder.restaurantRate1.setVisibility(restaurantDetails.getRestaurantRate1());
             holder.restaurantRate2.setVisibility(restaurantDetails.getRestaurantRate2());
             holder.restaurantRate3.setVisibility(restaurantDetails.getRestaurantRate3());
