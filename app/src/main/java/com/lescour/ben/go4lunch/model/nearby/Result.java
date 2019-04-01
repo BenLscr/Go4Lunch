@@ -47,6 +47,9 @@ public class Result implements Parcelable {
     @Expose
     private Double rating;
 
+    public Result() {
+    }
+
     protected Result(Parcel in) {
         geometry = in.readParcelable(Geometry.class.getClassLoader());
         icon = in.readString();

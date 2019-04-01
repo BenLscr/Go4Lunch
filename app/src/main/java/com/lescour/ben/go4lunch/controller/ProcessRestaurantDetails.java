@@ -3,8 +3,7 @@ package com.lescour.ben.go4lunch.controller;
 import android.view.View;
 
 import com.lescour.ben.go4lunch.BuildConfig;
-import com.lescour.ben.go4lunch.model.details.AddressComponent;
-import com.lescour.ben.go4lunch.model.details.DetailsResponse;
+import com.lescour.ben.go4lunch.model.PlaceDetailsResponse;
 import com.lescour.ben.go4lunch.model.nearby.Result;
 
 import java.text.ParseException;
@@ -19,47 +18,24 @@ import java.util.Locale;
 public class ProcessRestaurantDetails {
 
     private Result mResult;
-    private DetailsResponse mDetailsResponse;
+    private PlaceDetailsResponse mPlaceDetailsResponse;
     private String newHours;
 
-    public ProcessRestaurantDetails(Result nearbyResult, DetailsResponse detailsResponse) {
+    public ProcessRestaurantDetails(Result nearbyResult, PlaceDetailsResponse placeDetailsResponse) {
         this.mResult = nearbyResult;
-        this.mDetailsResponse = detailsResponse;
+        this.mPlaceDetailsResponse = placeDetailsResponse;
     }
 
     public String getRestaurantName() {
-        return mDetailsResponse.getResult().getName();
+        return mResult.getName();
     }
 
     public String getRestaurantAddress() {
-        boolean bStreetNumber = false;
-        int i = 0;
-        String streetNumber = null;
-        do {
-            AddressComponent tempAddressComponent = mDetailsResponse.getResult().getAddressComponents().get(i);
-            if (tempAddressComponent.getTypes().get(0).equals("street_number")) {
-                streetNumber = mDetailsResponse.getResult().getAddressComponents().get(i).getShortName();
-                bStreetNumber = true;
-            }
-            i++;
-        } while (!bStreetNumber);
-
-        boolean bRoute = false;
-        int j = 0;
-        String route = null;
-        do {
-            AddressComponent tempAddressComponent = mDetailsResponse.getResult().getAddressComponents().get(j);
-            if (tempAddressComponent.getTypes().get(0).equals("route")) {
-                route = mDetailsResponse.getResult().getAddressComponents().get(j).getShortName();
-                bRoute = true;
-            }
-            j++;
-        } while (!bRoute);
-
-        return streetNumber + ", " + route;
+        String address = mPlaceDetailsResponse.getAddress();
+        return address.substring(0, address.indexOf(","));
     }
 
-    public String getRestaurantOpenHours() {
+    /**public String getRestaurantOpenHours() {
         if (mDetailsResponse.getResult().getOpeningHours() != null) {
             if (mDetailsResponse.getResult().getOpeningHours().getOpenNow()) {
                 if (mDetailsResponse.getResult().getOpeningHours().getPeriods().size() == 1) {
@@ -127,5 +103,5 @@ public class ProcessRestaurantDetails {
         String photoReference = "&photoreference=" + mResult.getPhotos().get(0).getPhotoReference();
         String apiKey = "&key=" + BuildConfig.PLACES_API_KEY;
         return baseUrl + maxHeight + photoReference + apiKey;
-    }
+    }*/
 }

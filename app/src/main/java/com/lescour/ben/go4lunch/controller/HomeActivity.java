@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -16,6 +17,13 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.lescour.ben.go4lunch.BuildConfig;
@@ -25,11 +33,13 @@ import com.lescour.ben.go4lunch.controller.fragment.RestaurantListFragment;
 import com.lescour.ben.go4lunch.controller.fragment.WorkmatesListFragment;
 import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent;
 import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
-import com.lescour.ben.go4lunch.model.details.DetailsResponse;
+import com.lescour.ben.go4lunch.model.PlaceDetailsResponse;
 import com.lescour.ben.go4lunch.model.nearby.NearbyResponse;
+import com.lescour.ben.go4lunch.model.nearby.Result;
 import com.lescour.ben.go4lunch.utils.GoogleStreams;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -66,6 +76,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private long MIN_TIME_FOR_UPDATES = 300;
     private long MIN_DISTANCE_FOR_UPDATES = 5;
 
+    private PlacesClient placesClient;
+
     private String stringLocation;
     private int radius = 3500;
     private String type = "restaurant";
@@ -73,7 +85,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private int i = 0;
 
-    private List<DetailsResponse> mDetailsResponses;
+    private List<PlaceDetailsResponse> mPlaceDetailsResponses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,9 +107,9 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
         mParcelableRestaurantDetails = new ParcelableRestaurantDetails();
         mParcelableRestaurantDetails.setNearbyResults(new ArrayList<>());
-        mParcelableRestaurantDetails.setDetailsResponses(new ArrayList<>());
-        mDetailsResponses = new ArrayList<>();
+        mPlaceDetailsResponses = new ArrayList<>();
         this.getMyCurrentLocation();
+        this.initializePlacesApiClient();
     }
 
     private void configureToolbar() {
@@ -150,7 +162,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
-    public void onListFragmentInteraction(DetailsResponse detailsResponse) {
+    public void onListFragmentInteraction(Result result) {
 
     }
 
@@ -297,13 +309,20 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         });
     }
 
+    private void initializePlacesApiClient() {
+        // Initialize Places.
+        Places.initialize(getApplicationContext(), apiKey);
+        // Create a new Places client instance.
+        placesClient = Places.createClient(this);
+    }
+
     private void executeHttpRequestWithRetrofit_NearbySearch(){
         this.disposable = GoogleStreams.streamFetchNearbySearch(stringLocation, radius, type, apiKey)
                 .subscribeWith(new DisposableObserver<NearbyResponse>() {
                     @Override
                     public void onNext(NearbyResponse nearbyResponse) {
                         Log.e("TAG","On Next");
-                        updateUI(nearbyResponse);
+                        updateList(nearbyResponse);
                     }
 
                     @Override
@@ -318,39 +337,79 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                 });
     }
 
-    private void updateUI(NearbyResponse nearbyResponse) {
+    private void updateList(NearbyResponse nearbyResponse) {
         mParcelableRestaurantDetails.setNearbyResults(nearbyResponse.getResults());
-        executeHttpRequestWithRetrofit_DetailsSearch(mParcelableRestaurantDetails.getNearbyResults().get(i).getPlaceId());
+        getPlaceDetails(mParcelableRestaurantDetails.getNearbyResults().get(i).getPlaceId());
     }
 
-    private void executeHttpRequestWithRetrofit_DetailsSearch(String placeId){
-        this.disposable = GoogleStreams.streamFetchDetailsSearch(placeId, apiKey)
-                .subscribeWith(new DisposableObserver<DetailsResponse>() {
-                    @Override
-                    public void onNext(DetailsResponse detailsResponse) {
-                        Log.e("TAG","On Next");
-                        mDetailsResponses.add(detailsResponse);
-                        everyRestaurantDetails_isRequired();
-                    }
+    private void getPlaceDetails(String placeId) {
+        PlaceDetailsResponse placeDetailsResponse = new PlaceDetailsResponse();
+        // Specify the fields to return (in this example all fields are returned).
+        List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.OPENING_HOURS, Place.Field.ADDRESS);
+        // Construct a request object, passing the place ID and fields array.
+        FetchPlaceRequest request = FetchPlaceRequest.builder(placeId, placeFields).build();
 
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e("TAG","On Error"+Log.getStackTraceString(e));
-                    }
+        placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
+            Place place = response.getPlace();
+            placeDetailsResponse.setName(place.getName());
+            placeDetailsResponse.setOpeningHours(place.getOpeningHours());
+            placeDetailsResponse.setAddress(place.getAddress());
+            Log.e("PlaceDetails", "Place found: " + place.getName());
+            Log.e("PlaceDetails", "Place found: " + place.getOpeningHours());
+            Log.e("PlaceDetails", "Place found: " + place.getAddress());
+        }).addOnFailureListener((exception) -> {
+            if (exception instanceof ApiException) {
+                ApiException apiException = (ApiException) exception;
+                int statusCode = apiException.getStatusCode();
+                // Handle error with given status code.
+                Log.e("PlaceDetails", "Place not found: " + exception.getMessage());
+            }
+        });
+        getPlacePhotos(placeId, placeDetailsResponse);
+    }
 
-                    @Override
-                    public void onComplete() {
-                        Log.e("TAG","On Complete !!");
+    private void getPlacePhotos(String placeId, PlaceDetailsResponse placeDetailsResponse) {
+        // Specify fields. Requests for photos must always have the PHOTO_METADATAS field.
+        List<Place.Field> fields = Arrays.asList(Place.Field.PHOTO_METADATAS);
+        // Get a Place object (this example uses fetchPlace(), but you can also use findCurrentPlace())
+        FetchPlaceRequest placeRequest = FetchPlaceRequest.builder(placeId, fields).build();
+
+        placesClient.fetchPlace(placeRequest).addOnSuccessListener((response) -> {
+            Place place = response.getPlace();
+
+            // Get the photo metadata.
+            if (place.getPhotoMetadatas() != null) {
+                PhotoMetadata photoMetadata = place.getPhotoMetadatas().get(0);
+
+                // Create a FetchPhotoRequest.
+                FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
+                        .setMaxWidth(76) // Optional.
+                        .setMaxHeight(76) // Optional.
+                        .build();
+                placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
+                    Bitmap bitmap = fetchPhotoResponse.getBitmap();
+                    placeDetailsResponse.setBitmap(bitmap);
+                }).addOnFailureListener((exception) -> {
+                    if (exception instanceof ApiException) {
+                        ApiException apiException = (ApiException) exception;
+                        int statusCode = apiException.getStatusCode();
+                        // Handle error with given status code.
+                        Log.e("PlacePhotos", "Place not found: " + exception.getMessage());
                     }
                 });
+            }
+        });
+
+        mPlaceDetailsResponses.add(placeDetailsResponse);
+        everyRestaurantDetails_isRequired();
     }
 
     private void everyRestaurantDetails_isRequired() {
-        if (mParcelableRestaurantDetails.getNearbyResults().size() == mDetailsResponses.size()) {
-            mParcelableRestaurantDetails.setDetailsResponses(mDetailsResponses);
+        if (mParcelableRestaurantDetails.getNearbyResults().size() == mPlaceDetailsResponses.size()) {
+            mParcelableRestaurantDetails.setPlaceDetailsResponses(mPlaceDetailsResponses);
         } else {
-            executeHttpRequestWithRetrofit_DetailsSearch(mParcelableRestaurantDetails.getNearbyResults().get(i).getPlaceId());
             i++;
+            getPlaceDetails(mParcelableRestaurantDetails.getNearbyResults().get(i).getPlaceId());
         }
     }
 

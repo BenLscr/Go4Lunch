@@ -9,8 +9,9 @@ import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
-import com.lescour.ben.go4lunch.model.details.DetailsResponse;
+import com.lescour.ben.go4lunch.model.PlaceDetailsResponse;
 import com.lescour.ben.go4lunch.model.nearby.Result;
+import com.lescour.ben.go4lunch.view.RestaurantRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,7 @@ public class RestaurantListFragment extends Fragment {
 
     private RecyclerView.Adapter mRecyclerViewAdapter;
     private List<Result> nearbyResults;
-    private List<DetailsResponse> detailsResponses;
+    private List<PlaceDetailsResponse> placeDetailsResponses;
     private Disposable disposable;
 
     /**
@@ -68,7 +69,7 @@ public class RestaurantListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_restaurant_list, container, false);
 
         this.nearbyResults = new ArrayList<>();
-        this.detailsResponses = new ArrayList<>();
+        this.placeDetailsResponses = new ArrayList<>();
         this.setParcelableLocation();
 
         // Set the adapter
@@ -80,7 +81,7 @@ public class RestaurantListFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            this.mRecyclerViewAdapter = new RestaurantRecyclerViewAdapter(this.nearbyResults, this.detailsResponses, mListener, Glide.with(this));
+            this.mRecyclerViewAdapter = new RestaurantRecyclerViewAdapter(this.nearbyResults, this.placeDetailsResponses, mListener, Glide.with(this));
             recyclerView.setAdapter(this.mRecyclerViewAdapter);
         }
 
@@ -115,7 +116,7 @@ public class RestaurantListFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(DetailsResponse detailsResponse);
+        void onListFragmentInteraction(Result result);
     }
 
     private void setParcelableLocation() {
@@ -124,7 +125,7 @@ public class RestaurantListFragment extends Fragment {
             ParcelableRestaurantDetails mParcelableRestaurantDetails = bundle.getParcelable("HomeToFragment");
             if (mParcelableRestaurantDetails != null) {
                 nearbyResults = mParcelableRestaurantDetails.getNearbyResults();
-                detailsResponses = mParcelableRestaurantDetails.getDetailsResponses();
+                placeDetailsResponses = mParcelableRestaurantDetails.getPlaceDetailsResponses();
             }
         }
     }

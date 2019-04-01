@@ -1,4 +1,4 @@
-package com.lescour.ben.go4lunch.controller.fragment;
+package com.lescour.ben.go4lunch.view;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +10,7 @@ import com.bumptech.glide.RequestManager;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.controller.ProcessRestaurantDetails;
 import com.lescour.ben.go4lunch.controller.fragment.RestaurantListFragment.OnListFragmentInteractionListener;
-import com.lescour.ben.go4lunch.model.details.DetailsResponse;
+import com.lescour.ben.go4lunch.model.PlaceDetailsResponse;
 import com.lescour.ben.go4lunch.model.nearby.Result;
 
 import java.util.List;
@@ -22,13 +22,13 @@ import butterknife.ButterKnife;
 public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<RestaurantRecyclerViewAdapter.ViewHolder> {
 
     private List<Result> nearbyResults;
-    private List<DetailsResponse> detailsResponses;
+    private List<PlaceDetailsResponse> placeDetailsResponses;
     private final OnListFragmentInteractionListener mListener;
     private RequestManager glide;
 
-    public RestaurantRecyclerViewAdapter(List<Result> nearbyResults, List<DetailsResponse> detailsResponses, OnListFragmentInteractionListener listener, RequestManager glide) {
+    public RestaurantRecyclerViewAdapter(List<Result> nearbyResults, List<PlaceDetailsResponse> placeDetailsResponses, OnListFragmentInteractionListener listener, RequestManager glide) {
         this.nearbyResults = nearbyResults;
-        this.detailsResponses = detailsResponses;
+        this.placeDetailsResponses = placeDetailsResponses;
         mListener = listener;
         this.glide = glide;
     }
@@ -43,12 +43,12 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.nearbyResult = this.nearbyResults.get(position);
-        holder.detailsResponse = this.detailsResponses.get(position);
+        holder.placeDetailsResponse = this.placeDetailsResponses.get(position);
 
-        ProcessRestaurantDetails restaurantDetails = new ProcessRestaurantDetails(holder.nearbyResult, holder.detailsResponse);
+        ProcessRestaurantDetails restaurantDetails = new ProcessRestaurantDetails(holder.nearbyResult, holder.placeDetailsResponse);
         holder.restaurantName.setText(restaurantDetails.getRestaurantName());
         holder.restaurantAddress.setText(restaurantDetails.getRestaurantAddress());
-        holder.restaurantOpenHours.setText(restaurantDetails.getRestaurantOpenHours());
+        /**holder.restaurantOpenHours.setText(restaurantDetails.getRestaurantOpenHours());
         if (holder.nearbyResult.getRating() != null) {
             holder.restaurantRate1.setVisibility(restaurantDetails.getRestaurantRate1());
             holder.restaurantRate2.setVisibility(restaurantDetails.getRestaurantRate2());
@@ -56,7 +56,7 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
         }
         if (holder.nearbyResult.getPhotos() != null) {
             glide.load(restaurantDetails.getRestaurantImage()).into(holder.restaurantImage);
-        }
+        }*/
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,7 +64,7 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.detailsResponse);
+                    mListener.onListFragmentInteraction(holder.nearbyResult);
                 }
             }
         });
@@ -72,7 +72,7 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
 
     @Override
     public int getItemCount() {
-        return detailsResponses.size();
+        return nearbyResults.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -87,7 +87,7 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
         @BindView(R.id.restaurant_rate_3) ImageView restaurantRate3;
         @BindView(R.id.restaurant_image) ImageView restaurantImage;
         public Result nearbyResult;
-        public DetailsResponse detailsResponse;
+        public PlaceDetailsResponse placeDetailsResponse;
 
         public ViewHolder(View view) {
             super(view);

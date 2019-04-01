@@ -1,6 +1,5 @@
 package com.lescour.ben.go4lunch.utils;
 
-import com.lescour.ben.go4lunch.model.details.DetailsResponse;
 import com.lescour.ben.go4lunch.model.nearby.NearbyResponse;
 
 import java.util.concurrent.TimeUnit;
@@ -25,7 +24,7 @@ public class GoogleStreams {
                 .timeout(10, TimeUnit.SECONDS);
     }
 
-    public static Observable<DetailsResponse> streamFetchDetailsSearch(String placeId,
+    /**public static Observable<DetailsResponse> streamFetchDetailsSearch(String placeId,
                                                                        String apiKey){
         GoogleService googleService = GoogleService.retrofit.create(GoogleService.class);
         return googleService.getDetailsSearch(placeId, apiKey)
@@ -42,6 +41,6 @@ public class GoogleStreams {
                 .map(NearbyResponse::getResults)
                 .flatMapIterable(results -> results)
                 .flatMap(result -> streamFetchDetailsSearch(result.getPlaceId(), apiKey));
-    }
+    }*/
 
 }

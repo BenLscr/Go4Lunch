@@ -3,7 +3,6 @@ package com.lescour.ben.go4lunch.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.lescour.ben.go4lunch.model.details.DetailsResponse;
 import com.lescour.ben.go4lunch.model.nearby.Result;
 
 import java.util.List;
@@ -14,20 +13,20 @@ import java.util.List;
 public class ParcelableRestaurantDetails implements Parcelable {
 
     private List<Result> nearbyResults;
-    private List<DetailsResponse> detailsResponses;
+    private List<PlaceDetailsResponse> placeDetailsResponses;
 
     public ParcelableRestaurantDetails() {
     }
 
     protected ParcelableRestaurantDetails(Parcel in) {
         nearbyResults = in.createTypedArrayList(Result.CREATOR);
-        detailsResponses= in.createTypedArrayList(DetailsResponse.CREATOR);
+        placeDetailsResponses = in.createTypedArrayList(PlaceDetailsResponse.CREATOR);
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeTypedList(nearbyResults);
-        dest.writeTypedList(detailsResponses);
+        dest.writeTypedList(placeDetailsResponses);
     }
 
     @Override
@@ -55,11 +54,12 @@ public class ParcelableRestaurantDetails implements Parcelable {
         this.nearbyResults = nearbyResults;
     }
 
-    public List<DetailsResponse> getDetailsResponses() {
-        return detailsResponses;
+    public List<PlaceDetailsResponse> getPlaceDetailsResponses() {
+        return placeDetailsResponses;
     }
 
-    public void setDetailsResponses(List<DetailsResponse> detailsResponses) {
-        this.detailsResponses = detailsResponses;
+    public void setPlaceDetailsResponses(List<PlaceDetailsResponse> placeDetailsResponses) {
+        this.placeDetailsResponses = placeDetailsResponses;
     }
+
 }
