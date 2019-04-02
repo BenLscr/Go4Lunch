@@ -7,18 +7,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.lescour.ben.go4lunch.R;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link MapsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MapsFragment extends Fragment {
+public class MapsFragment extends Fragment implements OnMapReadyCallback {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -28,8 +34,6 @@ public class MapsFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private Context mContext;
-    private SupportMapFragment supportMapFragment;
     private GoogleMap mMap;
 
 
@@ -68,7 +72,21 @@ public class MapsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_maps, container, false);
+        View v = inflater.inflate(R.layout.fragment_maps, container, false);
+        SupportMapFragment supportMapFragment = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.map);
+        if (supportMapFragment != null) {
+            supportMapFragment.getMapAsync(this);
+        }
+        return v;
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Add a marker in Sydney, Australia, and move the camera.
+        LatLng sydney = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    }
 }

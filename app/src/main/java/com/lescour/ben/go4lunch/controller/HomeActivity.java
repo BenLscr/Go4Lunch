@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -45,6 +46,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -54,6 +56,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
+
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 /**
  * Created by benja on 15/03/2019.
@@ -66,6 +70,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     @BindView(R.id.activity_home_drawer_layout) DrawerLayout drawerLayout;
     @BindView(R.id.activity_home_nav_view) NavigationView navigationView;
     @BindView(R.id.navigation) BottomNavigationView navigation;
+    @BindView(R.id.activity_main_progress_bar) ProgressBar mProgressBar;
 
     private Fragment fragment;
     private ProgressDialog mProgress;
@@ -101,19 +106,26 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         this.configureDrawerLayout();
         this.configureNavigationView();
 
-        this.initFirstFragment();
-
         this.initProgressDialog();
 
+        this.updateProgressBar();
         mParcelableRestaurantDetails = new ParcelableRestaurantDetails();
         mParcelableRestaurantDetails.setNearbyResults(new ArrayList<>());
         mPlaceDetailsResponses = new ArrayList<>();
-        this.getMyCurrentLocation();
         this.initializePlacesApiClient();
+        this.getMyCurrentLocation();
     }
 
     private void configureToolbar() {
         setSupportActionBar(toolbar);
+    }
+
+    private void updateProgressBar() {
+        if (mProgressBar.isIndeterminate()) {
+            mProgressBar.setVisibility(View.VISIBLE);
+        } else {
+            mProgressBar.setVisibility(View.GONE);
+        }
     }
 
     //BOTTOM TOOLBAR\\
@@ -270,18 +282,19 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     //HTTP REQUEST\\
+    private void initializePlacesApiClient() {
+        // Initialize Places.
+        Places.initialize(getApplicationContext(), apiKey);
+        // Create a new Places client instance.
+        placesClient = Places.createClient(this);
+    }
+
     private void getMyCurrentLocation() {
         mParcelableRestaurantDetails = new ParcelableRestaurantDetails();
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    Activity#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for Activity#requestPermissions for more details.
+            if (checkSelfPermission(ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, 0);
                 return;
             }
         }
@@ -307,13 +320,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
             }
         });
-    }
-
-    private void initializePlacesApiClient() {
-        // Initialize Places.
-        Places.initialize(getApplicationContext(), apiKey);
-        // Create a new Places client instance.
-        placesClient = Places.createClient(this);
     }
 
     private void executeHttpRequestWithRetrofit_NearbySearch(){
@@ -354,9 +360,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
             placeDetailsResponse.setName(place.getName());
             placeDetailsResponse.setOpeningHours(place.getOpeningHours());
             placeDetailsResponse.setAddress(place.getAddress());
-            Log.e("PlaceDetails", "Place found: " + place.getName());
-            Log.e("PlaceDetails", "Place found: " + place.getOpeningHours());
-            Log.e("PlaceDetails", "Place found: " + place.getAddress());
         }).addOnFailureListener((exception) -> {
             if (exception instanceof ApiException) {
                 ApiException apiException = (ApiException) exception;
@@ -407,6 +410,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private void everyRestaurantDetails_isRequired() {
         if (mParcelableRestaurantDetails.getNearbyResults().size() == mPlaceDetailsResponses.size()) {
             mParcelableRestaurantDetails.setPlaceDetailsResponses(mPlaceDetailsResponses);
+            this.updateProgressBar();
+            this.initFirstFragment();
         } else {
             i++;
             getPlaceDetails(mParcelableRestaurantDetails.getNearbyResults().get(i).getPlaceId());
