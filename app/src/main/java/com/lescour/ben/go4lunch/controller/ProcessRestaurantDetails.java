@@ -2,6 +2,7 @@ package com.lescour.ben.go4lunch.controller;
 
 import android.view.View;
 
+import com.google.android.libraries.places.api.model.DayOfWeek;
 import com.lescour.ben.go4lunch.BuildConfig;
 import com.lescour.ben.go4lunch.model.PlaceDetailsResponse;
 import com.lescour.ben.go4lunch.model.nearby.Result;
@@ -19,9 +20,7 @@ public class ProcessRestaurantDetails {
 
     private Result mResult;
     private PlaceDetailsResponse mPlaceDetailsResponse;
-    private String newHoursAndMinutes;
     private int hours;
-    private int minutes;
     private String hoursString;
     private String minutesString;
 
@@ -48,25 +47,58 @@ public class ProcessRestaurantDetails {
                     Calendar calendar = Calendar.getInstance();
                     int currentDay = calendar.get(Calendar.DAY_OF_WEEK);
                     int currentHours = calendar.get(Calendar.HOUR_OF_DAY);
-                    int currentMinutes = calendar.get(Calendar.MINUTE);
 
                     SimpleDateFormat rawFormatHours = new SimpleDateFormat("hhmm", Locale.getDefault());
                     SimpleDateFormat newFormatHours = new SimpleDateFormat("h.mma", Locale.getDefault());
 
-                    retrievesHoursAndMinutes(currentDay);
+                    String day = null;
+                    switch (currentDay) {
+                        case 0:
+                            day = "SUNDAY";
+                            break;
+                        case 1:
+                            day = "MONDAY";
+                            break;
+                        case 2:
+                            day = "TUESDAY";
+                            break;
+                        case 3:
+                            day = "WEDNESDAY";
+                            break;
+                        case 4:
+                            day = "THURSDAY";
+                            break;
+                        case 5:
+                            day = "FRIDAY";
+                            break;
+                        case 6:
+                            day = "SATURDAY";
+                            break;
+                    }
 
-                    try {
-                        Date date;
-                        if (currentHours > hours && currentMinutes > minutes) {
-                            retrievesHoursAndMinutes(currentDay +1);
-                            date = rawFormatHours.parse(hoursString + minutesString);
+                    int i = 0;
+                    boolean bDay = false;
+                    DayOfWeek dayFound;
+                    do {
+                        dayFound = mPlaceDetailsResponse.getOpeningHours().getPeriods().get(i).getClose().getDay();
+                        if (!day.equals(dayFound.toString())) {
+                            bDay = true;
+                            if (currentHours > hours) {
+                                i++;
+                            }
+                            retrievesHoursAndMinutes(i);
                         } else {
-                            date = rawFormatHours.parse(hoursString + minutesString);
+                            i++;
                         }
-                        newHoursAndMinutes = newFormatHours.format(date);
+                    } while (!bDay);
+
+                    Date date = null;
+                    try {
+                        date = rawFormatHours.parse(hoursString + minutesString);
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
+                    String newHoursAndMinutes = newFormatHours.format(date);
                     return "Open until " + newHoursAndMinutes;
                 }
             } else {
@@ -77,10 +109,10 @@ public class ProcessRestaurantDetails {
         }
     }
 
-    private void retrievesHoursAndMinutes(int currentDay) {
-        hours = mPlaceDetailsResponse.getOpeningHours().getPeriods().get(currentDay).getClose().getTime().getHours();
-        minutes = mPlaceDetailsResponse.getOpeningHours().getPeriods().get(currentDay).getClose().getTime().getMinutes();
-        SimpleDateFormat formatHours = new SimpleDateFormat("hh", Locale.getDefault());
+    private void retrievesHoursAndMinutes(int i) {
+        hours = mPlaceDetailsResponse.getOpeningHours().getPeriods().get(i).getClose().getTime().getHours();
+        int minutes = mPlaceDetailsResponse.getOpeningHours().getPeriods().get(i).getClose().getTime().getMinutes();
+        SimpleDateFormat formatHours = new SimpleDateFormat("HH", Locale.getDefault());
         SimpleDateFormat formatMinutes = new SimpleDateFormat("mm", Locale.getDefault());
         try {
             Date dateHour = formatHours.parse(String.valueOf(hours));
