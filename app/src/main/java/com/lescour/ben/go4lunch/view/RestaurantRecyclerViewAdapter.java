@@ -49,14 +49,14 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
         holder.restaurantName.setText(restaurantDetails.getRestaurantName());
         holder.restaurantAddress.setText(restaurantDetails.getRestaurantAddress());
         holder.restaurantOpenHours.setText(restaurantDetails.getRestaurantOpenHours());
-        /**if (holder.nearbyResult.getRating() != null) {
+        if (holder.nearbyResult.getRating() != null) {
             holder.restaurantRate1.setVisibility(restaurantDetails.getRestaurantRate1());
             holder.restaurantRate2.setVisibility(restaurantDetails.getRestaurantRate2());
             holder.restaurantRate3.setVisibility(restaurantDetails.getRestaurantRate3());
         }
-        if (holder.nearbyResult.getPhotos() != null) {
-            glide.load(restaurantDetails.getRestaurantImage()).into(holder.restaurantImage);
-        }*/
+        if (holder.placeDetailsResponse.getBitmap() != null) {
+            holder.restaurantImage.setImageBitmap(restaurantDetails.getRestaurantImage());
+        }
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override

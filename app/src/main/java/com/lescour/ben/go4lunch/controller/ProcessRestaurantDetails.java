@@ -1,9 +1,9 @@
 package com.lescour.ben.go4lunch.controller;
 
+import android.graphics.Bitmap;
 import android.view.View;
 
 import com.google.android.libraries.places.api.model.DayOfWeek;
-import com.lescour.ben.go4lunch.BuildConfig;
 import com.lescour.ben.go4lunch.model.PlaceDetailsResponse;
 import com.lescour.ben.go4lunch.model.nearby.Result;
 
@@ -30,7 +30,11 @@ public class ProcessRestaurantDetails {
     }
 
     public String getRestaurantName() {
+        if (mResult.getName().length() >= 30) {
+            return mResult.getName().substring(0, 30) + "...";
+        } else {
         return mResult.getName();
+        }
     }
 
     public String getRestaurantAddress() {
@@ -148,11 +152,7 @@ public class ProcessRestaurantDetails {
         }
     }
 
-    public String getRestaurantImage() {
-        String baseUrl = "https://maps.googleapis.com/maps/api/place/photo?";
-        String maxHeight = "maxheight=76";
-        String photoReference = "&photoreference=" + mResult.getPhotos().get(0).getPhotoReference();
-        String apiKey = "&key=" + BuildConfig.PLACES_API_KEY;
-        return baseUrl + maxHeight + photoReference + apiKey;
+    public Bitmap getRestaurantImage() {
+        return mPlaceDetailsResponse.getBitmap();
     }
 }
