@@ -73,8 +73,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        this.nearbyResults = new ArrayList<>();
-        this.placeDetailsResponses = new ArrayList<>();
+
         this.setParcelableLocation();
 
         // Inflate the layout for this fragment
@@ -87,6 +86,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void setParcelableLocation() {
+        this.nearbyResults = new ArrayList<>();
+        this.placeDetailsResponses = new ArrayList<>();
         Bundle bundle = getArguments();
         if (bundle != null && bundle.containsKey("HomeToFragment")) {
             ParcelableRestaurantDetails mParcelableRestaurantDetails = bundle.getParcelable("HomeToFragment");

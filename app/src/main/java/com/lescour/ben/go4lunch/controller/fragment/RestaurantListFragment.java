@@ -68,8 +68,6 @@ public class RestaurantListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_restaurant_list, container, false);
 
-        this.nearbyResults = new ArrayList<>();
-        this.placeDetailsResponses = new ArrayList<>();
         this.setParcelableLocation();
 
         // Set the adapter
@@ -120,6 +118,8 @@ public class RestaurantListFragment extends Fragment {
     }
 
     private void setParcelableLocation() {
+        this.nearbyResults = new ArrayList<>();
+        this.placeDetailsResponses = new ArrayList<>();
         Bundle bundle = getArguments();
         if (bundle != null && bundle.containsKey("HomeToFragment")) {
             ParcelableRestaurantDetails mParcelableRestaurantDetails = bundle.getParcelable("HomeToFragment");
