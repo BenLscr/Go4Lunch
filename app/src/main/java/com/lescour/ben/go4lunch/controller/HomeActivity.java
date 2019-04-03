@@ -79,7 +79,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private Disposable disposable;
 
     private ParcelableRestaurantDetails mParcelableRestaurantDetails;
-    private long MIN_TIME_FOR_UPDATES = 300;
+    private long MIN_TIME_FOR_UPDATES = 3000;
     private long MIN_DISTANCE_FOR_UPDATES = 5;
 
     private PlacesClient placesClient;
@@ -386,8 +386,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
                 // Create a FetchPhotoRequest.
                 FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
-                        .setMaxWidth(76) // Optional.
-                        .setMaxHeight(76) // Optional.
+                        .setMaxWidth(120) // Optional.
+                        .setMaxHeight(120) // Optional.
                         .build();
                 placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
                     Bitmap bitmap = fetchPhotoResponse.getBitmap();

@@ -117,7 +117,8 @@
         <ImageView
             android:layout_width="76dp"
             android:layout_height="76dp"
-            app:srcCompat="@drawable/ic_launcher_background"
+            app:srcCompat="@drawable/baseline_restaurant_menu_white_24"
+            android:scaleType="centerCrop"
             android:id="@+id/restaurant_image"
             android:contentDescription="@string/restaurant_image"/>
 
