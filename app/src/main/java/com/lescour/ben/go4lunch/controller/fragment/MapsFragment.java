@@ -36,6 +36,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
 
+    private ParcelableRestaurantDetails mParcelableRestaurantDetails;
     private List<Result> nearbyResults;
     private List<PlaceDetailsResponse> placeDetailsResponses;
 
@@ -90,7 +91,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         this.placeDetailsResponses = new ArrayList<>();
         Bundle bundle = getArguments();
         if (bundle != null && bundle.containsKey("HomeToFragment")) {
-            ParcelableRestaurantDetails mParcelableRestaurantDetails = bundle.getParcelable("HomeToFragment");
+            mParcelableRestaurantDetails = bundle.getParcelable("HomeToFragment");
             if (mParcelableRestaurantDetails != null) {
                 nearbyResults = mParcelableRestaurantDetails.getNearbyResults();
                 placeDetailsResponses = mParcelableRestaurantDetails.getPlaceDetailsResponses();
@@ -103,9 +104,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         mMap = googleMap;
 
         // Add a marker in Sydney, Australia, and move the camera.
-        LatLng dieppe = new LatLng(49.9228, 1.07768);
-        mMap.addMarker(new MarkerOptions().position(dieppe).title("Marker in Dieppe"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(dieppe, 15));
+        LatLng currentLocation = new LatLng(mParcelableRestaurantDetails.getCurrentLat(), mParcelableRestaurantDetails.getCurrentLng());
+        mMap.addMarker(new MarkerOptions().position(currentLocation).title("My position"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
 
         for (int i = 0; nearbyResults.size() > i; i++) {
             LatLng restaurant = new LatLng(nearbyResults.get(i).getGeometry().getLocation().getLat(), nearbyResults.get(i).getGeometry().getLocation().getLng());

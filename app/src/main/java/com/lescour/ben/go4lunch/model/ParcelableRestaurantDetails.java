@@ -12,6 +12,8 @@ import java.util.List;
  */
 public class ParcelableRestaurantDetails implements Parcelable {
 
+    private Double currentLat;
+    private Double currentLng;
     private List<Result> nearbyResults;
     private List<PlaceDetailsResponse> placeDetailsResponses;
 
@@ -19,12 +21,34 @@ public class ParcelableRestaurantDetails implements Parcelable {
     }
 
     protected ParcelableRestaurantDetails(Parcel in) {
+        if (in.readByte() == 0) {
+            currentLat = null;
+        } else {
+            currentLat = in.readDouble();
+        }
+        if (in.readByte() == 0) {
+            currentLng = null;
+        } else {
+            currentLng = in.readDouble();
+        }
         nearbyResults = in.createTypedArrayList(Result.CREATOR);
         placeDetailsResponses = in.createTypedArrayList(PlaceDetailsResponse.CREATOR);
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        if (currentLat == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeDouble(currentLat);
+        }
+        if (currentLng == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeDouble(currentLng);
+        }
         dest.writeTypedList(nearbyResults);
         dest.writeTypedList(placeDetailsResponses);
     }
@@ -45,6 +69,22 @@ public class ParcelableRestaurantDetails implements Parcelable {
             return new ParcelableRestaurantDetails[size];
         }
     };
+
+    public Double getCurrentLat() {
+        return currentLat;
+    }
+
+    public void setCurrentLat(Double currentLat) {
+        this.currentLat = currentLat;
+    }
+
+    public Double getCurrentLng() {
+        return currentLng;
+    }
+
+    public void setCurrentLng(Double currentLng) {
+        this.currentLng = currentLng;
+    }
 
     public List<Result> getNearbyResults() {
         return nearbyResults;

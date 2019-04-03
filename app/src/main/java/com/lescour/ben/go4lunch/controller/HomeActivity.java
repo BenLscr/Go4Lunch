@@ -307,6 +307,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_FOR_UPDATES, MIN_DISTANCE_FOR_UPDATES, new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
+                mParcelableRestaurantDetails.setCurrentLat(location.getLatitude());
+                mParcelableRestaurantDetails.setCurrentLng(location.getLongitude());
                 stringLocation = location.getLatitude() + "," + location.getLongitude();
                 executeHttpRequestWithRetrofit_NearbySearch();
             }
