@@ -2,15 +2,19 @@ package com.lescour.ben.go4lunch.controller.fragment;
 
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
@@ -103,14 +107,24 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney, Australia, and move the camera.
         LatLng currentLocation = new LatLng(mParcelableRestaurantDetails.getCurrentLat(), mParcelableRestaurantDetails.getCurrentLng());
         mMap.addMarker(new MarkerOptions().position(currentLocation).title("My position"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
 
         for (int i = 0; nearbyResults.size() > i; i++) {
             LatLng restaurant = new LatLng(nearbyResults.get(i).getGeometry().getLocation().getLat(), nearbyResults.get(i).getGeometry().getLocation().getLng());
-            mMap.addMarker(new MarkerOptions().position(restaurant).title(nearbyResults.get(i).getName()));
+            mMap.addMarker(new MarkerOptions().position(restaurant)
+                    .title(nearbyResults.get(i).getName())
+                    .icon(BitmapDescriptorFactory.defaultMarker(20)));
         }
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                //Do something
+                Log.e("Marker", marker.getTitle());
+                return false;
+            }
+        });
     }
 }

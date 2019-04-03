@@ -109,7 +109,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
         this.initProgressDialog();
 
-        this.updateProgressBar();
+        mProgressBar.setVisibility(View.VISIBLE);
         mParcelableRestaurantDetails = new ParcelableRestaurantDetails();
         mParcelableRestaurantDetails.setNearbyResults(new ArrayList<>());
         mPlaceDetailsResponses = new ArrayList<>();
@@ -119,14 +119,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void configureToolbar() {
         setSupportActionBar(toolbar);
-    }
-
-    private void updateProgressBar() {
-        if (mProgressBar.isIndeterminate()) {
-            mProgressBar.setVisibility(View.VISIBLE);
-        } else {
-            mProgressBar.setVisibility(View.GONE);
-        }
     }
 
     private void initBundle() {
@@ -418,7 +410,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private void everyRestaurantDetails_isRequired() {
         if (mParcelableRestaurantDetails.getNearbyResults().size() == mPlaceDetailsResponses.size()) {
             mParcelableRestaurantDetails.setPlaceDetailsResponses(mPlaceDetailsResponses);
-            this.updateProgressBar();
+            mProgressBar.setVisibility(View.GONE);
             this.initBundle();
             this.initFirstFragment();
         } else {
