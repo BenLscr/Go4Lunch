@@ -74,6 +74,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private Fragment fragment;
     private ProgressDialog mProgress;
+    private Bundle bundle;
 
     private Disposable disposable;
 
@@ -128,17 +129,21 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
+    private void initBundle() {
+        bundle = new Bundle();
+        bundle.putParcelable("HomeToFragment", mParcelableRestaurantDetails);
+    }
+
     //BOTTOM TOOLBAR\\
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = item -> {
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("HomeToFragment", mParcelableRestaurantDetails);
         if (fragment != null) {
             getSupportFragmentManager().beginTransaction().remove(fragment).commit();
         }
         switch (item.getItemId()) {
             case R.id.navigation_map:
                 fragment = MapsFragment.newInstance("param1", "param2");
+                fragment.setArguments(bundle);
                 addFragment();
                 return true;
             case R.id.navigation_list_restaurant:
@@ -159,6 +164,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     //FRAGMENT\\
     private void initFirstFragment() {
         fragment = MapsFragment.newInstance("param1", "param2");
+        fragment.setArguments(bundle);
         addFragment();
     }
 
@@ -411,6 +417,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         if (mParcelableRestaurantDetails.getNearbyResults().size() == mPlaceDetailsResponses.size()) {
             mParcelableRestaurantDetails.setPlaceDetailsResponses(mPlaceDetailsResponses);
             this.updateProgressBar();
+            this.initBundle();
             this.initFirstFragment();
         } else {
             i++;

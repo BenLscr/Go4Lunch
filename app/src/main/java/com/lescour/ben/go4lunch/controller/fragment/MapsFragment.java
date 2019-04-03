@@ -1,7 +1,6 @@
 package com.lescour.ben.go4lunch.controller.fragment;
 
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +13,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.lescour.ben.go4lunch.R;
+import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
+import com.lescour.ben.go4lunch.model.PlaceDetailsResponse;
+import com.lescour.ben.go4lunch.model.nearby.Result;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,17 +28,16 @@ import androidx.fragment.app.FragmentTransaction;
  * create an instance of this fragment.
  */
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private GoogleMap mMap;
 
+    private List<Result> nearbyResults;
+    private List<PlaceDetailsResponse> placeDetailsResponses;
 
     public MapsFragment() {
         // Required empty public constructor
@@ -71,13 +73,28 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        this.nearbyResults = new ArrayList<>();
+        this.placeDetailsResponses = new ArrayList<>();
+        this.setParcelableLocation();
+
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_maps, container, false);
-        SupportMapFragment supportMapFragment = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (supportMapFragment != null) {
             supportMapFragment.getMapAsync(this);
         }
         return v;
+    }
+
+    private void setParcelableLocation() {
+        Bundle bundle = getArguments();
+        if (bundle != null && bundle.containsKey("HomeToFragment")) {
+            ParcelableRestaurantDetails mParcelableRestaurantDetails = bundle.getParcelable("HomeToFragment");
+            if (mParcelableRestaurantDetails != null) {
+                nearbyResults = mParcelableRestaurantDetails.getNearbyResults();
+                placeDetailsResponses = mParcelableRestaurantDetails.getPlaceDetailsResponses();
+            }
+        }
     }
 
     @Override
@@ -85,8 +102,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         mMap = googleMap;
 
         // Add a marker in Sydney, Australia, and move the camera.
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        LatLng dieppe = new LatLng(49.9228, 1.07768);
+        mMap.addMarker(new MarkerOptions().position(dieppe).title("Marker in Dieppe"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(dieppe, 15));
+
+        for (int i = 0; nearbyResults.size() > i; i++) {
+            LatLng restaurant = new LatLng(nearbyResults.get(i).getGeometry().getLocation().getLat(), nearbyResults.get(i).getGeometry().getLocation().getLng());
+            mMap.addMarker(new MarkerOptions().position(restaurant).title(nearbyResults.get(i).getName()));
+        }
     }
 }
