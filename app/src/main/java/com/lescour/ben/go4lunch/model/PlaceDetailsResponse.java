@@ -1,6 +1,7 @@
 package com.lescour.ben.go4lunch.model;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -15,6 +16,8 @@ public class PlaceDetailsResponse implements Parcelable {
     private OpeningHours openingHours;
     private String address;
     private Bitmap bitmap;
+    private Uri websiteUri;
+    private String phoneNumber;
 
     public PlaceDetailsResponse() {
     }
@@ -24,6 +27,23 @@ public class PlaceDetailsResponse implements Parcelable {
         openingHours = in.readParcelable(OpeningHours.class.getClassLoader());
         address = in.readString();
         bitmap = in.readParcelable(Bitmap.class.getClassLoader());
+        websiteUri = in.readParcelable(Uri.class.getClassLoader());
+        phoneNumber = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeParcelable(openingHours, flags);
+        dest.writeString(address);
+        dest.writeParcelable(bitmap, flags);
+        dest.writeParcelable(websiteUri, flags);
+        dest.writeString(phoneNumber);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<PlaceDetailsResponse> CREATOR = new Creator<PlaceDetailsResponse>() {
@@ -70,16 +90,19 @@ public class PlaceDetailsResponse implements Parcelable {
         this.bitmap = bitmap;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public Uri getWebsiteUri() {
+        return websiteUri;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(name);
-        dest.writeParcelable(openingHours, flags);
-        dest.writeString(address);
-        dest.writeParcelable(bitmap, flags);
+    public void setWebsiteUri(Uri websiteUri) {
+        this.websiteUri = websiteUri;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

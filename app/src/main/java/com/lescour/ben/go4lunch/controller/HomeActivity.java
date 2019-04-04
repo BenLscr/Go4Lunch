@@ -367,6 +367,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
             placeDetailsResponse.setName(place.getName());
             placeDetailsResponse.setOpeningHours(place.getOpeningHours());
             placeDetailsResponse.setAddress(place.getAddress());
+            placeDetailsResponse.setPhoneNumber(place.getPhoneNumber());
+            placeDetailsResponse.setWebsiteUri(place.getWebsiteUri());
         }).addOnFailureListener((exception) -> {
             if (exception instanceof ApiException) {
                 ApiException apiException = (ApiException) exception;
