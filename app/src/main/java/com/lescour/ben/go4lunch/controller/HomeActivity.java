@@ -3,6 +3,7 @@ package com.lescour.ben.go4lunch.controller;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
@@ -173,7 +174,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public void onListFragmentInteraction(Result result) {
-
+        Intent intent = new Intent(HomeActivity.this, RestaurantActivity.class);
+        startActivity(intent);
     }
 
     //MENU TOOLBAR\\

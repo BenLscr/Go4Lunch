@@ -14,7 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <activity android:name=".controller.RestaurantActivity"></activity>
         <activity
             android:name=".controller.AuthActivity"
             android:label="@string/app_name">
@@ -24,10 +24,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".controller.HomeActivity"
+        <activity
+            android:name=".controller.HomeActivity"
             android:label="@string/app_name"
-            android:parentActivityName=".controller.AuthActivity"/>
+            android:parentActivityName=".controller.AuthActivity" />
         <activity android:name=".controller.HeaderViewHolder" />
 
         <meta-data
@@ -40,8 +40,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyC4unTHxI6PBtUcIfsL0QRr1RPaUgUQzZU"/>
-
+            android:value="AIzaSyC4unTHxI6PBtUcIfsL0QRr1RPaUgUQzZU" />
     </application>
 
 </manifest>

@@ -38,4 +38,9 @@
     <string name="rate_stars">rate stars</string>
     <string name="restaurant_image">Restaurant image</string>
 
+    //RESTAURANT ACTIVITY
+    <string name="call">call</string>
+    <string name="like">like</string>
+    <string name="website">website</string>
+
 </resources>
