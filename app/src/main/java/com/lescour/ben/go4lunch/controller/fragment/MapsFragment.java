@@ -26,12 +26,14 @@ import java.util.List;
 
 import androidx.fragment.app.Fragment;
 
+import static com.lescour.ben.go4lunch.controller.HomeActivity.BUNDLE_EXTRA_PARCELABLERESTAURANTDETAILS;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link MapsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MapsFragment extends Fragment implements OnMapReadyCallback {
+public class MapsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -43,6 +45,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private ParcelableRestaurantDetails mParcelableRestaurantDetails;
     private List<Result> nearbyResults;
     private List<PlaceDetailsResponse> placeDetailsResponses;
+
+    public static final String INTENT_EXTRAS_RESULT_MAPS = "INTENT_EXTRAS_RESULT_MAPS";
+    public static final String INTENT_EXTRAS_PLACEDETAILSRESPONSE_MAPS = "INTENT_EXTRAS_PLACEDETAILSRESPONSE_MAPS";
 
     public MapsFragment() {
         // Required empty public constructor
@@ -94,8 +99,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         this.nearbyResults = new ArrayList<>();
         this.placeDetailsResponses = new ArrayList<>();
         Bundle bundle = getArguments();
-        if (bundle != null && bundle.containsKey("HomeToFragment")) {
-            mParcelableRestaurantDetails = bundle.getParcelable("HomeToFragment");
+        if (bundle != null && bundle.containsKey(BUNDLE_EXTRA_PARCELABLERESTAURANTDETAILS)) {
+            mParcelableRestaurantDetails = bundle.getParcelable(BUNDLE_EXTRA_PARCELABLERESTAURANTDETAILS);
             if (mParcelableRestaurantDetails != null) {
                 nearbyResults = mParcelableRestaurantDetails.getNearbyResults();
                 placeDetailsResponses = mParcelableRestaurantDetails.getPlaceDetailsResponses();
@@ -112,18 +117,26 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
 
         for (int i = 0; nearbyResults.size() > i; i++) {
-            LatLng restaurant = new LatLng(nearbyResults.get(i).getGeometry().getLocation().getLat(), nearbyResults.get(i).getGeometry().getLocation().getLng());
-            mMap.addMarker(new MarkerOptions().position(restaurant)
-                    .icon(BitmapDescriptorFactory.defaultMarker(20)));
+            this.setMarker(mMap, i);
         }
 
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                Intent intent = new Intent(getActivity(), RestaurantActivity.class);
-                startActivity(intent);
-                return false;
-            }
-        });
+        mMap.setOnMarkerClickListener(this);
+    }
+
+    private void setMarker(GoogleMap mMap, int position) {
+        LatLng restaurant = new LatLng(nearbyResults.get(position).getGeometry().getLocation().getLat(), nearbyResults.get(position).getGeometry().getLocation().getLng());
+        mMap.addMarker(new MarkerOptions().position(restaurant)
+                .icon(BitmapDescriptorFactory.defaultMarker(20)))
+                .setTag(position);
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        int position = (int) marker.getTag();
+        Intent intent = new Intent(getActivity(), RestaurantActivity.class);
+        intent.putExtra(INTENT_EXTRAS_RESULT_MAPS, nearbyResults.get(position));
+        intent.putExtra(INTENT_EXTRAS_PLACEDETAILSRESPONSE_MAPS, placeDetailsResponses.get(position));
+        startActivity(intent);
+        return false;
     }
 }

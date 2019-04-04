@@ -94,6 +94,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private List<PlaceDetailsResponse> mPlaceDetailsResponses;
 
+    public static final String BUNDLE_EXTRA_PARCELABLERESTAURANTDETAILS = "BUNDLE_EXTRA_PARCELABLERESTAURANTDETAILS";
     public static final String INTENT_EXTRA_RESULT = "INTENT_EXTRA_RESULT";
     public static final String INTENT_EXTRA_PLACEDETAILSRESPONSE = "INTENT_EXTRA_PLACEDETAILSRESPONSE";
 
@@ -127,7 +128,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void initBundle() {
         bundle = new Bundle();
-        bundle.putParcelable("HomeToFragment", mParcelableRestaurantDetails);
+        bundle.putParcelable(BUNDLE_EXTRA_PARCELABLERESTAURANTDETAILS, mParcelableRestaurantDetails);
     }
 
     //BOTTOM TOOLBAR\\

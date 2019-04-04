@@ -22,6 +22,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.disposables.Disposable;
 
+import static com.lescour.ben.go4lunch.controller.HomeActivity.BUNDLE_EXTRA_PARCELABLERESTAURANTDETAILS;
+
 /**
  * A fragment representing a list of Items.
  * <p/>
@@ -121,8 +123,8 @@ public class RestaurantListFragment extends Fragment {
         this.nearbyResults = new ArrayList<>();
         this.placeDetailsResponses = new ArrayList<>();
         Bundle bundle = getArguments();
-        if (bundle != null && bundle.containsKey("HomeToFragment")) {
-            ParcelableRestaurantDetails mParcelableRestaurantDetails = bundle.getParcelable("HomeToFragment");
+        if (bundle != null && bundle.containsKey(BUNDLE_EXTRA_PARCELABLERESTAURANTDETAILS)) {
+            ParcelableRestaurantDetails mParcelableRestaurantDetails = bundle.getParcelable(BUNDLE_EXTRA_PARCELABLERESTAURANTDETAILS);
             if (mParcelableRestaurantDetails != null) {
                 nearbyResults = mParcelableRestaurantDetails.getNearbyResults();
                 placeDetailsResponses = mParcelableRestaurantDetails.getPlaceDetailsResponses();

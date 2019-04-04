@@ -18,6 +18,8 @@ import butterknife.OnItemClick;
 
 import static com.lescour.ben.go4lunch.controller.HomeActivity.INTENT_EXTRA_PLACEDETAILSRESPONSE;
 import static com.lescour.ben.go4lunch.controller.HomeActivity.INTENT_EXTRA_RESULT;
+import static com.lescour.ben.go4lunch.controller.fragment.MapsFragment.INTENT_EXTRAS_PLACEDETAILSRESPONSE_MAPS;
+import static com.lescour.ben.go4lunch.controller.fragment.MapsFragment.INTENT_EXTRAS_RESULT_MAPS;
 
 public class RestaurantActivity extends AppCompatActivity {
 
@@ -51,8 +53,11 @@ public class RestaurantActivity extends AppCompatActivity {
         if (getIntent().hasExtra(INTENT_EXTRA_RESULT) && getIntent().hasExtra(INTENT_EXTRA_PLACEDETAILSRESPONSE)) {
             mResult = getIntent().getParcelableExtra(INTENT_EXTRA_RESULT);
             mPlaceDetailsResponse = getIntent().getParcelableExtra(INTENT_EXTRA_PLACEDETAILSRESPONSE);
-            mProcessRestaurantDetails = new ProcessRestaurantDetails(mResult, mPlaceDetailsResponse);
+        } else if (getIntent().hasExtra(INTENT_EXTRAS_RESULT_MAPS) && getIntent().hasExtra(INTENT_EXTRAS_PLACEDETAILSRESPONSE_MAPS)) {
+            mResult = getIntent().getParcelableExtra(INTENT_EXTRAS_RESULT_MAPS);
+            mPlaceDetailsResponse = getIntent().getParcelableExtra(INTENT_EXTRAS_PLACEDETAILSRESPONSE_MAPS);
         }
+        mProcessRestaurantDetails = new ProcessRestaurantDetails(mResult, mPlaceDetailsResponse);
     }
 
     private void updateUi() {
