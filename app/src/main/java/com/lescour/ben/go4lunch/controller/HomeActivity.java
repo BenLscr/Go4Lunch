@@ -94,6 +94,9 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private List<PlaceDetailsResponse> mPlaceDetailsResponses;
 
+    public static final String INTENT_EXTRA_RESULT = "INTENT_EXTRA_RESULT";
+    public static final String INTENT_EXTRA_PLACEDETAILSRESPONSE = "INTENT_EXTRA_PLACEDETAILSRESPONSE";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,8 +176,10 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
-    public void onListFragmentInteraction(Result result) {
+    public void onListFragmentInteraction(Result result, PlaceDetailsResponse placeDetailsResponse) {
         Intent intent = new Intent(HomeActivity.this, RestaurantActivity.class);
+        intent.putExtra(INTENT_EXTRA_RESULT, result);
+        intent.putExtra(INTENT_EXTRA_PLACEDETAILSRESPONSE, placeDetailsResponse);
         startActivity(intent);
     }
 

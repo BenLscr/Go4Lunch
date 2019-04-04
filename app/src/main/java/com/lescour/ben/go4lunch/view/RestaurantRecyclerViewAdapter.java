@@ -64,7 +64,7 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.nearbyResult);
+                    mListener.onListFragmentInteraction(holder.nearbyResult, holder.placeDetailsResponse);
                 }
             }
         });

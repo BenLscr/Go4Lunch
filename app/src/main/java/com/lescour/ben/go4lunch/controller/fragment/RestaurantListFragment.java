@@ -114,7 +114,7 @@ public class RestaurantListFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(Result result);
+        void onListFragmentInteraction(Result result, PlaceDetailsResponse placeDetailsResponse);
     }
 
     private void setParcelableLocation() {
