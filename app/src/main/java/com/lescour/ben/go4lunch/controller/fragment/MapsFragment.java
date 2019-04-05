@@ -126,7 +126,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     private void setMarker(GoogleMap mMap, int position) {
         LatLng restaurant = new LatLng(nearbyResults.get(position).getGeometry().getLocation().getLat(), nearbyResults.get(position).getGeometry().getLocation().getLng());
         mMap.addMarker(new MarkerOptions().position(restaurant)
-                .icon(BitmapDescriptorFactory.defaultMarker(20)))
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_orange_24)))
                 .setTag(position);
     }
 
