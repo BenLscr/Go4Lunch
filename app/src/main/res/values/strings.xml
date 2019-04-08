@@ -43,4 +43,7 @@
     <string name="like">like</string>
     <string name="website">website</string>
 
+    //WORKMATES
+    <string name="workmate_image">Workmate image</string>
+
 </resources>
