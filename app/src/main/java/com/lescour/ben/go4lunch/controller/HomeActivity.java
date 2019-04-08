@@ -374,7 +374,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private void getPlaceDetails(String placeId) {
         PlaceDetailsResponse placeDetailsResponse = new PlaceDetailsResponse();
         // Specify the fields to return (in this example all fields are returned).
-        List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.OPENING_HOURS, Place.Field.ADDRESS);
+        List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.OPENING_HOURS, Place.Field.ADDRESS, Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI);
         // Construct a request object, passing the place ID and fields array.
         FetchPlaceRequest request = FetchPlaceRequest.builder(placeId, placeFields).build();
 

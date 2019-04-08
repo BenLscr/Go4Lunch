@@ -1,21 +1,28 @@
 package com.lescour.ben.go4lunch.controller;
 
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.model.PlaceDetailsResponse;
 import com.lescour.ben.go4lunch.model.nearby.Result;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.OnItemClick;
 
+import static android.Manifest.permission.CALL_PHONE;
 import static com.lescour.ben.go4lunch.controller.HomeActivity.INTENT_EXTRA_PLACEDETAILSRESPONSE;
 import static com.lescour.ben.go4lunch.controller.HomeActivity.INTENT_EXTRA_RESULT;
 import static com.lescour.ben.go4lunch.controller.fragment.MapsFragment.INTENT_EXTRAS_PLACEDETAILSRESPONSE_MAPS;
@@ -78,9 +85,40 @@ public class RestaurantActivity extends AppCompatActivity {
 
     }
 
+    //CALL BUTTON
+    private static final int requestCodeCall = 123;
+
     @OnClick(R.id.restaurant_activity_button_call)
     public void callThisRestaurant() {
+        if (mPlaceDetailsResponse.getPhoneNumber() != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (checkSelfPermission(CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{CALL_PHONE}, requestCodeCall);
+                }
+            } else {
+                makeCall();
+            }
+        } else {
+            Toast.makeText(this, "No number  found for this restaurant...", Toast.LENGTH_LONG).show();
+        }
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case requestCodeCall: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    makeCall();
+                } else {
+                    Toast.makeText(this, "The app was not allowed to call.", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    }
+
+    private void makeCall() {
+        startActivity(new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + mPlaceDetailsResponse.getPhoneNumber())));
     }
 
     @OnClick(R.id.restaurant_activity_button_like)
