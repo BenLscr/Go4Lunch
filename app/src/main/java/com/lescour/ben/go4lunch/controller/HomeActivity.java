@@ -1,8 +1,8 @@
 package com.lescour.ben.go4lunch.controller;
 
-import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -11,6 +11,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,6 +47,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
@@ -86,7 +88,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private PlacesClient placesClient;
 
     private String stringLocation;
-    private int radius = 3500;
+    private int radius = 1500;
     private String type = "restaurant";
     private String apiKey = BuildConfig.PLACES_API_KEY;
 
@@ -103,7 +105,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
-        Log.e("HomeActivity", " onCreate");
 
         this.configureToolbar();
 
@@ -284,7 +285,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         mProgress.setMessage("Please wait...");
         mProgress.setCancelable(false);
         mProgress.setIndeterminate(true);
-
     }
 
     //HTTP REQUEST\\
@@ -299,11 +299,11 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         mParcelableRestaurantDetails = new ParcelableRestaurantDetails();
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (checkSelfPermission(ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, 0);
-                return;
             }
         }
+        this.checkConnexion(locationManager, this);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_FOR_UPDATES, MIN_DISTANCE_FOR_UPDATES, new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -328,6 +328,21 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
             }
         });
+    }
+
+    private void checkConnexion(LocationManager locationManager, Context context) {
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            new AlertDialog.Builder(context)
+                    .setTitle("GPS not found")  // GPS not found
+                    .setMessage("Want to enable ?") // Want to enable?
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            context.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                        }
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+        }
     }
 
     private void executeHttpRequestWithRetrofit_NearbySearch(){
