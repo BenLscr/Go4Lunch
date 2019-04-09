@@ -83,7 +83,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private ParcelableRestaurantDetails mParcelableRestaurantDetails;
     private long MIN_TIME_FOR_UPDATES = 3000;
-    private long MIN_DISTANCE_FOR_UPDATES = 5;
+    private long MIN_DISTANCE_FOR_UPDATES = 200;
 
     private PlacesClient placesClient;
 
@@ -117,8 +117,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
         mProgressBar.setVisibility(View.VISIBLE);
         mParcelableRestaurantDetails = new ParcelableRestaurantDetails();
-        mParcelableRestaurantDetails.setNearbyResults(new ArrayList<>());
-        mPlaceDetailsResponses = new ArrayList<>();
         this.initializePlacesApiClient();
         this.getMyCurrentLocation();
     }
@@ -186,6 +184,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     //MENU TOOLBAR\\
+
     /**
      * Inflate the menu and add it to the Toolbar.
      */
@@ -273,12 +272,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                 });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.e("Home", "Resume");
-    }
-
     private void initProgressDialog() {
         mProgress = new ProgressDialog(this);
         mProgress.setTitle("Your account will be disconnected...");
@@ -293,6 +286,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         Places.initialize(getApplicationContext(), apiKey);
         // Create a new Places client instance.
         placesClient = Places.createClient(this);
+
     }
 
     private void getMyCurrentLocation() {
@@ -300,13 +294,15 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, 0);
+            ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, 0);
             }
-        }
+         }
         this.checkConnexion(locationManager, this);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_FOR_UPDATES, MIN_DISTANCE_FOR_UPDATES, new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
+                mParcelableRestaurantDetails.setNearbyResults(new ArrayList<>());
+                mPlaceDetailsResponses = new ArrayList<>();
                 mParcelableRestaurantDetails.setCurrentLat(location.getLatitude());
                 mParcelableRestaurantDetails.setCurrentLng(location.getLongitude());
                 stringLocation = location.getLatitude() + "," + location.getLongitude();
@@ -368,7 +364,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void updateList(NearbyResponse nearbyResponse) {
         mParcelableRestaurantDetails.setNearbyResults(nearbyResponse.getResults());
-        getPlaceDetails(mParcelableRestaurantDetails.getNearbyResults().get(i).getPlaceId());
+        this.everyRestaurantDetails_isRequired();
     }
 
     private void getPlaceDetails(String placeId) {
@@ -385,6 +381,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
             placeDetailsResponse.setAddress(place.getAddress());
             placeDetailsResponse.setPhoneNumber(place.getPhoneNumber());
             placeDetailsResponse.setWebsiteUri(place.getWebsiteUri());
+            this.getPlacePhotos(placeId, placeDetailsResponse);
         }).addOnFailureListener((exception) -> {
             if (exception instanceof ApiException) {
                 ApiException apiException = (ApiException) exception;
@@ -393,7 +390,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                 Log.e("PlaceDetails", "Place not found: " + exception.getMessage());
             }
         });
-        getPlacePhotos(placeId, placeDetailsResponse);
     }
 
     private void getPlacePhotos(String placeId, PlaceDetailsResponse placeDetailsResponse) {
@@ -417,6 +413,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                 placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
                     Bitmap bitmap = fetchPhotoResponse.getBitmap();
                     placeDetailsResponse.setBitmap(bitmap);
+                    mPlaceDetailsResponses.add(placeDetailsResponse);
+                    everyRestaurantDetails_isRequired();
                 }).addOnFailureListener((exception) -> {
                     if (exception instanceof ApiException) {
                         ApiException apiException = (ApiException) exception;
@@ -427,9 +425,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                 });
             }
         });
-
-        mPlaceDetailsResponses.add(placeDetailsResponse);
-        everyRestaurantDetails_isRequired();
     }
 
     private void everyRestaurantDetails_isRequired() {
@@ -439,8 +434,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
             this.initBundle();
             this.initFirstFragment();
         } else {
-            i++;
             getPlaceDetails(mParcelableRestaurantDetails.getNearbyResults().get(i).getPlaceId());
+            i++;
         }
     }
 
