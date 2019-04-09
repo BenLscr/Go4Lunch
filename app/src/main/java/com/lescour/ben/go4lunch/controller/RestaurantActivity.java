@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -85,7 +86,7 @@ public class RestaurantActivity extends AppCompatActivity {
 
     }
 
-    //CALL BUTTON
+    //CALL BUTTON\\
     private static final int requestCodeCall = 123;
 
     @OnClick(R.id.restaurant_activity_button_call)
@@ -99,7 +100,7 @@ public class RestaurantActivity extends AppCompatActivity {
                 makeCall();
             }
         } else {
-            Toast.makeText(this, "No number  found for this restaurant...", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No number available for this restaurant...", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -121,13 +122,25 @@ public class RestaurantActivity extends AppCompatActivity {
         startActivity(new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + mPlaceDetailsResponse.getPhoneNumber())));
     }
 
+    //LIKE BUTTON\\
     @OnClick(R.id.restaurant_activity_button_like)
     public void likeThisRestaurant() {
 
     }
 
+    //WEBSITE BUTTON\\
+    public static final String BUNDLE_EXTRA_URL = "BUNDLE_EXTRA_URL";
+
     @OnClick(R.id.restaurant_activity_button_website)
     public void openWebsiteOfThisRestaurant() {
+        if (mPlaceDetailsResponse.getWebsiteUri() != null) {
+            Intent webViewActivity = new Intent(this, WebViewActivity.class);
+            webViewActivity.putExtra(BUNDLE_EXTRA_URL, mPlaceDetailsResponse.getWebsiteUri().toString());
+            this.startActivity(webViewActivity);
+        }
+        else {
+            Toast.makeText(this, "No website available for this restaurant...", Toast.LENGTH_LONG).show();
+        }
 
     }
 }
