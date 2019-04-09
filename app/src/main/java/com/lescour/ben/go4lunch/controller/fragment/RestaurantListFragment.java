@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
 import com.lescour.ben.go4lunch.model.PlaceDetailsResponse;
@@ -37,6 +36,7 @@ public class RestaurantListFragment extends Fragment {
     private OnListFragmentInteractionListener mListener;
 
     private RecyclerView.Adapter mRecyclerViewAdapter;
+    private ParcelableRestaurantDetails mParcelableRestaurantDetails;
     private List<Result> nearbyResults;
     private List<PlaceDetailsResponse> placeDetailsResponses;
     private Disposable disposable;
@@ -81,7 +81,7 @@ public class RestaurantListFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            this.mRecyclerViewAdapter = new RestaurantRecyclerViewAdapter(this.nearbyResults, this.placeDetailsResponses, mListener, Glide.with(this));
+            this.mRecyclerViewAdapter = new RestaurantRecyclerViewAdapter(this.mParcelableRestaurantDetails, mListener);
             recyclerView.setAdapter(this.mRecyclerViewAdapter);
         }
 
@@ -124,11 +124,7 @@ public class RestaurantListFragment extends Fragment {
         this.placeDetailsResponses = new ArrayList<>();
         Bundle bundle = getArguments();
         if (bundle != null && bundle.containsKey(BUNDLE_EXTRA_PARCELABLERESTAURANTDETAILS)) {
-            ParcelableRestaurantDetails mParcelableRestaurantDetails = bundle.getParcelable(BUNDLE_EXTRA_PARCELABLERESTAURANTDETAILS);
-            if (mParcelableRestaurantDetails != null) {
-                nearbyResults = mParcelableRestaurantDetails.getNearbyResults();
-                placeDetailsResponses = mParcelableRestaurantDetails.getPlaceDetailsResponses();
-            }
+            mParcelableRestaurantDetails = bundle.getParcelable(BUNDLE_EXTRA_PARCELABLERESTAURANTDETAILS);
         }
     }
 

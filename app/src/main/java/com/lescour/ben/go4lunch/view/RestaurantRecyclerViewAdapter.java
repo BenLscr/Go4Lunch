@@ -6,10 +6,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.RequestManager;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.controller.ProcessRestaurantDetails;
 import com.lescour.ben.go4lunch.controller.fragment.RestaurantListFragment.OnListFragmentInteractionListener;
+import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
 import com.lescour.ben.go4lunch.model.PlaceDetailsResponse;
 import com.lescour.ben.go4lunch.model.nearby.Result;
 
@@ -21,16 +21,16 @@ import butterknife.ButterKnife;
 
 public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<RestaurantRecyclerViewAdapter.ViewHolder> {
 
+    private ParcelableRestaurantDetails mParcelableRestaurantDetails;
     private List<Result> nearbyResults;
     private List<PlaceDetailsResponse> placeDetailsResponses;
     private final OnListFragmentInteractionListener mListener;
-    private RequestManager glide;
 
-    public RestaurantRecyclerViewAdapter(List<Result> nearbyResults, List<PlaceDetailsResponse> placeDetailsResponses, OnListFragmentInteractionListener listener, RequestManager glide) {
-        this.nearbyResults = nearbyResults;
-        this.placeDetailsResponses = placeDetailsResponses;
+    public RestaurantRecyclerViewAdapter(ParcelableRestaurantDetails mParcelableRestaurantDetails, OnListFragmentInteractionListener listener) {
+        this.mParcelableRestaurantDetails = mParcelableRestaurantDetails;
+        this.nearbyResults = mParcelableRestaurantDetails.getNearbyResults();//nearbyResults;
+        this.placeDetailsResponses = mParcelableRestaurantDetails.getPlaceDetailsResponses();//placeDetailsResponses;
         mListener = listener;
-        this.glide = glide;
     }
 
     @Override
@@ -46,9 +46,11 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
         holder.placeDetailsResponse = this.placeDetailsResponses.get(position);
 
         ProcessRestaurantDetails restaurantDetails = new ProcessRestaurantDetails(holder.nearbyResult, holder.placeDetailsResponse);
+
         holder.restaurantName.setText(restaurantDetails.getRestaurantName());
         holder.restaurantAddress.setText(restaurantDetails.getRestaurantAddress());
         holder.restaurantOpenHours.setText(restaurantDetails.getRestaurantOpenHours());
+        holder.restaurantDistance.setText(restaurantDetails.howFarIsThisRestaurant(mParcelableRestaurantDetails.getCurrentLat(), mParcelableRestaurantDetails.getCurrentLng()));
         if (holder.nearbyResult.getRating() != null) {
             holder.restaurantRate1.setVisibility(restaurantDetails.getRestaurantRate1());
             holder.restaurantRate2.setVisibility(restaurantDetails.getRestaurantRate2());

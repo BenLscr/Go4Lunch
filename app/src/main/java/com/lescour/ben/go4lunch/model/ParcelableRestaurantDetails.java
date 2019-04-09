@@ -12,8 +12,7 @@ import java.util.List;
  */
 public class ParcelableRestaurantDetails implements Parcelable {
 
-    private Double currentLat;
-    private Double currentLng;
+    private Double currentLat, currentLng;
     private List<Result> nearbyResults;
     private List<PlaceDetailsResponse> placeDetailsResponses;
 

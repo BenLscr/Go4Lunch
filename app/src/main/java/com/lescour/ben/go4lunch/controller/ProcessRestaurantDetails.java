@@ -21,8 +21,7 @@ public class ProcessRestaurantDetails {
     private Result mResult;
     private PlaceDetailsResponse mPlaceDetailsResponse;
     private int hours;
-    private String hoursString;
-    private String minutesString;
+    private String hoursString, minutesString;
 
     public ProcessRestaurantDetails(Result nearbyResult, PlaceDetailsResponse placeDetailsResponse) {
         this.mResult = nearbyResult;
@@ -111,6 +110,31 @@ public class ProcessRestaurantDetails {
         } else {
             return "No schedules defined";
         }
+    }
+
+    /**public String howFarIsThisRestaurant(Double currentLat, Double currentLng) {
+        Location myLocation = new Location("My location");
+        myLocation.setLatitude(currentLat);
+        myLocation.setLongitude(currentLng);
+
+        Location restaurantLocation = new Location ("Restaurant location");
+        restaurantLocation.setLatitude(mResult.getGeometry().getLocation().getLat());
+        restaurantLocation.setLongitude(mResult.getGeometry().getLocation().getLng());
+
+        return String.valueOf(myLocation.distanceTo(restaurantLocation));
+    }*/
+
+    public String howFarIsThisRestaurant(Double currentLat, Double currentLng) {
+        double latDistance = Math.toRadians(currentLat - mResult.getGeometry().getLocation().getLat());
+        double lngDistance = Math.toRadians(currentLng - mResult.getGeometry().getLocation().getLng());
+
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(currentLat)) * Math.cos(Math.toRadians(mResult.getGeometry().getLocation().getLat()))
+                * Math.sin(lngDistance / 2) * Math.sin(lngDistance / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return String.valueOf(Math.round(6371000 * c));
     }
 
     private void retrievesHoursAndMinutes(int i) {
