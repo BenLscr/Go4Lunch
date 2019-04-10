@@ -7,13 +7,13 @@ import android.util.Log;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
-import com.google.firebase.auth.FirebaseAuth;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.lescour.ben.go4lunch.R;
+import com.lescour.ben.go4lunch.model.firestore.User;
 import com.lescour.ben.go4lunch.utils.UserHelper;
 
 import java.util.Arrays;
-
-import androidx.annotation.NonNull;
 
 public class AuthActivity extends BaseActivity {
 
@@ -83,11 +83,19 @@ public class AuthActivity extends BaseActivity {
 
     private void createUserInFirestore(){
         if (this.getCurrentUser() != null){
-            String uid = this.getCurrentUser().getUid();
-            String username = this.getCurrentUser().getDisplayName();
-            String urlPicture = (this.getCurrentUser().getPhotoUrl() != null) ? this.getCurrentUser().getPhotoUrl().toString() : null;
-
-            UserHelper.createUser(uid, username, urlPicture).addOnFailureListener(this.onFailureListener());
+            UserHelper.getUser(this.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    if (documentSnapshot.exists()) {
+                        user = documentSnapshot.toObject(User.class);
+                    } else {
+                        user = new User(getCurrentUser().getUid(),
+                                getCurrentUser().getDisplayName(),
+                                (getCurrentUser().getPhotoUrl() != null) ? getCurrentUser().getPhotoUrl().toString() : null);
+                        UserHelper.createUser(user.getUid(), user).addOnFailureListener(onFailureListener());
+                    }
+                }
+            });
         }
     }
 

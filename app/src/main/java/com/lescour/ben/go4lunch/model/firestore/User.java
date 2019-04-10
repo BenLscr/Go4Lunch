@@ -11,6 +11,9 @@ public class User {
     private String userName;
     @Nullable
     private String userUrlImage;
+    private String userChoice;
+
+    public User () { }
 
     public User(String uid, String userName, String userUrlImage) {
         this.uid = uid;
@@ -22,10 +25,11 @@ public class User {
     public String getUid() { return uid; }
     public String getUserName() { return userName; }
     public String getUserUrlImage() { return userUrlImage; }
+    public String getUserChoice() { return userChoice; }
 
     //SETTER\\
     public void setUid(String uid) { this.uid = uid; }
     public void setUserName(String userName) { this.userName = userName; }
     public void setUserUrlImage(String userUrlImage) { this.userUrlImage = userUrlImage; }
-
+    public void setUserChoice(String userChoice) { this.userChoice = userChoice; }
 }
