@@ -24,6 +24,7 @@ public class AuthActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_auth);
         if (this.isCurrentUserLogged()){
+            this.retrievesIsData();
             this.launchHomeActivity();
         }
     }
@@ -63,7 +64,7 @@ public class AuthActivity extends BaseActivity {
 
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) { // SUCCESS
-                this.createUserInFirestore();
+                this.retrievesIsData();
                 this.launchHomeActivity();
             } else { // ERRORS
                 if (response == null) {
@@ -81,22 +82,24 @@ public class AuthActivity extends BaseActivity {
         }
     }
 
-    private void createUserInFirestore(){
-        if (this.getCurrentUser() != null){
-            UserHelper.getUser(this.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    if (documentSnapshot.exists()) {
-                        user = documentSnapshot.toObject(User.class);
-                    } else {
-                        user = new User(getCurrentUser().getUid(),
-                                getCurrentUser().getDisplayName(),
-                                (getCurrentUser().getPhotoUrl() != null) ? getCurrentUser().getPhotoUrl().toString() : null);
-                        UserHelper.createUser(user.getUid(), user).addOnFailureListener(onFailureListener());
-                    }
+    private void retrievesIsData() {
+        UserHelper.getUser(this.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    user = documentSnapshot.toObject(User.class);
+                } else {
+                    createUserInFirestore();
                 }
-            });
-        }
+            }
+        });
+    }
+
+    private void createUserInFirestore(){
+        user = new User(getCurrentUser().getUid(),
+                getCurrentUser().getDisplayName(),
+                (getCurrentUser().getPhotoUrl() != null) ? getCurrentUser().getPhotoUrl().toString() : null);
+        UserHelper.createUser(user.getUid(), user).addOnFailureListener(onFailureListener());
     }
 
     private void launchHomeActivity() {
