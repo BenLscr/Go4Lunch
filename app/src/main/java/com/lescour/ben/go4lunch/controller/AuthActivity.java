@@ -9,6 +9,7 @@ import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.lescour.ben.go4lunch.R;
+import com.lescour.ben.go4lunch.utils.UserHelper;
 
 import java.util.Arrays;
 
@@ -62,7 +63,7 @@ public class AuthActivity extends BaseActivity {
 
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) { // SUCCESS
-                //this.createUserInFirestore();
+                this.createUserInFirestore();
                 this.launchHomeActivity();
             } else { // ERRORS
                 if (response == null) {
@@ -77,6 +78,16 @@ public class AuthActivity extends BaseActivity {
                     Log.e("fail", "error inco");
                 }
             }
+        }
+    }
+
+    private void createUserInFirestore(){
+        if (this.getCurrentUser() != null){
+            String uid = this.getCurrentUser().getUid();
+            String username = this.getCurrentUser().getDisplayName();
+            String urlPicture = (this.getCurrentUser().getPhotoUrl() != null) ? this.getCurrentUser().getPhotoUrl().toString() : null;
+
+            UserHelper.createUser(uid, username, urlPicture).addOnFailureListener(this.onFailureListener());
         }
     }
 

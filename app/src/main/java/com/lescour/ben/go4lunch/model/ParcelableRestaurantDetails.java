@@ -3,6 +3,7 @@ package com.lescour.ben.go4lunch.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.lescour.ben.go4lunch.model.details.PlaceDetailsResponse;
 import com.lescour.ben.go4lunch.model.nearby.Result;
 
 import java.util.List;

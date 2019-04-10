@@ -5,7 +5,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -13,7 +12,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lescour.ben.go4lunch.R;
-import com.lescour.ben.go4lunch.model.PlaceDetailsResponse;
+import com.lescour.ben.go4lunch.controller.fragment.WorkmatesListRestaurantFragment;
+import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent;
+import com.lescour.ben.go4lunch.model.details.PlaceDetailsResponse;
 import com.lescour.ben.go4lunch.model.nearby.Result;
 
 import androidx.annotation.NonNull;
@@ -29,7 +30,7 @@ import static com.lescour.ben.go4lunch.controller.HomeActivity.INTENT_EXTRA_RESU
 import static com.lescour.ben.go4lunch.controller.fragment.MapsFragment.INTENT_EXTRAS_PLACEDETAILSRESPONSE_MAPS;
 import static com.lescour.ben.go4lunch.controller.fragment.MapsFragment.INTENT_EXTRAS_RESULT_MAPS;
 
-public class RestaurantActivity extends AppCompatActivity {
+public class RestaurantActivity extends AppCompatActivity implements WorkmatesListRestaurantFragment.OnListFragmentInteractionListener {
 
     @BindView(R.id.restaurant_activity_image) ImageView restaurantImage;
     @BindView(R.id.restaurant_activity_name) TextView restaurantName;
@@ -141,6 +142,11 @@ public class RestaurantActivity extends AppCompatActivity {
         else {
             Toast.makeText(this, "No website available for this restaurant...", Toast.LENGTH_LONG).show();
         }
+
+    }
+
+    @Override
+    public void onListFragmentInteraction(DummyContent.DummyItem item) {
 
     }
 }

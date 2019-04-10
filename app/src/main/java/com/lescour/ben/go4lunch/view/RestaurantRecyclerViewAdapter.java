@@ -10,7 +10,7 @@ import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.controller.ProcessRestaurantDetails;
 import com.lescour.ben.go4lunch.controller.fragment.RestaurantListFragment.OnListFragmentInteractionListener;
 import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
-import com.lescour.ben.go4lunch.model.PlaceDetailsResponse;
+import com.lescour.ben.go4lunch.model.details.PlaceDetailsResponse;
 import com.lescour.ben.go4lunch.model.nearby.Result;
 
 import java.util.List;

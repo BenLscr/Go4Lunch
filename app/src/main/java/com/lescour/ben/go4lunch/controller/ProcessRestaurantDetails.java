@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.view.View;
 
 import com.google.android.libraries.places.api.model.DayOfWeek;
-import com.lescour.ben.go4lunch.model.PlaceDetailsResponse;
+import com.lescour.ben.go4lunch.model.details.PlaceDetailsResponse;
 import com.lescour.ben.go4lunch.model.nearby.Result;
 
 import java.text.ParseException;

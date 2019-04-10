@@ -7,21 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.lescour.ben.go4lunch.R;
-import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
-import com.lescour.ben.go4lunch.model.details.PlaceDetailsResponse;
-import com.lescour.ben.go4lunch.model.nearby.Result;
-import com.lescour.ben.go4lunch.view.RestaurantRecyclerViewAdapter;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent;
+import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent.DummyItem;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import io.reactivex.disposables.Disposable;
-
-import static com.lescour.ben.go4lunch.controller.HomeActivity.BUNDLE_EXTRA_PARCELABLERESTAURANTDETAILS;
 
 /**
  * A fragment representing a list of Items.
@@ -29,27 +21,25 @@ import static com.lescour.ben.go4lunch.controller.HomeActivity.BUNDLE_EXTRA_PARC
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class RestaurantListFragment extends Fragment {
+public class WorkmatesListRestaurantFragment extends Fragment {
 
+    // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
+    // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
-
-    private RecyclerView.Adapter mRecyclerViewAdapter;
-    private ParcelableRestaurantDetails mParcelableRestaurantDetails;
-    private List<Result> nearbyResults;
-    private List<PlaceDetailsResponse> placeDetailsResponses;
-    private Disposable disposable;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public RestaurantListFragment() {
+    public WorkmatesListRestaurantFragment() {
     }
 
-    public static RestaurantListFragment newInstance(int columnCount) {
-        RestaurantListFragment fragment = new RestaurantListFragment();
+    // TODO: Customize parameter initialization
+    @SuppressWarnings("unused")
+    public static WorkmatesListRestaurantFragment newInstance(int columnCount) {
+        WorkmatesListRestaurantFragment fragment = new WorkmatesListRestaurantFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -68,9 +58,7 @@ public class RestaurantListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_restaurant_list, container, false);
-
-        this.setParcelableLocation();
+        View view = inflater.inflate(R.layout.fragment_workmates_list, container, false);
 
         // Set the adapter
         if (view instanceof RecyclerView) {
@@ -81,12 +69,11 @@ public class RestaurantListFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            this.mRecyclerViewAdapter = new RestaurantRecyclerViewAdapter(this.mParcelableRestaurantDetails, mListener);
-            recyclerView.setAdapter(this.mRecyclerViewAdapter);
+            recyclerView.setAdapter(new WorkmateRestaurantRecyclerViewAdapter(DummyContent.ITEMS, mListener));
         }
-
         return view;
     }
+
 
     @Override
     public void onAttach(Context context) {
@@ -116,16 +103,7 @@ public class RestaurantListFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(Result result, PlaceDetailsResponse placeDetailsResponse);
+        // TODO: Update argument type and name
+        void onListFragmentInteraction(DummyItem item);
     }
-
-    private void setParcelableLocation() {
-        this.nearbyResults = new ArrayList<>();
-        this.placeDetailsResponses = new ArrayList<>();
-        Bundle bundle = getArguments();
-        if (bundle != null && bundle.containsKey(BUNDLE_EXTRA_PARCELABLERESTAURANTDETAILS)) {
-            mParcelableRestaurantDetails = bundle.getParcelable(BUNDLE_EXTRA_PARCELABLERESTAURANTDETAILS);
-        }
-    }
-
 }

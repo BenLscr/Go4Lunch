@@ -126,6 +126,12 @@
 
         </FrameLayout>
 
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/workmates_list_restaurant_fragment"
+            android:name="com.lescour.ben.go4lunch.controller.fragment.WorkmatesListRestaurantFragment"/>
+
     </LinearLayout>
     
     <ImageButton

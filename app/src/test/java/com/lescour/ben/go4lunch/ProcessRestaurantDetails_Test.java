@@ -3,8 +3,7 @@ package com.lescour.ben.go4lunch;
 import android.view.View;
 
 import com.lescour.ben.go4lunch.controller.ProcessRestaurantDetails;
-import com.lescour.ben.go4lunch.controller.fragment.RestaurantListFragment;
-import com.lescour.ben.go4lunch.model.PlaceDetailsResponse;
+import com.lescour.ben.go4lunch.model.details.PlaceDetailsResponse;
 import com.lescour.ben.go4lunch.model.nearby.Result;
 
 import org.junit.Before;

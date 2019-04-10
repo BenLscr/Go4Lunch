@@ -1,4 +1,4 @@
-package com.lescour.ben.go4lunch.model;
+package com.lescour.ben.go4lunch.model.details;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
