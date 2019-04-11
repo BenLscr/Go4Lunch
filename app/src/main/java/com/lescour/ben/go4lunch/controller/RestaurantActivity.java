@@ -5,21 +5,30 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.controller.fragment.WorkmatesListRestaurantFragment;
-import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent;
 import com.lescour.ben.go4lunch.model.details.PlaceDetailsResponse;
+import com.lescour.ben.go4lunch.model.firestore.User;
 import com.lescour.ben.go4lunch.model.nearby.Result;
 import com.lescour.ben.go4lunch.utils.UserHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -30,7 +39,7 @@ import static com.lescour.ben.go4lunch.controller.HomeActivity.INTENT_EXTRA_RESU
 import static com.lescour.ben.go4lunch.controller.fragment.MapsFragment.INTENT_EXTRAS_PLACEDETAILSRESPONSE_MAPS;
 import static com.lescour.ben.go4lunch.controller.fragment.MapsFragment.INTENT_EXTRAS_RESULT_MAPS;
 
-public class RestaurantActivity extends BaseActivity implements WorkmatesListRestaurantFragment.OnListFragmentInteractionListener {
+public class RestaurantActivity extends BaseActivity {
 
     @BindView(R.id.restaurant_activity_image) ImageView restaurantImage;
     @BindView(R.id.restaurant_activity_name) TextView restaurantName;
@@ -38,11 +47,13 @@ public class RestaurantActivity extends BaseActivity implements WorkmatesListRes
     @BindView(R.id.restaurant_activity_rate_1) ImageView restaurantRate1;
     @BindView(R.id.restaurant_activity_rate_2) ImageView restaurantRate2;
     @BindView(R.id.restaurant_activity_rate_3) ImageView restaurantRate3;
-    @BindView(R.id.restaurant_activity_button_choice) ImageButton restaurantChoice;
+    @BindView(R.id.restaurant_activity_button_choice) ImageView restaurantChoice;
     @BindView(R.id.restaurant_activity_button_call) Button restaurantCall;
     @BindView(R.id.restaurant_activity_button_like) Button restaurantLike;
     @BindView(R.id.restaurant_activity_button_website) Button restaurantWebsite;
+    @BindView(R.id.activity_restaurant_progress_bar) ProgressBar mProgressBar;
 
+    private WorkmatesListRestaurantFragment workmatesListRestaurantFragment;
     private Result mResult;
     private PlaceDetailsResponse mPlaceDetailsResponse;
     private ProcessRestaurantDetails mProcessRestaurantDetails;
@@ -55,7 +66,7 @@ public class RestaurantActivity extends BaseActivity implements WorkmatesListRes
 
         this.searchIntent();
 
-        this.updateUi();
+        this.createUi();
     }
 
     private void searchIntent() {
@@ -69,7 +80,8 @@ public class RestaurantActivity extends BaseActivity implements WorkmatesListRes
         mProcessRestaurantDetails = new ProcessRestaurantDetails(mResult, mPlaceDetailsResponse);
     }
 
-    private void updateUi() {
+    private void createUi() {
+        mProgressBar.setVisibility(View.VISIBLE);
         if (mPlaceDetailsResponse.getBitmap() != null) {
             restaurantImage.setImageBitmap(mProcessRestaurantDetails.getRestaurantImage());
         }
@@ -80,23 +92,63 @@ public class RestaurantActivity extends BaseActivity implements WorkmatesListRes
             restaurantRate2.setVisibility(mProcessRestaurantDetails.getRestaurantRate2());
             restaurantRate3.setVisibility(mProcessRestaurantDetails.getRestaurantRate3());
         }
+        if (user.getUserChoice().equals(mResult.getName())) {
+            restaurantChoice.setColorFilter(getResources().getColor(R.color.mainThemeColorValid));
+        }
+        this.updateWorkmatesListRestaurantFragment();
+    }
+
+    private void updateWorkmatesListRestaurantFragment() {
+        UserHelper.getUsersWhoHaveSameChoice(mResult.getName()).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                List<DocumentSnapshot> listOfWorkmatesWithSameChoice = new ArrayList<>(queryDocumentSnapshots.getDocuments());
+                ArrayList<User> listOfUserWithSameChoice = new ArrayList<>();
+                int i = 0;
+                if (listOfWorkmatesWithSameChoice.size() != 0) {
+                    do {
+                        listOfUserWithSameChoice.add(listOfWorkmatesWithSameChoice.get(i).toObject(User.class));
+                        i++;
+                    } while (listOfUserWithSameChoice.size() != listOfWorkmatesWithSameChoice.size());
+                    addFragment(listOfUserWithSameChoice);
+                }
+                mProgressBar.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void addFragment(ArrayList<User> listOfUserWithSameChoice) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        workmatesListRestaurantFragment = WorkmatesListRestaurantFragment.newInstance(listOfUserWithSameChoice);
+        fragmentTransaction.add(R.id.container_restaurant_activity, workmatesListRestaurantFragment).commit();
     }
 
     //CHOICE BUTTON\\
-    @OnClick(R.id.restaurant_activity_button_choice)
-    public void setChoice() {
+    public void setChoice(View view) {
+        mProgressBar.setVisibility(View.VISIBLE);
         if (user.getUserChoice().equals("")) {
             user.setUserChoice(mResult.getName());
-            restaurantChoice.setBackground(getResources().getDrawable(R.drawable.baseline_check_circle_green_24));
+            restaurantChoice.setColorFilter(getResources().getColor(R.color.mainThemeColorValid));
         } else {
             user.setUserChoice("");
-            restaurantChoice.setBackground(getResources().getDrawable(R.drawable.baseline_check_circle_white_24));
+            restaurantChoice.setColorFilter(getResources().getColor(R.color.quantum_white_100));
         }
         this.updateUserChoice();
     }
 
     private void updateUserChoice() {
-        UserHelper.updateChoice(user.getUid(), user.getUserChoice()).addOnFailureListener(this.onFailureListener());
+        UserHelper.updateChoice(user.getUid(), user.getUserChoice())
+                .addOnFailureListener(this.onFailureListener())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        if (workmatesListRestaurantFragment != null) {
+                            getSupportFragmentManager().beginTransaction().remove(workmatesListRestaurantFragment).commit();
+                        }
+                        updateWorkmatesListRestaurantFragment();
+                    }
+                });
     }
 
     //CALL BUTTON\\
@@ -154,11 +206,6 @@ public class RestaurantActivity extends BaseActivity implements WorkmatesListRes
         else {
             Toast.makeText(this, "No website available for this restaurant...", Toast.LENGTH_LONG).show();
         }
-
     }
 
-    @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
-
-    }
 }

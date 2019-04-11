@@ -6,12 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.lescour.ben.go4lunch.R;
-import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent;
-import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent.DummyItem;
+import com.lescour.ben.go4lunch.model.firestore.User;
+
+import java.util.ArrayList;
 
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,11 +24,8 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 public class WorkmatesListRestaurantFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
-    private int mColumnCount = 1;
-    private OnListFragmentInteractionListener mListener;
+    private ArrayList<User> listOfUserWithSameChoice;
+    private static final String ARG_LISTOF_USERS = "LISTOF_USERS";
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -36,12 +34,10 @@ public class WorkmatesListRestaurantFragment extends Fragment {
     public WorkmatesListRestaurantFragment() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
-    public static WorkmatesListRestaurantFragment newInstance(int columnCount) {
+    public static WorkmatesListRestaurantFragment newInstance(ArrayList<User> listOfUserWithSameChoice) {
         WorkmatesListRestaurantFragment fragment = new WorkmatesListRestaurantFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
+        args.putParcelableArrayList(ARG_LISTOF_USERS, listOfUserWithSameChoice);
         fragment.setArguments(args);
         return fragment;
     }
@@ -51,7 +47,8 @@ public class WorkmatesListRestaurantFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+            listOfUserWithSameChoice = new ArrayList<>();
+            listOfUserWithSameChoice = getArguments().getParcelableArrayList(ARG_LISTOF_USERS);
         }
     }
 
@@ -64,32 +61,10 @@ public class WorkmatesListRestaurantFragment extends Fragment {
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            recyclerView.setAdapter(new WorkmateRestaurantRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+            recyclerView.setAdapter(new WorkmateRestaurantRecyclerViewAdapter(listOfUserWithSameChoice, Glide.with(this)));
         }
         return view;
-    }
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
     }
 
     /**
@@ -103,7 +78,6 @@ public class WorkmatesListRestaurantFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(User user);
     }
 }

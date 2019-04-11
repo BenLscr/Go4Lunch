@@ -3,28 +3,28 @@ package com.lescour.ben.go4lunch.controller.fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.request.RequestOptions;
 import com.lescour.ben.go4lunch.R;
-import com.lescour.ben.go4lunch.controller.fragment.WorkmatesListRestaurantFragment.OnListFragmentInteractionListener;
-import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent.DummyItem;
+import com.lescour.ben.go4lunch.model.firestore.User;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import androidx.recyclerview.widget.RecyclerView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
- */
 public class WorkmateRestaurantRecyclerViewAdapter extends RecyclerView.Adapter<WorkmateRestaurantRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
-    private final OnListFragmentInteractionListener mListener;
+    private final ArrayList<User> listOfUserWithSameChoice;
+    private final RequestManager glide;
 
-    public WorkmateRestaurantRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
-        mValues = items;
-        mListener = listener;
+    public WorkmateRestaurantRecyclerViewAdapter(ArrayList<User> listOfUserWithSameChoice, RequestManager glide) {
+        this.listOfUserWithSameChoice = listOfUserWithSameChoice;
+        this.glide = glide;
     }
 
     @Override
@@ -36,32 +36,30 @@ public class WorkmateRestaurantRecyclerViewAdapter extends RecyclerView.Adapter<
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
+        holder.user = listOfUserWithSameChoice.get(position);
 
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
-                }
-            }
-        });
+        String workmateIsJoining = holder.user.getUserName() + " is joining !";
+        holder.workmateText.setText(workmateIsJoining);
+        if (holder.user.getUserUrlImage() != null) {
+            glide.load(holder.user.getUserUrlImage()).apply(RequestOptions.circleCropTransform()).into(holder.workmateImage);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return listOfUserWithSameChoice.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public DummyItem mItem;
+        @BindView(R.id.workmate_image) ImageView workmateImage;
+        @BindView(R.id.workmate_text) TextView workmateText;
+        public User user;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
+            ButterKnife.bind(this, view);
         }
     }
 }
