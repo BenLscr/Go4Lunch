@@ -12,16 +12,9 @@ import com.lescour.ben.go4lunch.model.details.PlaceDetailsResponse;
 import com.lescour.ben.go4lunch.model.nearby.Result;
 import com.lescour.ben.go4lunch.view.RestaurantRecyclerViewAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import io.reactivex.disposables.Disposable;
-
-import static com.lescour.ben.go4lunch.controller.HomeActivity.BUNDLE_EXTRA_PARCELABLERESTAURANTDETAILS;
 
 /**
  * A fragment representing a list of Items.
@@ -31,15 +24,10 @@ import static com.lescour.ben.go4lunch.controller.HomeActivity.BUNDLE_EXTRA_PARC
  */
 public class RestaurantListFragment extends Fragment {
 
-    private static final String ARG_COLUMN_COUNT = "column-count";
-    private int mColumnCount = 1;
+    private static final String ARG_PARCELABLE_RESTAURANTDETAILS = "parcelable_restaurantdetails";
     private OnListFragmentInteractionListener mListener;
 
-    private RecyclerView.Adapter mRecyclerViewAdapter;
     private ParcelableRestaurantDetails mParcelableRestaurantDetails;
-    private List<Result> nearbyResults;
-    private List<PlaceDetailsResponse> placeDetailsResponses;
-    private Disposable disposable;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -48,10 +36,10 @@ public class RestaurantListFragment extends Fragment {
     public RestaurantListFragment() {
     }
 
-    public static RestaurantListFragment newInstance(int columnCount) {
+    public static RestaurantListFragment newInstance(ParcelableRestaurantDetails mParcelableRestaurantDetails) {
         RestaurantListFragment fragment = new RestaurantListFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
+        args.putParcelable(ARG_PARCELABLE_RESTAURANTDETAILS, mParcelableRestaurantDetails);
         fragment.setArguments(args);
         return fragment;
     }
@@ -61,7 +49,7 @@ public class RestaurantListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+            mParcelableRestaurantDetails = getArguments().getParcelable(ARG_PARCELABLE_RESTAURANTDETAILS);
         }
     }
 
@@ -70,19 +58,12 @@ public class RestaurantListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_restaurant_list, container, false);
 
-        this.setParcelableLocation();
-
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            this.mRecyclerViewAdapter = new RestaurantRecyclerViewAdapter(this.mParcelableRestaurantDetails, mListener);
-            recyclerView.setAdapter(this.mRecyclerViewAdapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+            recyclerView.setAdapter(new RestaurantRecyclerViewAdapter(this.mParcelableRestaurantDetails, mListener));
         }
 
         return view;
@@ -117,15 +98,6 @@ public class RestaurantListFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         void onListFragmentInteraction(Result result, PlaceDetailsResponse placeDetailsResponse);
-    }
-
-    private void setParcelableLocation() {
-        this.nearbyResults = new ArrayList<>();
-        this.placeDetailsResponses = new ArrayList<>();
-        Bundle bundle = getArguments();
-        if (bundle != null && bundle.containsKey(BUNDLE_EXTRA_PARCELABLERESTAURANTDETAILS)) {
-            mParcelableRestaurantDetails = bundle.getParcelable(BUNDLE_EXTRA_PARCELABLERESTAURANTDETAILS);
-        }
     }
 
 }
