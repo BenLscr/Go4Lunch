@@ -1,31 +1,37 @@
 package com.lescour.ben.go4lunch.controller.fragment;
 
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.request.RequestOptions;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.controller.fragment.WorkmatesListFragment.OnListFragmentInteractionListener;
-import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent.DummyItem;
+import com.lescour.ben.go4lunch.model.firestore.User;
 
-import java.util.List;
+import java.util.ArrayList;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
- */
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class WorkmateRecyclerViewAdapter extends RecyclerView.Adapter<WorkmateRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
+    private final ArrayList<User> usersList;
     private final OnListFragmentInteractionListener mListener;
+    private final RequestManager glide;
+    private final Context context;
 
-    public WorkmateRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
-        mValues = items;
+    public WorkmateRecyclerViewAdapter(ArrayList<User> usersList, OnListFragmentInteractionListener listener, RequestManager glide, Context context) {
+        this.usersList = usersList;
         mListener = listener;
+        this.glide = glide;
+        this.context = context;
     }
 
     @Override
@@ -37,7 +43,20 @@ public class WorkmateRecyclerViewAdapter extends RecyclerView.Adapter<WorkmateRe
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
+        holder.user = usersList.get(position);
+
+        if (holder.user.getUserChoice().equals("")) {
+            String workmateChoice = holder.user.getUserName() + " hasn't decided yet.";
+            holder.workmateText.setText(workmateChoice);
+            holder.workmateText.setTextColor(ContextCompat.getColor(context, R.color.quantum_grey));
+        } else {
+            String workmateChoice = holder.user.getUserName() + " wants to eat at " + holder.user.getUserChoice();
+            holder.workmateText.setText(workmateChoice);
+        }
+
+        if (holder.user.getUserUrlImage() != null) {
+            glide.load(holder.user.getUserUrlImage()).apply(RequestOptions.circleCropTransform()).into(holder.workmateImage);
+        }
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,7 +64,7 @@ public class WorkmateRecyclerViewAdapter extends RecyclerView.Adapter<WorkmateRe
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
+                    mListener.onListFragmentInteraction(holder.user.getUserChoice());
                 }
             }
         });
@@ -53,17 +72,19 @@ public class WorkmateRecyclerViewAdapter extends RecyclerView.Adapter<WorkmateRe
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return usersList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public DummyItem mItem;
+        @BindView(R.id.workmate_image) ImageView workmateImage;
+        @BindView(R.id.workmate_text) TextView workmateText;
+        public User user;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
+            ButterKnife.bind(this, view);
         }
-
     }
 }

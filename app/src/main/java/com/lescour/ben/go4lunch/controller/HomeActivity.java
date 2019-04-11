@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
@@ -29,6 +30,8 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.lescour.ben.go4lunch.BuildConfig;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.controller.fragment.MapsFragment;
@@ -37,9 +40,11 @@ import com.lescour.ben.go4lunch.controller.fragment.WorkmatesListFragment;
 import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent;
 import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
 import com.lescour.ben.go4lunch.model.details.PlaceDetailsResponse;
+import com.lescour.ben.go4lunch.model.firestore.User;
 import com.lescour.ben.go4lunch.model.nearby.NearbyResponse;
 import com.lescour.ben.go4lunch.model.nearby.Result;
 import com.lescour.ben.go4lunch.utils.GoogleStreams;
+import com.lescour.ben.go4lunch.utils.UserHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,7 +82,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private Fragment fragment;
     private ProgressDialog mProgress;
-    private Bundle bundle;
+
+    private ArrayList<User> usersList;
 
     private Disposable disposable;
 
@@ -117,7 +123,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         mProgressBar.setVisibility(View.VISIBLE);
         mParcelableRestaurantDetails = new ParcelableRestaurantDetails();
         this.initializePlacesApiClient();
-        this.getMyCurrentLocation();
+        this.retrievesUsersFromFirestore();
     }
 
     private void configureToolbar() {
@@ -140,9 +146,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                 addFragment();
                 return true;
             case R.id.navigation_workmates:
-                fragment = WorkmatesListFragment.newInstance(0);
-                //currentPlace();
-                //placeDetails();
+                fragment = WorkmatesListFragment.newInstance(usersList);
                 addFragment();
                 return true;
         }
@@ -162,7 +166,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+    public void onListFragmentInteraction(String userChoice) {
 
     }
 
@@ -268,6 +272,26 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         mProgress.setMessage("Please wait...");
         mProgress.setCancelable(false);
         mProgress.setIndeterminate(true);
+    }
+    //FIRESTORE\\
+    private void retrievesUsersFromFirestore() {
+        UserHelper.getUsersDocuments()
+                .addOnFailureListener(this.onFailureListener())
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        List<DocumentSnapshot> documentSnapshotList = new ArrayList<>(queryDocumentSnapshots.getDocuments());
+                        usersList = new ArrayList<>();
+                        if (documentSnapshotList.size() != 0) {
+                            int k = 0;
+                            do {
+                                usersList.add(documentSnapshotList.get(k).toObject(User.class));
+                                k++;
+                            } while (documentSnapshotList.size() != usersList.size());
+                            getMyCurrentLocation();
+                        }
+                    }
+                });
     }
 
     //HTTP REQUEST\\

@@ -6,12 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.lescour.ben.go4lunch.R;
-import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent;
-import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent.DummyItem;
+import com.lescour.ben.go4lunch.model.firestore.User;
+
+import java.util.ArrayList;
 
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,13 +24,10 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 public class WorkmatesListFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
-    private int mColumnCount = 1;
+    private static final String ARG_USERSLIST = "USERSLIST";
     private OnListFragmentInteractionListener mListener;
 
-    private RecyclerView.Adapter mRecyclerViewAdapter;
+    private ArrayList<User> usersList;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -38,12 +36,10 @@ public class WorkmatesListFragment extends Fragment {
     public WorkmatesListFragment() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
-    public static WorkmatesListFragment newInstance(int columnCount) {
+    public static WorkmatesListFragment newInstance(ArrayList<User> usersList) {
         WorkmatesListFragment fragment = new WorkmatesListFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
+        args.putParcelableArrayList(ARG_USERSLIST, usersList);
         fragment.setArguments(args);
         return fragment;
     }
@@ -53,7 +49,8 @@ public class WorkmatesListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+            usersList = new ArrayList<>();
+            usersList = getArguments().getParcelableArrayList(ARG_USERSLIST);
         }
     }
 
@@ -66,14 +63,10 @@ public class WorkmatesListFragment extends Fragment {
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            this.mRecyclerViewAdapter = new WorkmateRecyclerViewAdapter(DummyContent.ITEMS, mListener);
-            recyclerView.setAdapter(mRecyclerViewAdapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+            recyclerView.setAdapter(new WorkmateRecyclerViewAdapter(usersList, mListener, Glide.with(this), getContext()));
         }
+
         return view;
     }
 
@@ -105,7 +98,6 @@ public class WorkmatesListFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(String userChoice);
     }
 }

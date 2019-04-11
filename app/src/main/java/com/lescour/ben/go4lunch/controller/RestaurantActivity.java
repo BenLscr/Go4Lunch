@@ -64,12 +64,12 @@ public class RestaurantActivity extends BaseActivity {
         setContentView(R.layout.activity_restaurant);
         ButterKnife.bind(this);
 
-        this.searchIntent();
+        this.retrievesIntent();
 
         this.createUi();
     }
 
-    private void searchIntent() {
+    private void retrievesIntent() {
         if (getIntent().hasExtra(INTENT_EXTRA_RESULT) && getIntent().hasExtra(INTENT_EXTRA_PLACEDETAILSRESPONSE)) {
             mResult = getIntent().getParcelableExtra(INTENT_EXTRA_RESULT);
             mPlaceDetailsResponse = getIntent().getParcelableExtra(INTENT_EXTRA_PLACEDETAILSRESPONSE);
@@ -104,8 +104,8 @@ public class RestaurantActivity extends BaseActivity {
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 List<DocumentSnapshot> listOfWorkmatesWithSameChoice = new ArrayList<>(queryDocumentSnapshots.getDocuments());
                 ArrayList<User> listOfUserWithSameChoice = new ArrayList<>();
-                int i = 0;
                 if (listOfWorkmatesWithSameChoice.size() != 0) {
+                    int i = 0;
                     do {
                         listOfUserWithSameChoice.add(listOfWorkmatesWithSameChoice.get(i).toObject(User.class));
                         i++;

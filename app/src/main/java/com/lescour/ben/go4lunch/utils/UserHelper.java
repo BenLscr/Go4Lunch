@@ -23,29 +23,33 @@ public class UserHelper {
     // --- CREATE ---
 
     public static Task<Void> createUser(String uid, User user) {
-        return UserHelper.getUsersCollection().document(uid).set(user);
+        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME).document(uid).set(user);
     }
 
     // --- GET ---
 
     public static Task<DocumentSnapshot> getUser(String uid){
-        return UserHelper.getUsersCollection().document(uid).get();
+        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME).document(uid).get();
+    }
+
+    public static Task<QuerySnapshot> getUsersDocuments(){
+        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME).get();
     }
 
     public static Task<QuerySnapshot> getUsersWhoHaveSameChoice(String userChoice) {
-        return UserHelper.getUsersCollection().whereEqualTo("userChoice", userChoice).get();
+        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME).whereEqualTo("userChoice", userChoice).get();
     }
 
     // --- UPDATE ---
 
     public static Task<Void> updateChoice(String uid, String userChoice) {
-        return UserHelper.getUsersCollection().document(uid).update("userChoice", userChoice);
+        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME).document(uid).update("userChoice", userChoice);
     }
 
     // --- DELETE ---
 
     public static Task<Void> deleteUser(String uid) {
-        return UserHelper.getUsersCollection().document(uid).delete();
+        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME).document(uid).delete();
     }
 
 }
