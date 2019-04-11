@@ -1,4 +1,4 @@
-package com.lescour.ben.go4lunch.controller.fragment;
+package com.lescour.ben.go4lunch.view;
 
 import android.view.LayoutInflater;
 import android.view.View;

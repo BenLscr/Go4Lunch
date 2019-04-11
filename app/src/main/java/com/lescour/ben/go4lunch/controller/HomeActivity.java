@@ -96,7 +96,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private List<PlaceDetailsResponse> mPlaceDetailsResponses;
 
-    public static final String BUNDLE_EXTRA_PARCELABLERESTAURANTDETAILS = "BUNDLE_EXTRA_PARCELABLERESTAURANTDETAILS";
     public static final String INTENT_EXTRA_RESULT = "INTENT_EXTRA_RESULT";
     public static final String INTENT_EXTRA_PLACEDETAILSRESPONSE = "INTENT_EXTRA_PLACEDETAILSRESPONSE";
 
@@ -125,11 +124,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         setSupportActionBar(toolbar);
     }
 
-    private void initBundle() {
-        bundle = new Bundle();
-        bundle.putParcelable(BUNDLE_EXTRA_PARCELABLERESTAURANTDETAILS, mParcelableRestaurantDetails);
-    }
-
     //BOTTOM TOOLBAR\\
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = item -> {
@@ -138,8 +132,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         }
         switch (item.getItemId()) {
             case R.id.navigation_map:
-                fragment = MapsFragment.newInstance("param1", "param2");
-                fragment.setArguments(bundle);
+                fragment = MapsFragment.newInstance(mParcelableRestaurantDetails);
                 addFragment();
                 return true;
             case R.id.navigation_list_restaurant:
@@ -158,8 +151,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     //FRAGMENT\\
     private void initFirstFragment() {
-        fragment = MapsFragment.newInstance("param1", "param2");
-        fragment.setArguments(bundle);
+        fragment = MapsFragment.newInstance(mParcelableRestaurantDetails);
         addFragment();
     }
 
@@ -183,7 +175,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     //MENU TOOLBAR\\
-
     /**
      * Inflate the menu and add it to the Toolbar.
      */
@@ -430,7 +421,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         if (mParcelableRestaurantDetails.getNearbyResults().size() == mPlaceDetailsResponses.size()) {
             mParcelableRestaurantDetails.setPlaceDetailsResponses(mPlaceDetailsResponses);
             mProgressBar.setVisibility(View.GONE);
-            this.initBundle();
             this.initFirstFragment();
         } else {
             getPlaceDetails(mParcelableRestaurantDetails.getNearbyResults().get(i).getPlaceId());
