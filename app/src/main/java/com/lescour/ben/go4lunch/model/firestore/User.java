@@ -11,7 +11,7 @@ public class User {
     private String userName;
     @Nullable
     private String userUrlImage;
-    private String userChoice;
+    private String userChoice = "";
 
     public User () { }
 

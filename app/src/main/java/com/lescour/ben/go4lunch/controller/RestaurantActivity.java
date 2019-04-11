@@ -16,9 +16,9 @@ import com.lescour.ben.go4lunch.controller.fragment.WorkmatesListRestaurantFragm
 import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent;
 import com.lescour.ben.go4lunch.model.details.PlaceDetailsResponse;
 import com.lescour.ben.go4lunch.model.nearby.Result;
+import com.lescour.ben.go4lunch.utils.UserHelper;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,7 +30,7 @@ import static com.lescour.ben.go4lunch.controller.HomeActivity.INTENT_EXTRA_RESU
 import static com.lescour.ben.go4lunch.controller.fragment.MapsFragment.INTENT_EXTRAS_PLACEDETAILSRESPONSE_MAPS;
 import static com.lescour.ben.go4lunch.controller.fragment.MapsFragment.INTENT_EXTRAS_RESULT_MAPS;
 
-public class RestaurantActivity extends AppCompatActivity implements WorkmatesListRestaurantFragment.OnListFragmentInteractionListener {
+public class RestaurantActivity extends BaseActivity implements WorkmatesListRestaurantFragment.OnListFragmentInteractionListener {
 
     @BindView(R.id.restaurant_activity_image) ImageView restaurantImage;
     @BindView(R.id.restaurant_activity_name) TextView restaurantName;
@@ -82,9 +82,21 @@ public class RestaurantActivity extends AppCompatActivity implements WorkmatesLi
         }
     }
 
+    //CHOICE BUTTON\\
     @OnClick(R.id.restaurant_activity_button_choice)
     public void setChoice() {
+        if (user.getUserChoice().equals("")) {
+            user.setUserChoice(mResult.getName());
+            restaurantChoice.setBackground(getResources().getDrawable(R.drawable.baseline_check_circle_green_24));
+        } else {
+            user.setUserChoice("");
+            restaurantChoice.setBackground(getResources().getDrawable(R.drawable.baseline_check_circle_white_24));
+        }
+        this.updateUserChoice();
+    }
 
+    private void updateUserChoice() {
+        UserHelper.updateChoice(user.getUid(), user.getUserChoice()).addOnFailureListener(this.onFailureListener());
     }
 
     //CALL BUTTON\\

@@ -8,4 +8,5 @@
     <color name="mainThemeColorPrimary">#ff5722</color>
     <color name="mainThemeColorPrimaryDark">#c41c00</color>
     <color name="mainThemeColorLight">#ff8a50</color>
+    <color name="mainThemeColorValid">#bef67a</color>
 </resources>
