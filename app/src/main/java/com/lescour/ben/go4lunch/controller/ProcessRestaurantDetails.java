@@ -1,6 +1,7 @@
 package com.lescour.ben.go4lunch.controller;
 
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.view.View;
 
 import com.google.android.libraries.places.api.model.DayOfWeek;
@@ -112,29 +113,16 @@ public class ProcessRestaurantDetails {
         }
     }
 
-    /**public String howFarIsThisRestaurant(Double currentLat, Double currentLng) {
+    public String howFarIsThisRestaurant(Double currentLat, Double currentLng) {
         Location myLocation = new Location("My location");
         myLocation.setLatitude(currentLat);
         myLocation.setLongitude(currentLng);
 
-        Location restaurantLocation = new Location ("Restaurant location");
+        Location restaurantLocation = new Location("Restaurant location");
         restaurantLocation.setLatitude(mResult.getGeometry().getLocation().getLat());
         restaurantLocation.setLongitude(mResult.getGeometry().getLocation().getLng());
 
-        return String.valueOf(myLocation.distanceTo(restaurantLocation));
-    }*/
-
-    public String howFarIsThisRestaurant(Double currentLat, Double currentLng) {
-        double latDistance = Math.toRadians(currentLat - mResult.getGeometry().getLocation().getLat());
-        double lngDistance = Math.toRadians(currentLng - mResult.getGeometry().getLocation().getLng());
-
-        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-                + Math.cos(Math.toRadians(currentLat)) * Math.cos(Math.toRadians(mResult.getGeometry().getLocation().getLat()))
-                * Math.sin(lngDistance / 2) * Math.sin(lngDistance / 2);
-
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        return String.valueOf(Math.round(6371000 * c));
+        return String.valueOf(Math.round(myLocation.distanceTo(restaurantLocation)))+ "m";
     }
 
     private void retrievesHoursAndMinutes(int i) {
