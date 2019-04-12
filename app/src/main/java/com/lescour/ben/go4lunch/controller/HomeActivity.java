@@ -88,13 +88,13 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private Disposable disposable;
 
     private ParcelableRestaurantDetails mParcelableRestaurantDetails;
-    private long MIN_TIME_FOR_UPDATES = 3000;
+    private long MIN_TIME_FOR_UPDATES = 9999999;
     private long MIN_DISTANCE_FOR_UPDATES = 200;
 
     private PlacesClient placesClient;
 
     private String stringLocation;
-    private int radius = 1500;
+    private int radius = 1000;
     private String type = "restaurant";
     private String apiKey = BuildConfig.PLACES_API_KEY;
 

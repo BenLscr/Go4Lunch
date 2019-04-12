@@ -92,14 +92,14 @@ public class RestaurantActivity extends BaseActivity {
             restaurantRate2.setVisibility(mProcessRestaurantDetails.getRestaurantRate2());
             restaurantRate3.setVisibility(mProcessRestaurantDetails.getRestaurantRate3());
         }
-        if (user.getUserChoice().equals(mResult.getName())) {
+        if (user.getUserChoice().equals(mResult.getPlaceId())) {
             restaurantChoice.setColorFilter(getResources().getColor(R.color.mainThemeColorValid));
         }
         this.updateWorkmatesListRestaurantFragment();
     }
 
     private void updateWorkmatesListRestaurantFragment() {
-        UserHelper.getUsersWhoHaveSameChoice(mResult.getName()).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        UserHelper.getUsersWhoHaveSameChoice(mResult.getPlaceId()).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 List<DocumentSnapshot> listOfWorkmatesWithSameChoice = new ArrayList<>(queryDocumentSnapshots.getDocuments());
@@ -128,7 +128,10 @@ public class RestaurantActivity extends BaseActivity {
     public void setChoice(View view) {
         mProgressBar.setVisibility(View.VISIBLE);
         if (user.getUserChoice().equals("")) {
-            user.setUserChoice(mResult.getName());
+            user.setUserChoice(mResult.getPlaceId());
+            restaurantChoice.setColorFilter(getResources().getColor(R.color.mainThemeColorValid));
+        } else if (!user.getUserChoice().equals("") && !user.getUserChoice().equals(mResult.getPlaceId())) {
+            user.setUserChoice(mResult.getPlaceId());
             restaurantChoice.setColorFilter(getResources().getColor(R.color.mainThemeColorValid));
         } else {
             user.setUserChoice("");
