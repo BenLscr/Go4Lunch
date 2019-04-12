@@ -92,7 +92,7 @@ public class RestaurantActivity extends BaseActivity {
             restaurantRate2.setVisibility(mProcessRestaurantDetails.getRestaurantRate2());
             restaurantRate3.setVisibility(mProcessRestaurantDetails.getRestaurantRate3());
         }
-        if (user.getUserChoice().equals(mResult.getPlaceId())) {
+        if (user.getUserChoicePlaceId().equals(mResult.getPlaceId())) {
             restaurantChoice.setColorFilter(getResources().getColor(R.color.mainThemeColorValid));
         }
         this.updateWorkmatesListRestaurantFragment();
@@ -127,21 +127,24 @@ public class RestaurantActivity extends BaseActivity {
     //CHOICE BUTTON\\
     public void setChoice(View view) {
         mProgressBar.setVisibility(View.VISIBLE);
-        if (user.getUserChoice().equals("")) {
-            user.setUserChoice(mResult.getPlaceId());
+        if (user.getUserChoicePlaceId().equals("")) {
+            user.setUserChoicePlaceId(mResult.getPlaceId());
+            user.setUserChoiceRestaurantName(mResult.getName());
             restaurantChoice.setColorFilter(getResources().getColor(R.color.mainThemeColorValid));
-        } else if (!user.getUserChoice().equals("") && !user.getUserChoice().equals(mResult.getPlaceId())) {
-            user.setUserChoice(mResult.getPlaceId());
+        } else if (!user.getUserChoicePlaceId().equals("") && !user.getUserChoicePlaceId().equals(mResult.getPlaceId())) {
+            user.setUserChoicePlaceId(mResult.getPlaceId());
+            user.setUserChoiceRestaurantName(mResult.getName());
             restaurantChoice.setColorFilter(getResources().getColor(R.color.mainThemeColorValid));
         } else {
-            user.setUserChoice("");
+            user.setUserChoicePlaceId("");
+            user.setUserChoiceRestaurantName("");
             restaurantChoice.setColorFilter(getResources().getColor(R.color.quantum_white_100));
         }
         this.updateUserChoice();
     }
 
     private void updateUserChoice() {
-        UserHelper.updateChoice(user.getUid(), user.getUserChoice())
+        UserHelper.updateChoice(user.getUid(), user.getUserChoicePlaceId(), user.getUserChoiceRestaurantName())
                 .addOnFailureListener(this.onFailureListener())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

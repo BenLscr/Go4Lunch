@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.model.firestore.User;
+import com.lescour.ben.go4lunch.view.WorkmateRecyclerViewAdapter;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package com.lescour.ben.go4lunch.controller.fragment;
+package com.lescour.ben.go4lunch.view;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -45,12 +45,12 @@ public class WorkmateRecyclerViewAdapter extends RecyclerView.Adapter<WorkmateRe
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.user = usersList.get(position);
 
-        if (holder.user.getUserChoice().equals("")) {
+        if (holder.user.getUserChoicePlaceId().equals("")) {
             String workmateChoice = holder.user.getUserName() + " hasn't decided yet.";
             holder.workmateText.setText(workmateChoice);
             holder.workmateText.setTextColor(ContextCompat.getColor(context, R.color.quantum_grey));
         } else {
-            String workmateChoice = holder.user.getUserName() + " wants to eat at " + holder.user.getUserChoice();
+            String workmateChoice = holder.user.getUserName() + " wants to eat at " + holder.user.getUserChoiceRestaurantName() + ".";
             holder.workmateText.setText(workmateChoice);
         }
 
@@ -64,7 +64,7 @@ public class WorkmateRecyclerViewAdapter extends RecyclerView.Adapter<WorkmateRe
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.user.getUserChoice());
+                    mListener.onListFragmentInteraction(holder.user.getUserChoicePlaceId());
                 }
             }
         });

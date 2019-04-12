@@ -166,8 +166,20 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
-    public void onListFragmentInteraction(String userChoice) {
+    public void onListFragmentInteraction(String userChoicePlaceId) {
+        int j = 0;
+        Result result;
+        PlaceDetailsResponse placeDetailsResponse;
+        do {
+            result = mParcelableRestaurantDetails.getNearbyResults().get(j);
+            placeDetailsResponse = mParcelableRestaurantDetails.getPlaceDetailsResponses().get(j);
+            j++;
+        } while (!result.getPlaceId().equals(userChoicePlaceId));
 
+        Intent intent = new Intent(HomeActivity.this, RestaurantActivity.class);
+        intent.putExtra(INTENT_EXTRA_RESULT, result);
+        intent.putExtra(INTENT_EXTRA_PLACEDETAILSRESPONSE, placeDetailsResponse);
+        startActivity(intent);
     }
 
     @Override

@@ -36,14 +36,16 @@ public class UserHelper {
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME).get();
     }
 
-    public static Task<QuerySnapshot> getUsersWhoHaveSameChoice(String userChoice) {
-        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME).whereEqualTo("userChoice", userChoice).get();
+    public static Task<QuerySnapshot> getUsersWhoHaveSameChoice(String userChoicePlaceId) {
+        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME).whereEqualTo("userChoicePlaceId", userChoicePlaceId).get();
     }
 
     // --- UPDATE ---
 
-    public static Task<Void> updateChoice(String uid, String userChoice) {
-        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME).document(uid).update("userChoice", userChoice);
+    public static Task<Void> updateChoice(String uid, String userChoicePlaceId, String userChoiceRestaurantName) {
+        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME).document(uid)
+                .update("userChoicePlaceId", userChoicePlaceId,
+                        "userChoiceRestaurantName", userChoiceRestaurantName);
     }
 
     // --- DELETE ---
