@@ -20,13 +20,12 @@ import androidx.recyclerview.widget.RecyclerView;
 /**
  * A fragment representing a list of Items.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
- * interface.
  */
 public class WorkmatesListRestaurantFragment extends Fragment {
 
     private ArrayList<User> listOfUserWithSameChoice;
     private static final String ARG_LISTOF_USERS = "LISTOF_USERS";
+    private RecyclerView.Adapter mRecyclerViewAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -48,8 +47,8 @@ public class WorkmatesListRestaurantFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            listOfUserWithSameChoice = new ArrayList<>();
-            listOfUserWithSameChoice = getArguments().getParcelableArrayList(ARG_LISTOF_USERS);
+            this.listOfUserWithSameChoice = new ArrayList<>();
+            this.listOfUserWithSameChoice = getArguments().getParcelableArrayList(ARG_LISTOF_USERS);
         }
     }
 
@@ -63,22 +62,16 @@ public class WorkmatesListRestaurantFragment extends Fragment {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(new WorkmateRestaurantRecyclerViewAdapter(listOfUserWithSameChoice, Glide.with(this)));
+            this.mRecyclerViewAdapter = new WorkmateRestaurantRecyclerViewAdapter(this.listOfUserWithSameChoice, Glide.with(this), getContext());
+            recyclerView.setAdapter(this.mRecyclerViewAdapter);
         }
+
         return view;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(User user);
+    public void notifyRecyclerView(ArrayList<User> listOfUserWithSameChoice) {
+        this.listOfUserWithSameChoice.clear();
+        this.listOfUserWithSameChoice.addAll(listOfUserWithSameChoice);
+        this.mRecyclerViewAdapter.notifyDataSetChanged();
     }
 }

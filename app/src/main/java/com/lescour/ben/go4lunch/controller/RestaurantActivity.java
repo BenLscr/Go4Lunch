@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -14,6 +15,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.controller.fragment.WorkmatesListRestaurantFragment;
@@ -24,6 +27,8 @@ import com.lescour.ben.go4lunch.utils.UserHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -65,8 +70,8 @@ public class RestaurantActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         this.retrievesIntent();
-
         this.createUi();
+        this.setFirestoreListener();
     }
 
     private void retrievesIntent() {
@@ -95,22 +100,27 @@ public class RestaurantActivity extends BaseActivity {
         if (user.getUserChoicePlaceId().equals(mResult.getPlaceId())) {
             restaurantChoice.setColorFilter(getResources().getColor(R.color.mainThemeColorValid));
         }
-        this.updateWorkmatesListRestaurantFragment();
     }
 
-    private void updateWorkmatesListRestaurantFragment() {
-        UserHelper.getUsersWhoHaveSameChoice(mResult.getPlaceId()).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+    private void setFirestoreListener() {
+        UserHelper.listenerUsersWhoHaveSameChoice(mResult.getPlaceId()).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<DocumentSnapshot> listOfWorkmatesWithSameChoice = new ArrayList<>(queryDocumentSnapshots.getDocuments());
-                ArrayList<User> listOfUserWithSameChoice = new ArrayList<>();
-                if (listOfWorkmatesWithSameChoice.size() != 0) {
-                    int i = 0;
-                    do {
-                        listOfUserWithSameChoice.add(listOfWorkmatesWithSameChoice.get(i).toObject(User.class));
-                        i++;
-                    } while (listOfUserWithSameChoice.size() != listOfWorkmatesWithSameChoice.size());
-                    addFragment(listOfUserWithSameChoice);
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (queryDocumentSnapshots != null) {
+                    List<DocumentSnapshot> listOfWorkmatesWithSameChoice = new ArrayList<>(queryDocumentSnapshots.getDocuments());
+                    ArrayList<User> listOfUserWithSameChoice = new ArrayList<>();
+                    if (listOfWorkmatesWithSameChoice.size() != 0) {
+                        int i = 0;
+                        do {
+                            listOfUserWithSameChoice.add(listOfWorkmatesWithSameChoice.get(i).toObject(User.class));
+                            i++;
+                        } while (listOfUserWithSameChoice.size() != listOfWorkmatesWithSameChoice.size());
+                    }
+                    if (workmatesListRestaurantFragment != null) {
+                        workmatesListRestaurantFragment.notifyRecyclerView(listOfUserWithSameChoice);
+                    } else {
+                        addFragment(listOfUserWithSameChoice);
+                    }
                 }
                 mProgressBar.setVisibility(View.GONE);
             }
@@ -145,16 +155,7 @@ public class RestaurantActivity extends BaseActivity {
 
     private void updateUserChoice() {
         UserHelper.updateChoice(user.getUid(), user.getUserChoicePlaceId(), user.getUserChoiceRestaurantName())
-                .addOnFailureListener(this.onFailureListener())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        if (workmatesListRestaurantFragment != null) {
-                            getSupportFragmentManager().beginTransaction().remove(workmatesListRestaurantFragment).commit();
-                        }
-                        updateWorkmatesListRestaurantFragment();
-                    }
-                });
+                .addOnFailureListener(this.onFailureListener());
     }
 
     //CALL BUTTON\\

@@ -1,5 +1,6 @@
 package com.lescour.ben.go4lunch.view;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import com.lescour.ben.go4lunch.model.firestore.User;
 
 import java.util.ArrayList;
 
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,10 +23,12 @@ public class WorkmateRestaurantRecyclerViewAdapter extends RecyclerView.Adapter<
 
     private final ArrayList<User> listOfUserWithSameChoice;
     private final RequestManager glide;
+    private final Context context;
 
-    public WorkmateRestaurantRecyclerViewAdapter(ArrayList<User> listOfUserWithSameChoice, RequestManager glide) {
+    public WorkmateRestaurantRecyclerViewAdapter(ArrayList<User> listOfUserWithSameChoice, RequestManager glide, Context context) {
         this.listOfUserWithSameChoice = listOfUserWithSameChoice;
         this.glide = glide;
+        this.context = context;
     }
 
     @Override
@@ -42,6 +46,8 @@ public class WorkmateRestaurantRecyclerViewAdapter extends RecyclerView.Adapter<
         holder.workmateText.setText(workmateIsJoining);
         if (holder.user.getUserUrlImage() != null) {
             glide.load(holder.user.getUserUrlImage()).apply(RequestOptions.circleCropTransform()).into(holder.workmateImage);
+        } else {
+            holder.workmateImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.baseline_account_circle_white_24));
         }
     }
 
