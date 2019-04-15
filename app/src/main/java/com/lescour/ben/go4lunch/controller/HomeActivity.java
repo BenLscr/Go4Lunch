@@ -142,7 +142,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                 addFragment();
                 return true;
             case R.id.navigation_list_restaurant:
-                fragment = RestaurantListFragment.newInstance(mParcelableRestaurantDetails);
+                fragment = RestaurantListFragment.newInstance(mParcelableRestaurantDetails, usersList);
                 addFragment();
                 return true;
             case R.id.navigation_workmates:

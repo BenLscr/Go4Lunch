@@ -2,14 +2,17 @@ package com.lescour.ben.go4lunch.controller;
 
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.opengl.Visibility;
 import android.view.View;
 
 import com.google.android.libraries.places.api.model.DayOfWeek;
 import com.lescour.ben.go4lunch.model.details.PlaceDetailsResponse;
+import com.lescour.ben.go4lunch.model.firestore.User;
 import com.lescour.ben.go4lunch.model.nearby.Result;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -23,6 +26,7 @@ public class ProcessRestaurantDetails {
     private PlaceDetailsResponse mPlaceDetailsResponse;
     private int hours;
     private String hoursString, minutesString;
+    private int howManyPeople = 0;
 
     public ProcessRestaurantDetails(Result nearbyResult, PlaceDetailsResponse placeDetailsResponse) {
         this.mResult = nearbyResult;
@@ -113,18 +117,6 @@ public class ProcessRestaurantDetails {
         }
     }
 
-    public String howFarIsThisRestaurant(Double currentLat, Double currentLng) {
-        Location myLocation = new Location("My location");
-        myLocation.setLatitude(currentLat);
-        myLocation.setLongitude(currentLng);
-
-        Location restaurantLocation = new Location("Restaurant location");
-        restaurantLocation.setLatitude(mResult.getGeometry().getLocation().getLat());
-        restaurantLocation.setLongitude(mResult.getGeometry().getLocation().getLng());
-
-        return String.valueOf(Math.round(myLocation.distanceTo(restaurantLocation)))+ "m";
-    }
-
     private void retrievesHoursAndMinutes(int i) {
         hours = mPlaceDetailsResponse.getOpeningHours().getPeriods().get(i).getClose().getTime().getHours();
         int minutes = mPlaceDetailsResponse.getOpeningHours().getPeriods().get(i).getClose().getTime().getMinutes();
@@ -137,6 +129,35 @@ public class ProcessRestaurantDetails {
             minutesString = formatMinutes.format(dateMinute);
         } catch (ParseException e) {
             e.printStackTrace();
+        }
+    }
+
+    public String howFarIsThisRestaurant(Double currentLat, Double currentLng) {
+        Location myLocation = new Location("My location");
+        myLocation.setLatitude(currentLat);
+        myLocation.setLongitude(currentLng);
+
+        Location restaurantLocation = new Location("Restaurant location");
+        restaurantLocation.setLatitude(mResult.getGeometry().getLocation().getLat());
+        restaurantLocation.setLongitude(mResult.getGeometry().getLocation().getLng());
+
+        return String.valueOf(Math.round(myLocation.distanceTo(restaurantLocation)))+ "m";
+    }
+
+    public String howManyPeopleChoseThisRestaurant(ArrayList<User> usersList) {
+        for (int i = 0; i < usersList.size(); i++) {
+            if (usersList.get(i).getUserChoicePlaceId().equals(mResult.getPlaceId())) {
+                howManyPeople++;
+            }
+        }
+        return "(" + howManyPeople + ")";
+    }
+
+    public int therePeopleWhoChoseThisRestaurant() {
+        if (howManyPeople != 0) {
+            return View.VISIBLE;
+        } else {
+            return View.GONE;
         }
     }
 

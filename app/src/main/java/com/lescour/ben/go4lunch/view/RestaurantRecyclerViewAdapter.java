@@ -11,8 +11,10 @@ import com.lescour.ben.go4lunch.controller.ProcessRestaurantDetails;
 import com.lescour.ben.go4lunch.controller.fragment.RestaurantListFragment.OnListFragmentInteractionListener;
 import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
 import com.lescour.ben.go4lunch.model.details.PlaceDetailsResponse;
+import com.lescour.ben.go4lunch.model.firestore.User;
 import com.lescour.ben.go4lunch.model.nearby.Result;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,12 +26,14 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
     private ParcelableRestaurantDetails mParcelableRestaurantDetails;
     private List<Result> nearbyResults;
     private List<PlaceDetailsResponse> placeDetailsResponses;
+    private ArrayList<User> usersList;
     private final OnListFragmentInteractionListener mListener;
 
-    public RestaurantRecyclerViewAdapter(ParcelableRestaurantDetails mParcelableRestaurantDetails, OnListFragmentInteractionListener listener) {
+    public RestaurantRecyclerViewAdapter(ParcelableRestaurantDetails mParcelableRestaurantDetails, ArrayList<User> usersList, OnListFragmentInteractionListener listener) {
         this.mParcelableRestaurantDetails = mParcelableRestaurantDetails;
-        this.nearbyResults = mParcelableRestaurantDetails.getNearbyResults();//nearbyResults;
-        this.placeDetailsResponses = mParcelableRestaurantDetails.getPlaceDetailsResponses();//placeDetailsResponses;
+        this.nearbyResults = mParcelableRestaurantDetails.getNearbyResults();
+        this.placeDetailsResponses = mParcelableRestaurantDetails.getPlaceDetailsResponses();
+        this.usersList = usersList;
         mListener = listener;
     }
 
@@ -51,6 +55,8 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
         holder.restaurantAddress.setText(restaurantDetails.getRestaurantAddress());
         holder.restaurantOpenHours.setText(restaurantDetails.getRestaurantOpenHours());
         holder.restaurantDistance.setText(restaurantDetails.howFarIsThisRestaurant(mParcelableRestaurantDetails.getCurrentLat(), mParcelableRestaurantDetails.getCurrentLng()));
+        holder.restaurantNumberOfPerson.setText(restaurantDetails.howManyPeopleChoseThisRestaurant(usersList));
+        holder.restaurantNumberOfPerson.setVisibility(restaurantDetails.therePeopleWhoChoseThisRestaurant());
         if (holder.nearbyResult.getRating() != null) {
             holder.restaurantRate1.setVisibility(restaurantDetails.getRestaurantRate1());
             holder.restaurantRate2.setVisibility(restaurantDetails.getRestaurantRate2());

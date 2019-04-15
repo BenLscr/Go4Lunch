@@ -9,8 +9,11 @@ import android.view.ViewGroup;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
 import com.lescour.ben.go4lunch.model.details.PlaceDetailsResponse;
+import com.lescour.ben.go4lunch.model.firestore.User;
 import com.lescour.ben.go4lunch.model.nearby.Result;
 import com.lescour.ben.go4lunch.view.RestaurantRecyclerViewAdapter;
+
+import java.util.ArrayList;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,9 +28,11 @@ import androidx.recyclerview.widget.RecyclerView;
 public class RestaurantListFragment extends Fragment {
 
     private static final String ARG_PARCELABLE_RESTAURANTDETAILS = "parcelable_restaurantdetails";
+    private static final String ARG_USERSLIST = "USERSLIST";
     private OnListFragmentInteractionListener mListener;
 
     private ParcelableRestaurantDetails mParcelableRestaurantDetails;
+    private ArrayList<User> usersList;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -36,10 +41,11 @@ public class RestaurantListFragment extends Fragment {
     public RestaurantListFragment() {
     }
 
-    public static RestaurantListFragment newInstance(ParcelableRestaurantDetails mParcelableRestaurantDetails) {
+    public static RestaurantListFragment newInstance(ParcelableRestaurantDetails mParcelableRestaurantDetails, ArrayList<User> usersList) {
         RestaurantListFragment fragment = new RestaurantListFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_PARCELABLE_RESTAURANTDETAILS, mParcelableRestaurantDetails);
+        args.putParcelableArrayList(ARG_USERSLIST, usersList);
         fragment.setArguments(args);
         return fragment;
     }
@@ -50,6 +56,8 @@ public class RestaurantListFragment extends Fragment {
 
         if (getArguments() != null) {
             mParcelableRestaurantDetails = getArguments().getParcelable(ARG_PARCELABLE_RESTAURANTDETAILS);
+            usersList = new ArrayList<>();
+            usersList = getArguments().getParcelableArrayList(ARG_USERSLIST);
         }
     }
 
@@ -63,7 +71,7 @@ public class RestaurantListFragment extends Fragment {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(new RestaurantRecyclerViewAdapter(this.mParcelableRestaurantDetails, mListener));
+            recyclerView.setAdapter(new RestaurantRecyclerViewAdapter(this.mParcelableRestaurantDetails, this.usersList, mListener));
         }
 
         return view;
