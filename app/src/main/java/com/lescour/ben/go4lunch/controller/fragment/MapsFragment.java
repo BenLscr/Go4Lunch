@@ -34,26 +34,25 @@ import androidx.fragment.app.Fragment;
  */
 public class MapsFragment extends BaseFragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
-    private static final String ARG_PARCELABLERESTAURANTDETAILS = "PARCELABLERESTAURANTDETAILS";
-    private static final String ARG_USERSLIST = "USERSLIST";
-
     private GoogleMap mMap;
 
-    private ParcelableRestaurantDetails mParcelableRestaurantDetails;
-    private ArrayList<User> usersList;
     private List<Result> nearbyResults;
     private List<PlaceDetailsResponse> placeDetailsResponses;
 
     public static final String INTENT_EXTRAS_RESULT_MAPS = "INTENT_EXTRAS_RESULT_MAPS";
     public static final String INTENT_EXTRAS_PLACEDETAILSRESPONSE_MAPS = "INTENT_EXTRAS_PLACEDETAILSRESPONSE_MAPS";
 
+    /**
+     * Mandatory empty constructor for the fragment manager to instantiate the
+     * fragment (e.g. upon screen orientation changes).
+     */
     public MapsFragment() {
     }
 
     public static MapsFragment newInstance(ParcelableRestaurantDetails mParcelableRestaurantDetails, ArrayList<User> usersList) {
         MapsFragment fragment = new MapsFragment();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_PARCELABLERESTAURANTDETAILS, mParcelableRestaurantDetails);
+        args.putParcelable(ARG_PARCELABLE_RESTAURANTDETAILS, mParcelableRestaurantDetails);
         args.putParcelableArrayList(ARG_USERSLIST, usersList);
         fragment.setArguments(args);
         return fragment;
@@ -65,7 +64,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
         this.nearbyResults = new ArrayList<>();
         this.placeDetailsResponses = new ArrayList<>();
         if (getArguments() != null) {
-            mParcelableRestaurantDetails = getArguments().getParcelable(ARG_PARCELABLERESTAURANTDETAILS);
+            mParcelableRestaurantDetails = getArguments().getParcelable(ARG_PARCELABLE_RESTAURANTDETAILS);
             if (mParcelableRestaurantDetails != null) {
                 nearbyResults = mParcelableRestaurantDetails.getNearbyResults();
                 placeDetailsResponses = mParcelableRestaurantDetails.getPlaceDetailsResponses();
@@ -116,9 +115,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
         return false;
     }
 
-    public void notifyRecyclerView(ArrayList<User> usersList) {
-        this.usersList.clear();
-        this.usersList.addAll(usersList);
+    public void notifyFragment() {
         //this.mRecyclerViewAdapter.notifyDataSetChanged();
     }
 

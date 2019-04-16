@@ -10,8 +10,11 @@ import android.widget.TextView;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
 import com.lescour.ben.go4lunch.R;
-import com.lescour.ben.go4lunch.controller.fragment.WorkmatesListFragment.OnListFragmentInteractionListener;
+import com.lescour.ben.go4lunch.controller.fragment.BaseFragment;
+import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
+import com.lescour.ben.go4lunch.model.details.PlaceDetailsResponse;
 import com.lescour.ben.go4lunch.model.firestore.User;
+import com.lescour.ben.go4lunch.model.nearby.Result;
 
 import java.util.ArrayList;
 
@@ -22,12 +25,18 @@ import butterknife.ButterKnife;
 
 public class WorkmateRecyclerViewAdapter extends RecyclerView.Adapter<WorkmateRecyclerViewAdapter.ViewHolder> {
 
+    private final ParcelableRestaurantDetails mParcelableRestaurantDetails;
     private final ArrayList<User> usersList;
-    private final OnListFragmentInteractionListener mListener;
+    private final BaseFragment.OnListFragmentInteractionListener mListener;
     private final RequestManager glide;
     private final Context context;
 
-    public WorkmateRecyclerViewAdapter(ArrayList<User> usersList, OnListFragmentInteractionListener listener, RequestManager glide, Context context) {
+    public WorkmateRecyclerViewAdapter(ParcelableRestaurantDetails mParcelableRestaurantDetails,
+                                       ArrayList<User> usersList,
+                                       BaseFragment.OnListFragmentInteractionListener listener,
+                                       RequestManager glide,
+                                       Context context) {
+        this.mParcelableRestaurantDetails = mParcelableRestaurantDetails;
         this.usersList = usersList;
         mListener = listener;
         this.glide = glide;
@@ -66,7 +75,15 @@ public class WorkmateRecyclerViewAdapter extends RecyclerView.Adapter<WorkmateRe
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.user.getUserChoicePlaceId());
+                    int j = 0;
+                    Result result;
+                    PlaceDetailsResponse placeDetailsResponse;
+                    do {
+                        result = mParcelableRestaurantDetails.getNearbyResults().get(j);
+                        placeDetailsResponse = mParcelableRestaurantDetails.getPlaceDetailsResponses().get(j);
+                        j++;
+                    } while (!result.getPlaceId().equals(holder.user.getUserChoicePlaceId()));
+                    mListener.onListFragmentInteraction(result, placeDetailsResponse);
                 }
             }
         });
@@ -89,4 +106,5 @@ public class WorkmateRecyclerViewAdapter extends RecyclerView.Adapter<WorkmateRe
             ButterKnife.bind(this, view);
         }
     }
+
 }

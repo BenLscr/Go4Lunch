@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.controller.ProcessRestaurantDetails;
-import com.lescour.ben.go4lunch.controller.fragment.RestaurantListFragment.OnListFragmentInteractionListener;
+import com.lescour.ben.go4lunch.controller.fragment.BaseFragment;
 import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
 import com.lescour.ben.go4lunch.model.details.PlaceDetailsResponse;
 import com.lescour.ben.go4lunch.model.firestore.User;
@@ -27,9 +27,9 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
     private List<Result> nearbyResults;
     private List<PlaceDetailsResponse> placeDetailsResponses;
     private ArrayList<User> usersList;
-    private final OnListFragmentInteractionListener mListener;
+    private final BaseFragment.OnListFragmentInteractionListener mListener;
 
-    public RestaurantRecyclerViewAdapter(ParcelableRestaurantDetails mParcelableRestaurantDetails, ArrayList<User> usersList, OnListFragmentInteractionListener listener) {
+    public RestaurantRecyclerViewAdapter(ParcelableRestaurantDetails mParcelableRestaurantDetails, ArrayList<User> usersList, BaseFragment.OnListFragmentInteractionListener listener) {
         this.mParcelableRestaurantDetails = mParcelableRestaurantDetails;
         this.nearbyResults = mParcelableRestaurantDetails.getNearbyResults();
         this.placeDetailsResponses = mParcelableRestaurantDetails.getPlaceDetailsResponses();

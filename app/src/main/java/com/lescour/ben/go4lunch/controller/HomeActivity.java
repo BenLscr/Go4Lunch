@@ -21,7 +21,6 @@ import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
@@ -61,7 +60,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import butterknife.BindView;
@@ -75,8 +73,7 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
  * Created by benja on 15/03/2019.
  */
 public class HomeActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener,
-        RestaurantListFragment.OnListFragmentInteractionListener,
-        WorkmatesListFragment.OnListFragmentInteractionListener {
+        BaseFragment.OnListFragmentInteractionListener {
 
     @BindView(R.id.activity_home_toolbar) Toolbar toolbar;
     @BindView(R.id.activity_home_drawer_layout) DrawerLayout drawerLayout;
@@ -128,7 +125,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         mParcelableRestaurantDetails = new ParcelableRestaurantDetails();
         this.initializePlacesApiClient();
         this.getMyCurrentLocation();
-        //this.setFirestoreListener();
     }
 
     private void configureToolbar() {
@@ -138,9 +134,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     //BOTTOM TOOLBAR\\
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = item -> {
-
-
-        //TODO CREER DES IF POUR CHAQUE TYPES DE FRAGMENTS
         if (fragment != null) {
             getSupportFragmentManager().beginTransaction().remove(fragment).commit();
         }
@@ -154,7 +147,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                 addFragment();
                 return true;
             case R.id.navigation_workmates:
-                fragment = WorkmatesListFragment.newInstance(usersList);
+                fragment = WorkmatesListFragment.newInstance(mParcelableRestaurantDetails, usersList);
                 addFragment();
                 return true;
         }
@@ -173,8 +166,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         fragmentTransaction.add(R.id.fragment_container, fragment).commit();
     }
 
-    @Override
-    public void onListFragmentInteraction(String userChoicePlaceId) {
+    /**@Override
+    public void onListFragmentInteraction(Result result, PlaceDetailsResponse placeDetailsResponse) {
         int j = 0;
         Result result;
         PlaceDetailsResponse placeDetailsResponse;
@@ -188,7 +181,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         intent.putExtra(INTENT_EXTRA_RESULT, result);
         intent.putExtra(INTENT_EXTRA_PLACEDETAILSRESPONSE, placeDetailsResponse);
         startActivity(intent);
-    }
+    }*/
 
     @Override
     public void onListFragmentInteraction(Result result, PlaceDetailsResponse placeDetailsResponse) {
@@ -310,7 +303,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                         } while (documentSnapshotList.size() != usersList.size());
                     }
                     if (fragment != null) {
-                        fragment.newDataForRecyclerView(usersList);
+                        fragment.newDataForFragment(usersList);
                     } else {
                         initFirstFragment();
                     }
@@ -463,8 +456,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private void everyRestaurantDetails_isRequired() {
         if (mParcelableRestaurantDetails.getNearbyResults().size() == mPlaceDetailsResponses.size()) {
             mParcelableRestaurantDetails.setPlaceDetailsResponses(mPlaceDetailsResponses);
-            //mProgressBar.setVisibility(View.GONE);
-            //this.initFirstFragment();
             this.setFirestoreListener();
         } else {
             getPlaceDetails(mParcelableRestaurantDetails.getNearbyResults().get(i).getPlaceId());
