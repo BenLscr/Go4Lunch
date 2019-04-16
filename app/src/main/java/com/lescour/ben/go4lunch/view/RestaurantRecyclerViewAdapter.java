@@ -17,6 +17,7 @@ import com.lescour.ben.go4lunch.model.nearby.Result;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,25 +28,26 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
     private List<Result> nearbyResults;
     private List<PlaceDetailsResponse> placeDetailsResponses;
     private ArrayList<User> usersList;
-    private final BaseFragment.OnListFragmentInteractionListener mListener;
+    private BaseFragment.OnListFragmentInteractionListener mListener;
 
     public RestaurantRecyclerViewAdapter(ParcelableRestaurantDetails mParcelableRestaurantDetails, ArrayList<User> usersList, BaseFragment.OnListFragmentInteractionListener listener) {
         this.mParcelableRestaurantDetails = mParcelableRestaurantDetails;
         this.nearbyResults = mParcelableRestaurantDetails.getNearbyResults();
         this.placeDetailsResponses = mParcelableRestaurantDetails.getPlaceDetailsResponses();
         this.usersList = usersList;
-        mListener = listener;
+        this.mListener = listener;
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_restaurant, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         holder.nearbyResult = this.nearbyResults.get(position);
         holder.placeDetailsResponse = this.placeDetailsResponses.get(position);
 
@@ -66,14 +68,11 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
             holder.restaurantImage.setImageBitmap(restaurantDetails.getRestaurantImage());
         }
 
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.nearbyResult, holder.placeDetailsResponse);
-                }
+        holder.mView.setOnClickListener(v -> {
+            if (null != mListener) {
+                // Notify the active callbacks interface (the activity, if the
+                // fragment is attached to one) that an item has been selected.
+                mListener.onListFragmentInteraction(holder.nearbyResult, holder.placeDetailsResponse);
             }
         });
     }

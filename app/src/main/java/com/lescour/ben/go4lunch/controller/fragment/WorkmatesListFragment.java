@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
 import com.lescour.ben.go4lunch.model.firestore.User;
-import com.lescour.ben.go4lunch.view.WorkmateRecyclerViewAdapter;
+import com.lescour.ben.go4lunch.view.WorkmatesRecyclerViewAdapter;
 
 import java.util.ArrayList;
 
@@ -52,7 +52,7 @@ public class WorkmatesListFragment extends BaseFragment {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            this.mRecyclerViewAdapter = new WorkmateRecyclerViewAdapter(mParcelableRestaurantDetails, usersList, mListener, Glide.with(this), getContext());
+            this.mRecyclerViewAdapter = new WorkmatesRecyclerViewAdapter(mParcelableRestaurantDetails, usersList, mListener, Glide.with(this), getContext());
             recyclerView.setAdapter(this.mRecyclerViewAdapter);
         }
         return view;

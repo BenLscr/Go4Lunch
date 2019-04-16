@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.model.firestore.User;
-import com.lescour.ben.go4lunch.view.WorkmateRestaurantRecyclerViewAdapter;
+import com.lescour.ben.go4lunch.view.WorkmatesRestaurantRecyclerViewAdapter;
 
 import java.util.ArrayList;
 
@@ -62,7 +62,7 @@ public class WorkmatesListRestaurantFragment extends Fragment {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            this.mRecyclerViewAdapter = new WorkmateRestaurantRecyclerViewAdapter(this.listOfUserWithSameChoice, Glide.with(this), getContext());
+            this.mRecyclerViewAdapter = new WorkmatesRestaurantRecyclerViewAdapter(this.listOfUserWithSameChoice, Glide.with(this), getContext());
             recyclerView.setAdapter(this.mRecyclerViewAdapter);
         }
 
