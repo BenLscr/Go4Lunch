@@ -56,6 +56,10 @@ public class UserHelper {
 
     // --- LISTENER ---
 
+    public static CollectionReference listenerUsersCollection(){
+        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
+    }
+
     public static Query listenerUsersWhoHaveSameChoice(String userChoicePlaceId) {
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME).whereEqualTo("userChoicePlaceId", userChoicePlaceId);
     }

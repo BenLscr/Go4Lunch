@@ -25,10 +25,11 @@ import androidx.recyclerview.widget.RecyclerView;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class RestaurantListFragment extends Fragment {
+public class RestaurantListFragment extends BaseFragment {
 
     private static final String ARG_PARCELABLE_RESTAURANTDETAILS = "parcelable_restaurantdetails";
     private static final String ARG_USERSLIST = "USERSLIST";
+    private RecyclerView.Adapter mRecyclerViewAdapter;
     private OnListFragmentInteractionListener mListener;
 
     private ParcelableRestaurantDetails mParcelableRestaurantDetails;
@@ -56,8 +57,8 @@ public class RestaurantListFragment extends Fragment {
 
         if (getArguments() != null) {
             mParcelableRestaurantDetails = getArguments().getParcelable(ARG_PARCELABLE_RESTAURANTDETAILS);
-            usersList = new ArrayList<>();
-            usersList = getArguments().getParcelableArrayList(ARG_USERSLIST);
+            this.usersList = new ArrayList<>();
+            this.usersList = getArguments().getParcelableArrayList(ARG_USERSLIST);
         }
     }
 
@@ -71,10 +72,17 @@ public class RestaurantListFragment extends Fragment {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(new RestaurantRecyclerViewAdapter(this.mParcelableRestaurantDetails, this.usersList, mListener));
+            this.mRecyclerViewAdapter = new RestaurantRecyclerViewAdapter(this.mParcelableRestaurantDetails, this.usersList, mListener);
+            recyclerView.setAdapter(this.mRecyclerViewAdapter);
         }
 
         return view;
+    }
+
+    public void notifyRecyclerView(ArrayList<User> usersList) {
+        this.usersList.clear();
+        this.usersList.addAll(usersList);
+        this.mRecyclerViewAdapter.notifyDataSetChanged();
     }
 
     @Override

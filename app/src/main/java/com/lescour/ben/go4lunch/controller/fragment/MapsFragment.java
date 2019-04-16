@@ -19,6 +19,7 @@ import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.controller.RestaurantActivity;
 import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
 import com.lescour.ben.go4lunch.model.details.PlaceDetailsResponse;
+import com.lescour.ben.go4lunch.model.firestore.User;
 import com.lescour.ben.go4lunch.model.nearby.Result;
 
 import java.util.ArrayList;
@@ -31,13 +32,15 @@ import androidx.fragment.app.Fragment;
  * Use the {@link MapsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MapsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+public class MapsFragment extends BaseFragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private static final String ARG_PARCELABLERESTAURANTDETAILS = "PARCELABLERESTAURANTDETAILS";
+    private static final String ARG_USERSLIST = "USERSLIST";
 
     private GoogleMap mMap;
 
     private ParcelableRestaurantDetails mParcelableRestaurantDetails;
+    private ArrayList<User> usersList;
     private List<Result> nearbyResults;
     private List<PlaceDetailsResponse> placeDetailsResponses;
 
@@ -47,10 +50,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     public MapsFragment() {
     }
 
-    public static MapsFragment newInstance(ParcelableRestaurantDetails mParcelableRestaurantDetails) {
+    public static MapsFragment newInstance(ParcelableRestaurantDetails mParcelableRestaurantDetails, ArrayList<User> usersList) {
         MapsFragment fragment = new MapsFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_PARCELABLERESTAURANTDETAILS, mParcelableRestaurantDetails);
+        args.putParcelableArrayList(ARG_USERSLIST, usersList);
         fragment.setArguments(args);
         return fragment;
     }
@@ -66,6 +70,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                 nearbyResults = mParcelableRestaurantDetails.getNearbyResults();
                 placeDetailsResponses = mParcelableRestaurantDetails.getPlaceDetailsResponses();
             }
+            this.usersList = new ArrayList<>();
+            this.usersList = getArguments().getParcelableArrayList(ARG_USERSLIST);
         }
     }
 
@@ -108,6 +114,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         intent.putExtra(INTENT_EXTRAS_PLACEDETAILSRESPONSE_MAPS, placeDetailsResponses.get(position));
         startActivity(intent);
         return false;
+    }
+
+    public void notifyRecyclerView(ArrayList<User> usersList) {
+        this.usersList.clear();
+        this.usersList.addAll(usersList);
+        //this.mRecyclerViewAdapter.notifyDataSetChanged();
     }
 
 }

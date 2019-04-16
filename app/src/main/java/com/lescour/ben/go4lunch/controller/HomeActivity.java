@@ -31,13 +31,15 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.lescour.ben.go4lunch.BuildConfig;
 import com.lescour.ben.go4lunch.R;
+import com.lescour.ben.go4lunch.controller.fragment.BaseFragment;
 import com.lescour.ben.go4lunch.controller.fragment.MapsFragment;
 import com.lescour.ben.go4lunch.controller.fragment.RestaurantListFragment;
 import com.lescour.ben.go4lunch.controller.fragment.WorkmatesListFragment;
-import com.lescour.ben.go4lunch.controller.fragment.dummy.DummyContent;
 import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
 import com.lescour.ben.go4lunch.model.details.PlaceDetailsResponse;
 import com.lescour.ben.go4lunch.model.firestore.User;
@@ -49,6 +51,8 @@ import com.lescour.ben.go4lunch.utils.UserHelper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -80,7 +84,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     @BindView(R.id.navigation) BottomNavigationView navigation;
     @BindView(R.id.activity_main_progress_bar) ProgressBar mProgressBar;
 
-    private Fragment fragment;
+    private BaseFragment fragment;
     private ProgressDialog mProgress;
 
     private ArrayList<User> usersList;
@@ -123,7 +127,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         mProgressBar.setVisibility(View.VISIBLE);
         mParcelableRestaurantDetails = new ParcelableRestaurantDetails();
         this.initializePlacesApiClient();
-        this.retrievesUsersFromFirestore();
+        this.getMyCurrentLocation();
+        //this.setFirestoreListener();
     }
 
     private void configureToolbar() {
@@ -133,12 +138,15 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     //BOTTOM TOOLBAR\\
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = item -> {
+
+
+        //TODO CREER DES IF POUR CHAQUE TYPES DE FRAGMENTS
         if (fragment != null) {
             getSupportFragmentManager().beginTransaction().remove(fragment).commit();
         }
         switch (item.getItemId()) {
             case R.id.navigation_map:
-                fragment = MapsFragment.newInstance(mParcelableRestaurantDetails);
+                fragment = MapsFragment.newInstance(mParcelableRestaurantDetails, usersList);
                 addFragment();
                 return true;
             case R.id.navigation_list_restaurant:
@@ -155,7 +163,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     //FRAGMENT\\
     private void initFirstFragment() {
-        fragment = MapsFragment.newInstance(mParcelableRestaurantDetails);
+        fragment = MapsFragment.newInstance(mParcelableRestaurantDetails, usersList);
         addFragment();
     }
 
@@ -285,25 +293,31 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         mProgress.setCancelable(false);
         mProgress.setIndeterminate(true);
     }
+
     //FIRESTORE\\
-    private void retrievesUsersFromFirestore() {
-        UserHelper.getUsersDocuments()
-                .addOnFailureListener(this.onFailureListener())
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        List<DocumentSnapshot> documentSnapshotList = new ArrayList<>(queryDocumentSnapshots.getDocuments());
-                        usersList = new ArrayList<>();
-                        if (documentSnapshotList.size() != 0) {
-                            int k = 0;
-                            do {
-                                usersList.add(documentSnapshotList.get(k).toObject(User.class));
-                                k++;
-                            } while (documentSnapshotList.size() != usersList.size());
-                            getMyCurrentLocation();
-                        }
+    private void setFirestoreListener() {
+        UserHelper.listenerUsersCollection().addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (queryDocumentSnapshots != null) {
+                    List<DocumentSnapshot> documentSnapshotList = new ArrayList<>(queryDocumentSnapshots.getDocuments());
+                    usersList = new ArrayList<>();
+                    if (documentSnapshotList.size() != 0) {
+                        int k = 0;
+                        do {
+                            usersList.add(documentSnapshotList.get(k).toObject(User.class));
+                            k++;
+                        } while (documentSnapshotList.size() != usersList.size());
                     }
-                });
+                    if (fragment != null) {
+                        fragment.newDataForRecyclerView(usersList);
+                    } else {
+                        initFirstFragment();
+                    }
+                }
+                mProgressBar.setVisibility(View.GONE);
+            }
+        });
     }
 
     //HTTP REQUEST\\
@@ -312,7 +326,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         Places.initialize(getApplicationContext(), apiKey);
         // Create a new Places client instance.
         placesClient = Places.createClient(this);
-
     }
 
     private void getMyCurrentLocation() {
@@ -336,19 +349,13 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
             }
 
             @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
+            public void onStatusChanged(String provider, int status, Bundle extras) { }
 
             @Override
-            public void onProviderEnabled(String provider) {
-
-            }
+            public void onProviderEnabled(String provider) { }
 
             @Override
-            public void onProviderDisabled(String provider) {
-
-            }
+            public void onProviderDisabled(String provider) { }
         });
     }
 
@@ -456,8 +463,9 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private void everyRestaurantDetails_isRequired() {
         if (mParcelableRestaurantDetails.getNearbyResults().size() == mPlaceDetailsResponses.size()) {
             mParcelableRestaurantDetails.setPlaceDetailsResponses(mPlaceDetailsResponses);
-            mProgressBar.setVisibility(View.GONE);
-            this.initFirstFragment();
+            //mProgressBar.setVisibility(View.GONE);
+            //this.initFirstFragment();
+            this.setFirestoreListener();
         } else {
             getPlaceDetails(mParcelableRestaurantDetails.getNearbyResults().get(i).getPlaceId());
             i++;

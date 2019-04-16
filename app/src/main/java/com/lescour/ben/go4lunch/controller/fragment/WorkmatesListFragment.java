@@ -23,9 +23,10 @@ import androidx.recyclerview.widget.RecyclerView;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class WorkmatesListFragment extends Fragment {
+public class WorkmatesListFragment extends BaseFragment {
 
     private static final String ARG_USERSLIST = "USERSLIST";
+    private RecyclerView.Adapter mRecyclerViewAdapter;
     private OnListFragmentInteractionListener mListener;
 
     private ArrayList<User> usersList;
@@ -50,8 +51,8 @@ public class WorkmatesListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            usersList = new ArrayList<>();
-            usersList = getArguments().getParcelableArrayList(ARG_USERSLIST);
+            this.usersList = new ArrayList<>();
+            this.usersList = getArguments().getParcelableArrayList(ARG_USERSLIST);
         }
     }
 
@@ -65,10 +66,17 @@ public class WorkmatesListFragment extends Fragment {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(new WorkmateRecyclerViewAdapter(usersList, mListener, Glide.with(this), getContext()));
+            this.mRecyclerViewAdapter = new WorkmateRecyclerViewAdapter(usersList, mListener, Glide.with(this), getContext());
+            recyclerView.setAdapter(this.mRecyclerViewAdapter);
         }
 
         return view;
+    }
+
+    public void notifyRecyclerView(ArrayList<User> usersList) {
+        this.usersList.clear();
+        this.usersList.addAll(usersList);
+        this.mRecyclerViewAdapter.notifyDataSetChanged();
     }
 
     @Override
