@@ -19,6 +19,6 @@
         android:layout_margin="@dimen/text_margin"
         android:textAppearance="?attr/textAppearanceListItem"
         android:layout_gravity="center"
-        android:text="my Text"/>
+        android:text="@string/text_example"/>
 
 </LinearLayout>

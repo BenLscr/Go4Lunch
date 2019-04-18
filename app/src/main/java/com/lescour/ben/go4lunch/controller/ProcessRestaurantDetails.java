@@ -1,11 +1,13 @@
 package com.lescour.ben.go4lunch.controller;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.opengl.Visibility;
 import android.view.View;
 
 import com.google.android.libraries.places.api.model.DayOfWeek;
+import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.model.details.PlaceDetailsResponse;
 import com.lescour.ben.go4lunch.model.firestore.User;
 import com.lescour.ben.go4lunch.model.nearby.Result;
@@ -50,14 +52,14 @@ public class ProcessRestaurantDetails {
         if (mPlaceDetailsResponse.getOpeningHours() != null) {
             if (mResult.getOpeningHours().getOpenNow()) {
                 if (mPlaceDetailsResponse.getOpeningHours().getPeriods().size() == 1) {
-                    return "Open 24/7";
+                    return Resources.getSystem().getString(R.string.open_24_7);
                 } else {
                     Calendar calendar = Calendar.getInstance();
                     int currentDay = calendar.get(Calendar.DAY_OF_WEEK);
                     int currentHours = calendar.get(Calendar.HOUR_OF_DAY);
 
                     SimpleDateFormat rawFormatHours = new SimpleDateFormat("hhmm", Locale.getDefault());
-                    SimpleDateFormat newFormatHours = new SimpleDateFormat("h.mma", Locale.getDefault());
+                    SimpleDateFormat newFormatHours = new SimpleDateFormat(Resources.getSystem().getString(R.string.pattern), Locale.getDefault());
 
                     String day = null;
                     switch (currentDay) {
@@ -107,13 +109,13 @@ public class ProcessRestaurantDetails {
                         e.printStackTrace();
                     }
                     String newHoursAndMinutes = newFormatHours.format(date);
-                    return "Open until " + newHoursAndMinutes;
+                    return Resources.getSystem().getString(R.string.open_until) + newHoursAndMinutes;
                 }
             } else {
-                return "Currently closed";
+                return Resources.getSystem().getString(R.string.no_schedules_defined);
             }
         } else {
-            return "No schedules defined";
+            return Resources.getSystem().getString(R.string.currently_closed);
         }
     }
 

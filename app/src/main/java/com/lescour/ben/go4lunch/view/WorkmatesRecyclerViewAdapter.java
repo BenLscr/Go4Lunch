@@ -1,6 +1,7 @@
 package com.lescour.ben.go4lunch.view;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
 
 import com.bumptech.glide.RequestManager;
@@ -42,11 +43,11 @@ public class WorkmatesRecyclerViewAdapter extends BaseRecyclerViewAdapterWorkmat
         holder.user = usersList.get(position);
 
         if (holder.user.getUserChoicePlaceId().equals("")) {
-            String workmateChoice = holder.user.getUserName() + " hasn't decided yet.";
+            String workmateChoice = holder.user.getUserName() + Resources.getSystem().getString(R.string.hasnt_decided_yet);
             holder.workmateText.setText(workmateChoice);
             holder.workmateText.setTextColor(ContextCompat.getColor(context, R.color.quantum_grey));
         } else {
-            String workmateChoice = holder.user.getUserName() + " wants to eat at " + holder.user.getUserChoiceRestaurantName() + ".";
+            String workmateChoice = holder.user.getUserName() + Resources.getSystem().getString(R.string.wants_to_eat_at) + holder.user.getUserChoiceRestaurantName() + ".";
             holder.workmateText.setText(workmateChoice);
         }
 

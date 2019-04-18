@@ -1,6 +1,7 @@
 package com.lescour.ben.go4lunch.view;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
@@ -28,7 +29,7 @@ public class WorkmatesRestaurantRecyclerViewAdapter extends BaseRecyclerViewAdap
     public void onBindViewHolder(@NonNull final ViewHolderWorkmates holder, int position) {
         holder.user = listOfUserWithSameChoice.get(position);
 
-        String workmateIsJoining = holder.user.getUserName() + " is joining !";
+        String workmateIsJoining = holder.user.getUserName() + Resources.getSystem().getString(R.string.is_joining);
         holder.workmateText.setText(workmateIsJoining);
         if (holder.user.getUserUrlImage() != null) {
             glide.load(holder.user.getUserUrlImage()).apply(RequestOptions.circleCropTransform()).into(holder.workmateImage);

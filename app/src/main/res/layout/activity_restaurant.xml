@@ -150,6 +150,7 @@
         android:src="@drawable/baseline_check_circle_white_24"
         app:layout_anchor="@id/restaurant_activity_image"
         app:layout_anchorGravity="bottom|right|end"
-        android:id="@+id/restaurant_activity_button_choice"/>
+        android:id="@+id/restaurant_activity_button_choice"
+        android:contentDescription="@string/button_choice" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

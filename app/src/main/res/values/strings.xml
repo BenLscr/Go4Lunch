@@ -1,15 +1,23 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Go4Lunch</string>
+
     //AUTHENTICATION
+    <string name="logo">logo</string>
     <string name="error_authentication_canceled">Authentification annulée&#8230;</string>
     <string name="error_no_internet">Aucune connexion internet !</string>
     <string name="error_unknown_error">Une erreur inconnue s\'est produite&#8230;</string>
+    <string name="fetch_failed">Fetch Failed</string>
+    <string name="your_account_will_be_disconnected">Your account will be disconnected…</string>
+    <string name="please_wait">Please wait…</string>
+
     //BOTTOM MENU
     <string name="map_view">Map View</string>
     <string name="list_restaurant">List Restaurant</string>
     <string name="workmates">Workmates</string>
+
     //TOOLBAR MENU
     <string name="search">Search</string>
+
     //MAIN MENU
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -22,14 +30,13 @@
     <string name="user_image">User Image</string>
     <string name="info_no_email_found">No email found</string>
     <string name="info_no_name_found">No name found</string>
+    <string name="no_restaurant_selected">No restaurant selected !</string>
+
     //FACEBOOK PURPOSE
     <string name="facebook_application_id" translatable="false">625097174586182</string>
     <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb625097174586182</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
-    //FRAGMENT_RESTAURANT
+    //FRAGMENT RESTAURANT
     <string name="restaurant">Restaurant</string>
     <string name="address">Address</string>
     <string name="is_it_open">Is it open ?</string>
@@ -42,8 +49,27 @@
     <string name="call">call</string>
     <string name="like">like</string>
     <string name="website">website</string>
+    <string name="no_phone_number">No phone number available for this restaurant…</string>
+    <string name="not_allowed_to_call">The app was not allowed to call.</string>
+    <string name="no_website">No website available for this restaurant…</string>
+    <string name="button_choice">button_choice</string>
 
     //WORKMATES
     <string name="workmate_image">Workmate image</string>
+
+    //PROCESS_RESTAURANT_DETAILS
+    <string name="open_24_7">Open 24/7</string>
+    <string name="pattern">h.mma</string>
+    <string name="open_until">Open until </string>
+    <string name="currently_closed">Currently closed</string>
+    <string name="no_schedules_defined">No schedules defined</string>
+
+    //WORKMATES FRAGMENT
+    <string name="hasnt_decided_yet"> hasn\'t decided yet.</string>
+    <string name="wants_to_eat_at">  wants to eat at </string>
+    <string name="text_example">text example</string>
+
+    //WORKMATES RESTAURANT ACTIVITY
+    <string name="is_joining"> is joining !</string>
 
 </resources>

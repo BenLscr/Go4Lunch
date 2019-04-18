@@ -16,7 +16,8 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/go4lunch_ic_sign"/>
+            android:src="@drawable/go4lunch_ic_sign"
+            android:contentDescription="@string/logo" />
 
     </LinearLayout>
 

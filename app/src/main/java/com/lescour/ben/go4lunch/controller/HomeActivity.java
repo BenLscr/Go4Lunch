@@ -135,8 +135,33 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         setSupportActionBar(toolbar);
     }
 
+    //MENU TOOLBAR\\
+    /**
+     * Inflate the menu and add it to the Toolbar.
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        return true;
+    }
+
+    /**
+     * Handle actions on menu items.
+     * @param item Item selected.
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_activity_home_search:
+                this.searchRestaurant();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     int AUTOCOMPLETE_REQUEST_CODE = 1;
-    public void searchRestaurant(MenuItem item) {
+    private void searchRestaurant() {
         /**List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
 
         // Start the autocomplete intent.
@@ -202,31 +227,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         this.launchRestaurantActivity(result, placeDetailsResponse);
     }
 
-    //MENU TOOLBAR\\
-    /**
-     * Inflate the menu and add it to the Toolbar.
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-        return true;
-    }
-
-    /**
-     * Handle actions on menu items.
-     * @param item Item selected.
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_activity_home_search:
-                Toast.makeText(this, "Button not available", Toast.LENGTH_LONG).show();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
     //MAIN MENU\\
     private void configureDrawerLayout() {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout,
@@ -278,7 +278,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void retrievesTheRestaurant() {
         if (user.getUserChoicePlaceId().equals("")) {
-            Toast.makeText(this, "No restaurant selected !", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.no_restaurant_selected), Toast.LENGTH_LONG).show();
         } else {
             Result result;
             PlaceDetailsResponse placeDetailsResponse;
@@ -308,7 +308,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                         mProgress.dismiss();
                         finish();
                     } else {
-                        Toast.makeText(HomeActivity.this, "Fetch Failed",
+                        Toast.makeText(HomeActivity.this, getString(R.string.fetch_failed),
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -316,8 +316,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void initProgressDialog() {
         mProgress = new ProgressDialog(this);
-        mProgress.setTitle("Your account will be disconnected...");
-        mProgress.setMessage("Please wait...");
+        mProgress.setTitle(getString(R.string.your_account_will_be_disconnected));
+        mProgress.setMessage(getString(R.string.please_wait));
         mProgress.setCancelable(false);
         mProgress.setIndeterminate(true);
     }

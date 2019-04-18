@@ -172,7 +172,7 @@ public class RestaurantActivity extends BaseActivity {
                 makeCall();
             }
         } else {
-            Toast.makeText(this, "No number available for this restaurant...", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.no_phone_number), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -184,7 +184,7 @@ public class RestaurantActivity extends BaseActivity {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     makeCall();
                 } else {
-                    Toast.makeText(this, "The app was not allowed to call.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, getString(R.string.not_allowed_to_call), Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -211,7 +211,7 @@ public class RestaurantActivity extends BaseActivity {
             this.startActivity(webViewActivity);
         }
         else {
-            Toast.makeText(this, "No website available for this restaurant...", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.no_website), Toast.LENGTH_LONG).show();
         }
     }
 
