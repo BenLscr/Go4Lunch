@@ -1,8 +1,11 @@
 package com.lescour.ben.go4lunch.controller.fragment;
 
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +28,8 @@ import com.lescour.ben.go4lunch.model.nearby.Result;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 /**
@@ -35,6 +40,7 @@ import androidx.fragment.app.Fragment;
 public class MapsFragment extends BaseFragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 789;
 
     private List<Result> nearbyResults;
     private List<PlaceDetailsResponse> placeDetailsResponses;
@@ -89,20 +95,47 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        LatLng currentLocation = new LatLng(mParcelableRestaurantDetails.getCurrentLat(), mParcelableRestaurantDetails.getCurrentLng());
-        mMap.addMarker(new MarkerOptions().position(currentLocation).title("My position"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
-        for (int i = 0; nearbyResults.size() > i; i++) {
-            this.setMarker(mMap, i);
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            LatLng currentLocation = new LatLng(mParcelableRestaurantDetails.getCurrentLat(), mParcelableRestaurantDetails.getCurrentLng());
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
+            for (int i = 0; nearbyResults.size() > i; i++) {
+                this.setMarker(i);
+            }
+            mMap.setOnMarkerClickListener(this);
+        } else {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
-        mMap.setOnMarkerClickListener(this);
     }
 
-    private void setMarker(GoogleMap mMap, int position) {
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                //TODO DO SOMETHING
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //TODO DO SOMETHING
+                }
+            }
+        }
+    }
+
+    private void setMarker(int position) {
+        Log.e("tag", "setMarker");
         LatLng restaurant = new LatLng(nearbyResults.get(position).getGeometry().getLocation().getLat(), nearbyResults.get(position).getGeometry().getLocation().getLng());
-        mMap.addMarker(new MarkerOptions().position(restaurant)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_orange_24)))
-                .setTag(position);
+        for (int j = 0; usersList.size() > j; j++) {
+            if (nearbyResults.get(position).getPlaceId().equals(usersList.get(j).getUserChoicePlaceId())) {
+                mMap.addMarker(new MarkerOptions().position(restaurant)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
+                        .setTag(position);
+            } else {
+                mMap.addMarker(new MarkerOptions().position(restaurant)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)))
+                        .setTag(position);
+            }
+        }
     }
 
     @Override
@@ -116,7 +149,10 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     }
 
     public void notifyFragment() {
-        //this.mRecyclerViewAdapter.notifyDataSetChanged();
+        for (int i = 0; nearbyResults.size() > i; i++) {
+            this.setMarker(i);
+        }
+        Log.e("tag", "notifyFragment");
     }
 
 }

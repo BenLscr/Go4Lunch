@@ -21,12 +21,15 @@ import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Status;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -127,8 +130,36 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         this.getMyCurrentLocation();
     }
 
+    //TOOLBAR\\
     private void configureToolbar() {
         setSupportActionBar(toolbar);
+    }
+
+    int AUTOCOMPLETE_REQUEST_CODE = 1;
+    public void searchRestaurant(MenuItem item) {
+        /**List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+
+        // Start the autocomplete intent.
+        Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
+                .setLocationRestriction(RectangularBounds)
+                .build(this);
+        startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);*/
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                Log.i("TAG", "Place: " + place.getName() + ", " + place.getId());
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.i("TAG", status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
     }
 
     //BOTTOM TOOLBAR\\
@@ -166,29 +197,9 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         fragmentTransaction.add(R.id.fragment_container, fragment).commit();
     }
 
-    /**@Override
-    public void onListFragmentInteraction(Result result, PlaceDetailsResponse placeDetailsResponse) {
-        int j = 0;
-        Result result;
-        PlaceDetailsResponse placeDetailsResponse;
-        do {
-            result = mParcelableRestaurantDetails.getNearbyResults().get(j);
-            placeDetailsResponse = mParcelableRestaurantDetails.getPlaceDetailsResponses().get(j);
-            j++;
-        } while (!result.getPlaceId().equals(userChoicePlaceId));
-
-        Intent intent = new Intent(HomeActivity.this, RestaurantActivity.class);
-        intent.putExtra(INTENT_EXTRA_RESULT, result);
-        intent.putExtra(INTENT_EXTRA_PLACEDETAILSRESPONSE, placeDetailsResponse);
-        startActivity(intent);
-    }*/
-
     @Override
     public void onListFragmentInteraction(Result result, PlaceDetailsResponse placeDetailsResponse) {
-        Intent intent = new Intent(HomeActivity.this, RestaurantActivity.class);
-        intent.putExtra(INTENT_EXTRA_RESULT, result);
-        intent.putExtra(INTENT_EXTRA_PLACEDETAILSRESPONSE, placeDetailsResponse);
-        startActivity(intent);
+        this.launchRestaurantActivity(result, placeDetailsResponse);
     }
 
     //MENU TOOLBAR\\
@@ -239,6 +250,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         int id = item.getItemId();
         switch (id) {
             case R.id.activity_home_drawer_your_lunch:
+                this.retrievesTheRestaurant();
                 break;
             case R.id.activity_home_drawer_settings:
                 break;
@@ -262,6 +274,29 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         } else {
             super.onBackPressed();
         }
+    }
+
+    private void retrievesTheRestaurant() {
+        if (user.getUserChoicePlaceId().equals("")) {
+            Toast.makeText(this, "No restaurant selected !", Toast.LENGTH_LONG).show();
+        } else {
+            Result result;
+            PlaceDetailsResponse placeDetailsResponse;
+            int l = 0;
+            do {
+                result = mParcelableRestaurantDetails.getNearbyResults().get(l);
+                placeDetailsResponse = mParcelableRestaurantDetails.getPlaceDetailsResponses().get(l);
+                l++;
+            } while (!result.getPlaceId().equals(user.getUserChoicePlaceId()));
+            this.launchRestaurantActivity(result, placeDetailsResponse);
+        }
+    }
+
+    private void launchRestaurantActivity(Result result, PlaceDetailsResponse placeDetailsResponse) {
+        Intent intent = new Intent(HomeActivity.this, RestaurantActivity.class);
+        intent.putExtra(INTENT_EXTRA_RESULT, result);
+        intent.putExtra(INTENT_EXTRA_PLACEDETAILSRESPONSE, placeDetailsResponse);
+        startActivity(intent);
     }
 
     private void signOutUserFromFirebase() {
@@ -325,31 +360,42 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         mParcelableRestaurantDetails = new ParcelableRestaurantDetails();
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, 0);
+            if (checkSelfPermission(ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                //this.checkConnexion(locationManager, this);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_FOR_UPDATES, MIN_DISTANCE_FOR_UPDATES, new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        mParcelableRestaurantDetails.setNearbyResults(new ArrayList<>());
+                        mPlaceDetailsResponses = new ArrayList<>();
+                        mParcelableRestaurantDetails.setCurrentLat(location.getLatitude());
+                        mParcelableRestaurantDetails.setCurrentLng(location.getLongitude());
+                        stringLocation = location.getLatitude() + "," + location.getLongitude();
+                        executeHttpRequestWithRetrofit_NearbySearch();
+                    }
+
+                    @Override
+                    public void onStatusChanged(String provider, int status, Bundle extras) { }
+
+                    @Override
+                    public void onProviderEnabled(String provider) { }
+
+                    @Override
+                    public void onProviderDisabled(String provider) { }
+                });
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, 0);
             }
          }
-        this.checkConnexion(locationManager, this);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_FOR_UPDATES, MIN_DISTANCE_FOR_UPDATES, new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                mParcelableRestaurantDetails.setNearbyResults(new ArrayList<>());
-                mPlaceDetailsResponses = new ArrayList<>();
-                mParcelableRestaurantDetails.setCurrentLat(location.getLatitude());
-                mParcelableRestaurantDetails.setCurrentLng(location.getLongitude());
-                stringLocation = location.getLatitude() + "," + location.getLongitude();
-                executeHttpRequestWithRetrofit_NearbySearch();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 0: {
+                getMyCurrentLocation();
             }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) { }
-
-            @Override
-            public void onProviderEnabled(String provider) { }
-
-            @Override
-            public void onProviderDisabled(String provider) { }
-        });
+        }
     }
 
     private void checkConnexion(LocationManager locationManager, Context context) {

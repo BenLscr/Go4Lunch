@@ -5,6 +5,7 @@
         android:id="@+id/menu_activity_home_search"
         android:icon="@drawable/baseline_search_white_24"
         app:showAsAction="ifRoom"
-        android:title="@string/search">
+        android:title="@string/search"
+        android:onClick="searchRestaurant">
     </item>
 </menu>
