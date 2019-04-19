@@ -51,7 +51,7 @@ public class RestaurantListFragment extends BaseFragment {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            this.mRecyclerViewAdapter = new RestaurantRecyclerViewAdapter(this.mParcelableRestaurantDetails, this.usersList, mListener);
+            this.mRecyclerViewAdapter = new RestaurantRecyclerViewAdapter(this.mParcelableRestaurantDetails, this.usersList, context, mListener);
             recyclerView.setAdapter(this.mRecyclerViewAdapter);
         }
         return view;

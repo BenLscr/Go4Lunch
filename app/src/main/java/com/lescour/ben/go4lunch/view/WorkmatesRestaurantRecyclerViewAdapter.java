@@ -29,7 +29,7 @@ public class WorkmatesRestaurantRecyclerViewAdapter extends BaseRecyclerViewAdap
     public void onBindViewHolder(@NonNull final ViewHolderWorkmates holder, int position) {
         holder.user = listOfUserWithSameChoice.get(position);
 
-        String workmateIsJoining = holder.user.getUserName() + Resources.getSystem().getString(R.string.is_joining);
+        String workmateIsJoining = holder.user.getUserName() + context.getString(R.string.is_joining);
         holder.workmateText.setText(workmateIsJoining);
         if (holder.user.getUserUrlImage() != null) {
             glide.load(holder.user.getUserUrlImage()).apply(RequestOptions.circleCropTransform()).into(holder.workmateImage);

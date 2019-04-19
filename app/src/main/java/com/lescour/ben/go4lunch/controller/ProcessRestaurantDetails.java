@@ -1,5 +1,6 @@
 package com.lescour.ben.go4lunch.controller;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.location.Location;
@@ -19,6 +20,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import androidx.annotation.Nullable;
+
 /**
  * Created by benja on 26/03/2019.
  */
@@ -26,13 +29,15 @@ public class ProcessRestaurantDetails {
 
     private Result mResult;
     private PlaceDetailsResponse mPlaceDetailsResponse;
+    private Context context;
     private int hours;
     private String hoursString, minutesString;
     private int howManyPeople = 0;
 
-    public ProcessRestaurantDetails(Result nearbyResult, PlaceDetailsResponse placeDetailsResponse) {
+    public ProcessRestaurantDetails(Result nearbyResult, PlaceDetailsResponse placeDetailsResponse, Context context) {
         this.mResult = nearbyResult;
         this.mPlaceDetailsResponse = placeDetailsResponse;
+        this.context = context;
     }
 
     public String getRestaurantName() {
@@ -52,14 +57,14 @@ public class ProcessRestaurantDetails {
         if (mPlaceDetailsResponse.getOpeningHours() != null) {
             if (mResult.getOpeningHours().getOpenNow()) {
                 if (mPlaceDetailsResponse.getOpeningHours().getPeriods().size() == 1) {
-                    return Resources.getSystem().getString(R.string.open_24_7);
+                    return context.getString(R.string.open_24_7);
                 } else {
                     Calendar calendar = Calendar.getInstance();
                     int currentDay = calendar.get(Calendar.DAY_OF_WEEK);
                     int currentHours = calendar.get(Calendar.HOUR_OF_DAY);
 
                     SimpleDateFormat rawFormatHours = new SimpleDateFormat("hhmm", Locale.getDefault());
-                    SimpleDateFormat newFormatHours = new SimpleDateFormat(Resources.getSystem().getString(R.string.pattern), Locale.getDefault());
+                    SimpleDateFormat newFormatHours = new SimpleDateFormat(context.getString(R.string.pattern), Locale.getDefault());
 
                     String day = null;
                     switch (currentDay) {
@@ -109,13 +114,13 @@ public class ProcessRestaurantDetails {
                         e.printStackTrace();
                     }
                     String newHoursAndMinutes = newFormatHours.format(date);
-                    return Resources.getSystem().getString(R.string.open_until) + newHoursAndMinutes;
+                    return context.getString(R.string.open_until) + newHoursAndMinutes;
                 }
             } else {
-                return Resources.getSystem().getString(R.string.no_schedules_defined);
+                return context.getString(R.string.currently_closed);
             }
         } else {
-            return Resources.getSystem().getString(R.string.currently_closed);
+            return context.getString(R.string.no_schedules_defined);
         }
     }
 
@@ -190,4 +195,5 @@ public class ProcessRestaurantDetails {
     public Bitmap getRestaurantImage() {
         return mPlaceDetailsResponse.getBitmap();
     }
+
 }

@@ -82,7 +82,7 @@ public class RestaurantActivity extends BaseActivity {
             mResult = getIntent().getParcelableExtra(INTENT_EXTRAS_RESULT_MAPS);
             mPlaceDetailsResponse = getIntent().getParcelableExtra(INTENT_EXTRAS_PLACEDETAILSRESPONSE_MAPS);
         }
-        mProcessRestaurantDetails = new ProcessRestaurantDetails(mResult, mPlaceDetailsResponse);
+        mProcessRestaurantDetails = new ProcessRestaurantDetails(mResult, mPlaceDetailsResponse, getApplicationContext());
     }
 
     private void createUi() {

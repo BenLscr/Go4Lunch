@@ -30,6 +30,7 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -153,7 +154,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_activity_home_search:
-                this.searchRestaurant();
+                //this.searchRestaurant();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -162,13 +163,13 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     int AUTOCOMPLETE_REQUEST_CODE = 1;
     private void searchRestaurant() {
-        /**List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+        List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
 
         // Start the autocomplete intent.
         Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
-                .setLocationRestriction(RectangularBounds)
+                //.setLocationRestriction(RectangularBounds)
                 .build(this);
-        startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);*/
+        startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
     }
 
     @Override

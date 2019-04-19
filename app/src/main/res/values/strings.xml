@@ -36,6 +36,10 @@
     <string name="facebook_application_id" translatable="false">625097174586182</string>
     <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb625097174586182</string>
 
+    //TWITTER
+    <string name="twitter_consumer_key" translatable="false">H861iZhjYMXIRzUkcIq1Vr3SL</string>
+    <string name="twitter_consumer_secret" translatable="false">Qv9fHlCUEThl8CoCx8bQLrE3yTKMObBOg1pcfGV2pvIPMaQnc9</string>
+
     //FRAGMENT RESTAURANT
     <string name="restaurant">Restaurant</string>
     <string name="address">Address</string>
@@ -65,11 +69,11 @@
     <string name="no_schedules_defined">No schedules defined</string>
 
     //WORKMATES FRAGMENT
-    <string name="hasnt_decided_yet"> hasn\'t decided yet.</string>
-    <string name="wants_to_eat_at">  wants to eat at </string>
+    <string name="hasnt_decided_yet">\u0020 hasn\'t decided yet.</string>
+    <string name="wants_to_eat_at">\u0020 wants to eat at \u0020</string>
     <string name="text_example">text example</string>
 
     //WORKMATES RESTAURANT ACTIVITY
-    <string name="is_joining"> is joining !</string>
+    <string name="is_joining">\u0020 is joining !</string>
 
 </resources>

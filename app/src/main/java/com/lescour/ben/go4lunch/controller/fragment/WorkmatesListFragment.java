@@ -52,7 +52,7 @@ public class WorkmatesListFragment extends BaseFragment {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            this.mRecyclerViewAdapter = new WorkmatesRecyclerViewAdapter(mParcelableRestaurantDetails, usersList, mListener, Glide.with(this), getContext());
+            this.mRecyclerViewAdapter = new WorkmatesRecyclerViewAdapter(mParcelableRestaurantDetails, usersList, mListener, Glide.with(this), context);
             recyclerView.setAdapter(this.mRecyclerViewAdapter);
         }
         return view;
