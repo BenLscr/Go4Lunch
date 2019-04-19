@@ -125,12 +125,12 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     private void setMarker(int position) {
         LatLng restaurant = new LatLng(nearbyResults.get(position).getGeometry().getLocation().getLat(), nearbyResults.get(position).getGeometry().getLocation().getLng());
         mMap.addMarker(new MarkerOptions().position(restaurant)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)))
+                .icon(BitmapDescriptorFactory.defaultMarker(25)))
                 .setTag(position);
         for (User user : usersList) {
             if (nearbyResults.get(position).getPlaceId().equals(user.getUserChoicePlaceId())) {
                 mMap.addMarker(new MarkerOptions().position(restaurant)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
+                        .icon(BitmapDescriptorFactory.defaultMarker(92)))
                         .setTag(position);
             }
         }
