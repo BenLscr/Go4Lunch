@@ -123,16 +123,14 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     }
 
     private void setMarker(int position) {
-        Log.e("tag", "setMarker");
         LatLng restaurant = new LatLng(nearbyResults.get(position).getGeometry().getLocation().getLat(), nearbyResults.get(position).getGeometry().getLocation().getLng());
-        for (int j = 0; usersList.size() > j; j++) {
-            if (nearbyResults.get(position).getPlaceId().equals(usersList.get(j).getUserChoicePlaceId())) {
+        mMap.addMarker(new MarkerOptions().position(restaurant)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)))
+                .setTag(position);
+        for (User user : usersList) {
+            if (nearbyResults.get(position).getPlaceId().equals(user.getUserChoicePlaceId())) {
                 mMap.addMarker(new MarkerOptions().position(restaurant)
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
-                        .setTag(position);
-            } else {
-                mMap.addMarker(new MarkerOptions().position(restaurant)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)))
                         .setTag(position);
             }
         }
@@ -152,7 +150,6 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
         for (int i = 0; nearbyResults.size() > i; i++) {
             this.setMarker(i);
         }
-        Log.e("tag", "notifyFragment");
     }
 
 }
