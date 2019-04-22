@@ -25,7 +25,6 @@ public class AuthActivity extends BaseActivity {
         this.setContentView(R.layout.activity_auth);
         if (this.isCurrentUserLogged()){
             this.retrievesIsData();
-            this.launchHomeActivity();
         }
     }
 
@@ -45,7 +44,8 @@ public class AuthActivity extends BaseActivity {
                         .setAvailableProviders(
                                 Arrays.asList(
                                         new AuthUI.IdpConfig.FacebookBuilder().build(),
-                                        new AuthUI.IdpConfig.GoogleBuilder().build()))
+                                        new AuthUI.IdpConfig.GoogleBuilder().build(),
+                                        new AuthUI.IdpConfig.TwitterBuilder().build()))
                         .setIsSmartLockEnabled(false, true)
                         .setLogo(R.drawable.go4lunch_ic_sign)
                         .build(),
@@ -65,7 +65,6 @@ public class AuthActivity extends BaseActivity {
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) { // SUCCESS
                 this.retrievesIsData();
-                this.launchHomeActivity();
             } else { // ERRORS
                 if (response == null) {
                     //Toast.makeText(this, R.string.error_authentication_canceled, Toast.LENGTH_LONG).show();
@@ -88,6 +87,7 @@ public class AuthActivity extends BaseActivity {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
                     user = documentSnapshot.toObject(User.class);
+                    launchHomeActivity();
                 } else {
                     createUserInFirestore();
                 }
@@ -100,6 +100,7 @@ public class AuthActivity extends BaseActivity {
                 getCurrentUser().getDisplayName(),
                 (getCurrentUser().getPhotoUrl() != null) ? getCurrentUser().getPhotoUrl().toString() : null);
         UserHelper.createUser(user.getUid(), user).addOnFailureListener(onFailureListener());
+        launchHomeActivity();
     }
 
     private void launchHomeActivity() {

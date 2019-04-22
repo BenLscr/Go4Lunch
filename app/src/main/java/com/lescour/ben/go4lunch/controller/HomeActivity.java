@@ -22,9 +22,11 @@ import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -37,6 +39,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.maps.android.SphericalUtil;
 import com.lescour.ben.go4lunch.BuildConfig;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.controller.fragment.BaseFragment;
@@ -154,7 +157,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_activity_home_search:
-                //this.searchRestaurant();
+                this.searchRestaurant();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -163,11 +166,19 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     int AUTOCOMPLETE_REQUEST_CODE = 1;
     private void searchRestaurant() {
+        LatLng currentPosition = new LatLng(mParcelableRestaurantDetails.getCurrentLat(), mParcelableRestaurantDetails.getCurrentLng());
+        double distanceFromCenterToCorner = radius * Math.sqrt(2.0);
+        LatLng southwestCorner =
+                SphericalUtil.computeOffset(currentPosition, distanceFromCenterToCorner, 225.0);
+        LatLng northeastCorner =
+                SphericalUtil.computeOffset(currentPosition, distanceFromCenterToCorner, 45.0);
+
+
         List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
 
         // Start the autocomplete intent.
         Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
-                //.setLocationRestriction(RectangularBounds)
+                .setLocationRestriction(RectangularBounds.newInstance(southwestCorner, northeastCorner))
                 .build(this);
         startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
     }
