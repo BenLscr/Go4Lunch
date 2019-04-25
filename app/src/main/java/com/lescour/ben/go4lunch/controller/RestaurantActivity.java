@@ -140,21 +140,28 @@ public class RestaurantActivity extends BaseActivity {
         if (user.getUserChoicePlaceId().equals("")) {
             user.setUserChoicePlaceId(mResult.getPlaceId());
             user.setUserChoiceRestaurantName(mResult.getName());
+            String address = mPlaceDetailsResponse.getAddress();
+            String addressCut = address.substring(0, address.indexOf(","));
+            user.setUserChoiceRestaurantAddress(addressCut);
             restaurantChoice.setColorFilter(getResources().getColor(R.color.mainThemeColorValid));
         } else if (!user.getUserChoicePlaceId().equals("") && !user.getUserChoicePlaceId().equals(mResult.getPlaceId())) {
             user.setUserChoicePlaceId(mResult.getPlaceId());
             user.setUserChoiceRestaurantName(mResult.getName());
+            String address = mPlaceDetailsResponse.getAddress();
+            String addressCut = address.substring(0, address.indexOf(","));
+            user.setUserChoiceRestaurantAddress(addressCut);
             restaurantChoice.setColorFilter(getResources().getColor(R.color.mainThemeColorValid));
         } else {
             user.setUserChoicePlaceId("");
             user.setUserChoiceRestaurantName("");
+            user.setUserChoiceRestaurantAddress("");
             restaurantChoice.setColorFilter(getResources().getColor(R.color.quantum_white_100));
         }
         this.updateUserChoice();
     }
 
     private void updateUserChoice() {
-        UserHelper.updateChoice(user.getUid(), user.getUserChoicePlaceId(), user.getUserChoiceRestaurantName())
+        UserHelper.updateChoice(user.getUid(), user.getUserChoicePlaceId(), user.getUserChoiceRestaurantName(), user.getUserChoiceRestaurantAddress())
                 .addOnFailureListener(this.onFailureListener());
     }
 

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="15dp">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/baseline_search_white_24"
+        android:tint="@color/quantum_grey"/>
+
+    <EditText
+        android:id="@+id/edittext_autocomplete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/search_restaurant"
+        android:background="@android:color/transparent"
+        android:inputType="text"
+        android:layout_marginStart="15dp"/>
+
+</LinearLayout>

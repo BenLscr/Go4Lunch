@@ -27,9 +27,15 @@ public abstract class BaseFragment extends Fragment {
     //CUSTOM\\
     protected abstract void notifyFragment();
 
-    public void newDataForFragment(ArrayList<User> usersList) {
+    public void newUsersForFragment(ArrayList<User> usersList) {
         this.usersList.clear();
         this.usersList.addAll(usersList);
+        notifyFragment();
+    }
+
+    public void newRestaurantsForFragment(ParcelableRestaurantDetails mParcelableRestaurantDetailsAutocomplete) {
+        this.mParcelableRestaurantDetails = new ParcelableRestaurantDetails();
+        this.mParcelableRestaurantDetails = mParcelableRestaurantDetailsAutocomplete;
         notifyFragment();
     }
 

@@ -48,10 +48,11 @@ public class UserHelper {
 
     // --- UPDATE ---
 
-    public static Task<Void> updateChoice(String uid, String userChoicePlaceId, String userChoiceRestaurantName) {
+    public static Task<Void> updateChoice(String uid, String userChoicePlaceId, String userChoiceRestaurantName, String userChoiceRestaurantAddress) {
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME).document(uid)
                 .update("userChoicePlaceId", userChoicePlaceId,
-                        "userChoiceRestaurantName", userChoiceRestaurantName);
+                        "userChoiceRestaurantName", userChoiceRestaurantName,
+                        "userChoiceRestaurantAddress", userChoiceRestaurantAddress);
     }
 
     // --- LISTENER ---

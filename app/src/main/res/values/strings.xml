@@ -76,4 +76,15 @@
     //WORKMATES RESTAURANT ACTIVITY
     <string name="is_joining">\u0020 is joining !</string>
 
+    //AUTOCOMPLETE
+    <string name="search_restaurant">Search Restaurant</string>
+
+    //NOTIFICATION
+    <string name="big_content_title">Your choice for this lunch</string>
+    <string name="notification_title">Notification title</string>
+    <string name="default_notification_channel_id">default notification channel id</string>
+    <string name="channel_name">Go4Lunch Notifications</string>
+    <string name="located_at">\u0020 located at \u0020</string>
+    <string name="with">\u0020 with \u0020</string>
+
 </resources>

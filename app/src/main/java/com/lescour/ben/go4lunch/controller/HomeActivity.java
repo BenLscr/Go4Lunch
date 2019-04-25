@@ -12,27 +12,30 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompletePrediction;
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.RectangularBounds;
+import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.libraries.places.widget.Autocomplete;
-import com.google.android.libraries.places.widget.AutocompleteActivity;
-import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -64,6 +67,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -87,6 +91,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     @BindView(R.id.activity_home_nav_view) NavigationView navigationView;
     @BindView(R.id.navigation) BottomNavigationView navigation;
     @BindView(R.id.activity_main_progress_bar) ProgressBar mProgressBar;
+    @BindView(R.id.card_view) CardView mCardView;
+    @BindView(R.id.edittext_autocomplete) EditText mEditText;
 
     private BaseFragment fragment;
     private ProgressDialog mProgress;
@@ -157,46 +163,78 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_activity_home_search:
-                this.searchRestaurant();
+                this.buttonSearch();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    int AUTOCOMPLETE_REQUEST_CODE = 1;
-    private void searchRestaurant() {
-        LatLng currentPosition = new LatLng(mParcelableRestaurantDetails.getCurrentLat(), mParcelableRestaurantDetails.getCurrentLng());
-        double distanceFromCenterToCorner = radius * Math.sqrt(2.0);
-        LatLng southwestCorner =
-                SphericalUtil.computeOffset(currentPosition, distanceFromCenterToCorner, 225.0);
-        LatLng northeastCorner =
-                SphericalUtil.computeOffset(currentPosition, distanceFromCenterToCorner, 45.0);
+    private void buttonSearch() {
+        mCardView.setVisibility(View.VISIBLE);
 
+        mEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-        List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+            }
 
-        // Start the autocomplete intent.
-        Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
-                .setLocationRestriction(RectangularBounds.newInstance(southwestCorner, northeastCorner))
-                .build(this);
-        startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                searchRestaurant(mEditText.getText().toString());
+            }
+        });
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                Place place = Autocomplete.getPlaceFromIntent(data);
-                Log.i("TAG", "Place: " + place.getName() + ", " + place.getId());
-            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-                // TODO: Handle the error.
-                Status status = Autocomplete.getStatusFromIntent(data);
-                Log.i("TAG", status.getStatusMessage());
-            } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
+    private void searchRestaurant(String query) {
+        double distanceFromCenterToCorner = radius * Math.sqrt(2.0);
+        LatLng center = new LatLng(mParcelableRestaurantDetails.getCurrentLat(), mParcelableRestaurantDetails.getCurrentLng());
+        LatLng southwestCorner = SphericalUtil.computeOffset(center, distanceFromCenterToCorner, 225.0);
+        LatLng northeastCorner = SphericalUtil.computeOffset(center, distanceFromCenterToCorner, 45.0);
+        // Create a new token for the autocomplete session. Pass this to FindAutocompletePredictionsRequest,
+        // and once again when the user makes a selection (for example when calling fetchPlace()).
+        AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
+
+        // Create a RectangularBounds object.
+        RectangularBounds bounds = RectangularBounds.newInstance(southwestCorner, northeastCorner);
+        // Use the builder to create a FindAutocompletePredictionsRequest.
+        FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
+                .setLocationRestriction(bounds)
+                .setTypeFilter(TypeFilter.ESTABLISHMENT)
+                .setSessionToken(token)
+                .setQuery(query)
+                .build();
+
+        placesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
+            ParcelableRestaurantDetails mParcelableRestaurantDetailsAutocomplete = new ParcelableRestaurantDetails();
+            mParcelableRestaurantDetailsAutocomplete.setCurrentLat(mParcelableRestaurantDetails.getCurrentLat());
+            mParcelableRestaurantDetailsAutocomplete.setCurrentLng(mParcelableRestaurantDetails.getCurrentLng());
+            ArrayList<Result> result = new ArrayList<Result>();
+            ArrayList<PlaceDetailsResponse> placeDetailsResponses = new ArrayList<PlaceDetailsResponse>();
+            for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
+                int z = 0;
+                do {
+                    if (mParcelableRestaurantDetails.getNearbyResults().get(z).getPlaceId().equals(prediction.getPlaceId())) {
+                        result.add(mParcelableRestaurantDetails.getNearbyResults().get(z));
+                        placeDetailsResponses.add(mParcelableRestaurantDetails.getPlaceDetailsResponses().get(z));
+                    }
+                    z++;
+                } while (mParcelableRestaurantDetails.getNearbyResults().size() != z);
             }
-        }
+            mParcelableRestaurantDetailsAutocomplete.setNearbyResults(result);
+            mParcelableRestaurantDetailsAutocomplete.setPlaceDetailsResponses(placeDetailsResponses);
+            fragment.newRestaurantsForFragment(mParcelableRestaurantDetailsAutocomplete);
+        }).addOnFailureListener((exception) -> {
+            if (exception instanceof ApiException) {
+                ApiException apiException = (ApiException) exception;
+                Log.e("TAG", "Place not found: " + apiException.getStatusCode());
+            }
+        });
     }
 
     //BOTTOM TOOLBAR\\
@@ -350,7 +388,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                         } while (documentSnapshotList.size() != usersList.size());
                     }
                     if (fragment != null) {
-                        fragment.newDataForFragment(usersList);
+                        fragment.newUsersForFragment(usersList);
                     } else {
                         initFirstFragment();
                     }

@@ -16,6 +16,7 @@ public class User implements Parcelable {
     private String userUrlImage;
     private String userChoicePlaceId = "";
     private String userChoiceRestaurantName = "";
+    private String userChoiceRestaurantAddress = "";
 
     public User () { }
 
@@ -32,6 +33,7 @@ public class User implements Parcelable {
         userUrlImage = in.readString();
         userChoicePlaceId = in.readString();
         userChoiceRestaurantName = in.readString();
+        userChoiceRestaurantAddress = in.readString();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -58,6 +60,7 @@ public class User implements Parcelable {
         dest.writeString(userUrlImage);
         dest.writeString(userChoicePlaceId);
         dest.writeString(userChoiceRestaurantName);
+        dest.writeString(userChoiceRestaurantAddress);
     }
 
     //GETTER\\
@@ -66,6 +69,7 @@ public class User implements Parcelable {
     public String getUserUrlImage() { return userUrlImage; }
     public String getUserChoicePlaceId() { return userChoicePlaceId; }
     public String getUserChoiceRestaurantName() { return userChoiceRestaurantName; }
+    public String getUserChoiceRestaurantAddress() { return userChoiceRestaurantAddress; }
 
     //SETTER\\
     public void setUid(String uid) { this.uid = uid; }
@@ -73,4 +77,6 @@ public class User implements Parcelable {
     public void setUserUrlImage(String userUrlImage) { this.userUrlImage = userUrlImage; }
     public void setUserChoicePlaceId(String userChoicePlaceId) { this.userChoicePlaceId = userChoicePlaceId; }
     public void setUserChoiceRestaurantName(String userChoiceRestaurantName) { this.userChoiceRestaurantName = userChoiceRestaurantName; }
+    public void setUserChoiceRestaurantAddress(String userChoiceRestaurantAddress) { this.userChoiceRestaurantAddress = userChoiceRestaurantAddress; }
+
 }
