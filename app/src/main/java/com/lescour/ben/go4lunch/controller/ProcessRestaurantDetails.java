@@ -152,8 +152,8 @@ public class ProcessRestaurantDetails {
     }
 
     public String howManyPeopleChoseThisRestaurant(ArrayList<User> usersList) {
-        for (int i = 0; i < usersList.size(); i++) {
-            if (usersList.get(i).getUserChoicePlaceId().equals(mResult.getPlaceId())) {
+        for (User user : usersList) {
+            if (user.getUserChoicePlaceId().equals(mResult.getPlaceId())) {
                 howManyPeople++;
             }
         }

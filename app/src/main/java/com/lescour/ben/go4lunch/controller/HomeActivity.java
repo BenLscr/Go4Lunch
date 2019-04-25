@@ -112,8 +112,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private String type = "restaurant";
     private String apiKey = BuildConfig.PLACES_API_KEY;
 
-    private int i = 0;
-
     private List<PlaceDetailsResponse> mPlaceDetailsResponses;
 
     public static final String INTENT_EXTRA_RESULT = "INTENT_EXTRA_RESULT";
@@ -175,19 +173,13 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
         mEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
 
             @Override
-            public void afterTextChanged(Editable s) {
-                searchRestaurant(mEditText.getText().toString());
-            }
+            public void afterTextChanged(Editable s) { searchRestaurant(mEditText.getText().toString()); }
         });
     }
 
@@ -381,11 +373,9 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                     List<DocumentSnapshot> documentSnapshotList = new ArrayList<>(queryDocumentSnapshots.getDocuments());
                     usersList = new ArrayList<>();
                     if (documentSnapshotList.size() != 0) {
-                        int k = 0;
-                        do {
-                            usersList.add(documentSnapshotList.get(k).toObject(User.class));
-                            k++;
-                        } while (documentSnapshotList.size() != usersList.size());
+                        for (DocumentSnapshot documentSnapshot : documentSnapshotList) {
+                            usersList.add(documentSnapshot.toObject(User.class));
+                        }
                     }
                     if (fragment != null) {
                         fragment.newUsersForFragment(usersList);
@@ -486,7 +476,9 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void updateList(NearbyResponse nearbyResponse) {
         mParcelableRestaurantDetails.setNearbyResults(nearbyResponse.getResults());
-        this.everyRestaurantDetails_isRequired();
+        for (Result result : mParcelableRestaurantDetails.getNearbyResults()) {
+            this.getPlaceDetails(result.getPlaceId());
+        }
     }
 
     private void getPlaceDetails(String placeId) {
@@ -536,7 +528,10 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                     Bitmap bitmap = fetchPhotoResponse.getBitmap();
                     placeDetailsResponse.setBitmap(bitmap);
                     mPlaceDetailsResponses.add(placeDetailsResponse);
-                    everyRestaurantDetails_isRequired();
+                    if (mParcelableRestaurantDetails.getNearbyResults().size() == mPlaceDetailsResponses.size()) {
+                        mParcelableRestaurantDetails.setPlaceDetailsResponses(mPlaceDetailsResponses);
+                        this.setFirestoreListener();
+                    }
                 }).addOnFailureListener((exception) -> {
                     if (exception instanceof ApiException) {
                         ApiException apiException = (ApiException) exception;
@@ -547,16 +542,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                 });
             }
         });
-    }
-
-    private void everyRestaurantDetails_isRequired() {
-        if (mParcelableRestaurantDetails.getNearbyResults().size() == mPlaceDetailsResponses.size()) {
-            mParcelableRestaurantDetails.setPlaceDetailsResponses(mPlaceDetailsResponses);
-            this.setFirestoreListener();
-        } else {
-            getPlaceDetails(mParcelableRestaurantDetails.getNearbyResults().get(i).getPlaceId());
-            i++;
-        }
     }
 
 }

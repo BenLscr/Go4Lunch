@@ -64,7 +64,7 @@
     //PROCESS_RESTAURANT_DETAILS
     <string name="open_24_7">Open 24/7</string>
     <string name="pattern">h.mma</string>
-    <string name="open_until">Open until </string>
+    <string name="open_until">Open until \u0020</string>
     <string name="currently_closed">Currently closed</string>
     <string name="no_schedules_defined">No schedules defined</string>
 
