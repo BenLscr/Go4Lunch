@@ -18,6 +18,6 @@
         android:hint="@string/search_restaurant"
         android:background="@android:color/transparent"
         android:inputType="text"
-        android:layout_marginStart="15dp"/>
+        android:layout_marginStart="35dp"/>
 
 </LinearLayout>

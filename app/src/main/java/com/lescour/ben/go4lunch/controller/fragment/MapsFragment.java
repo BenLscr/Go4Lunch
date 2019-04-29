@@ -147,6 +147,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     }
 
     public void notifyFragment() {
+        mMap.clear();
         for (int i = 0; nearbyResults.size() > i; i++) {
             this.setMarker(i);
         }

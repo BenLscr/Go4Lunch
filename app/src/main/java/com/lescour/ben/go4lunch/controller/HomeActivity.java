@@ -63,6 +63,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
@@ -102,6 +103,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private Disposable disposable;
 
     private ParcelableRestaurantDetails mParcelableRestaurantDetails;
+    private ParcelableRestaurantDetails saveParcelableRestaurantDetails;
     private long MIN_TIME_FOR_UPDATES = 9999999;
     private long MIN_DISTANCE_FOR_UPDATES = 200;
 
@@ -133,9 +135,24 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         this.initProgressDialog();
 
         mProgressBar.setVisibility(View.VISIBLE);
-        mParcelableRestaurantDetails = new ParcelableRestaurantDetails();
         this.initializePlacesApiClient();
         this.getMyCurrentLocation();
+    }
+
+    /**
+     * Close the NavigationDrawer or the Autocomplete bar with the button back
+     */
+    @Override
+    public void onBackPressed() {
+        if (this.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            this.drawerLayout.closeDrawer(GravityCompat.START);
+        } else if (mCardView.getVisibility() == View.VISIBLE) {
+            mCardView.setVisibility(View.GONE);
+            revertParcelableRestaurantDetails();
+            fragment.newRestaurantsForFragment(mParcelableRestaurantDetails);
+        } else {
+            //super.onBackPressed();
+        }
     }
 
     //TOOLBAR\\
@@ -170,7 +187,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void buttonSearch() {
         mCardView.setVisibility(View.VISIBLE);
-
+        saveParcelableRestaurantDetails();
         mEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -184,49 +201,63 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void searchRestaurant(String query) {
-        double distanceFromCenterToCorner = radius * Math.sqrt(2.0);
-        LatLng center = new LatLng(mParcelableRestaurantDetails.getCurrentLat(), mParcelableRestaurantDetails.getCurrentLng());
-        LatLng southwestCorner = SphericalUtil.computeOffset(center, distanceFromCenterToCorner, 225.0);
-        LatLng northeastCorner = SphericalUtil.computeOffset(center, distanceFromCenterToCorner, 45.0);
-        // Create a new token for the autocomplete session. Pass this to FindAutocompletePredictionsRequest,
-        // and once again when the user makes a selection (for example when calling fetchPlace()).
-        AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
+        if (query.equals("")) {
+            revertParcelableRestaurantDetails();
+            fragment.newRestaurantsForFragment(mParcelableRestaurantDetails);
+        } else {
+            double distanceFromCenterToCorner = radius * Math.sqrt(2.0);
+            LatLng center = new LatLng(mParcelableRestaurantDetails.getCurrentLat(), mParcelableRestaurantDetails.getCurrentLng());
+            LatLng southwestCorner = SphericalUtil.computeOffset(center, distanceFromCenterToCorner, 225.0);
+            LatLng northeastCorner = SphericalUtil.computeOffset(center, distanceFromCenterToCorner, 45.0);
+            // Create a new token for the autocomplete session. Pass this to FindAutocompletePredictionsRequest,
+            // and once again when the user makes a selection (for example when calling fetchPlace()).
+            AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
 
-        // Create a RectangularBounds object.
-        RectangularBounds bounds = RectangularBounds.newInstance(southwestCorner, northeastCorner);
-        // Use the builder to create a FindAutocompletePredictionsRequest.
-        FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
-                .setLocationRestriction(bounds)
-                .setTypeFilter(TypeFilter.ESTABLISHMENT)
-                .setSessionToken(token)
-                .setQuery(query)
-                .build();
+            // Create a RectangularBounds object.
+            RectangularBounds bounds = RectangularBounds.newInstance(southwestCorner, northeastCorner);
+            // Use the builder to create a FindAutocompletePredictionsRequest.
+            FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
+                    .setLocationRestriction(bounds)
+                    .setTypeFilter(TypeFilter.ESTABLISHMENT)
+                    .setSessionToken(token)
+                    .setQuery(query)
+                    .build();
 
-        placesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
-            ParcelableRestaurantDetails mParcelableRestaurantDetailsAutocomplete = new ParcelableRestaurantDetails();
-            mParcelableRestaurantDetailsAutocomplete.setCurrentLat(mParcelableRestaurantDetails.getCurrentLat());
-            mParcelableRestaurantDetailsAutocomplete.setCurrentLng(mParcelableRestaurantDetails.getCurrentLng());
-            ArrayList<Result> result = new ArrayList<Result>();
-            ArrayList<PlaceDetailsResponse> placeDetailsResponses = new ArrayList<PlaceDetailsResponse>();
-            for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
-                int z = 0;
-                do {
-                    if (mParcelableRestaurantDetails.getNearbyResults().get(z).getPlaceId().equals(prediction.getPlaceId())) {
-                        result.add(mParcelableRestaurantDetails.getNearbyResults().get(z));
-                        placeDetailsResponses.add(mParcelableRestaurantDetails.getPlaceDetailsResponses().get(z));
-                    }
-                    z++;
-                } while (mParcelableRestaurantDetails.getNearbyResults().size() != z);
-            }
-            mParcelableRestaurantDetailsAutocomplete.setNearbyResults(result);
-            mParcelableRestaurantDetailsAutocomplete.setPlaceDetailsResponses(placeDetailsResponses);
-            fragment.newRestaurantsForFragment(mParcelableRestaurantDetailsAutocomplete);
-        }).addOnFailureListener((exception) -> {
-            if (exception instanceof ApiException) {
-                ApiException apiException = (ApiException) exception;
-                Log.e("TAG", "Place not found: " + apiException.getStatusCode());
-            }
-        });
+
+            placesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
+                ArrayList<Result> results = new ArrayList<>();
+                ArrayList<PlaceDetailsResponse> placeDetailsResponses = new ArrayList<>();
+                for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
+                    int z = 0;
+                    do {
+                        if (saveParcelableRestaurantDetails.getNearbyResults().get(z).getPlaceId().equals(prediction.getPlaceId())) {
+                            results.add(saveParcelableRestaurantDetails.getNearbyResults().get(z));
+                            placeDetailsResponses.add(saveParcelableRestaurantDetails.getPlaceDetailsResponses().get(z));
+                        }
+                        z++;
+                    } while (saveParcelableRestaurantDetails.getNearbyResults().size() != z);
+                }
+                mParcelableRestaurantDetails.setNearbyResults(results);
+                mParcelableRestaurantDetails.setPlaceDetailsResponses(placeDetailsResponses);
+                fragment.newRestaurantsForFragment(mParcelableRestaurantDetails);
+            }).addOnFailureListener((exception) -> {
+                if (exception instanceof ApiException) {
+                    ApiException apiException = (ApiException) exception;
+                    Log.e("TAG", "Place not found: " + apiException.getStatusCode());
+                }
+            });
+        }
+    }
+
+    private void saveParcelableRestaurantDetails() {
+        saveParcelableRestaurantDetails = new ParcelableRestaurantDetails();
+        saveParcelableRestaurantDetails.setNearbyResults(mParcelableRestaurantDetails.getNearbyResults());
+        saveParcelableRestaurantDetails.setPlaceDetailsResponses(mParcelableRestaurantDetails.getPlaceDetailsResponses());
+    }
+
+    private void revertParcelableRestaurantDetails() {
+        mParcelableRestaurantDetails.setNearbyResults(saveParcelableRestaurantDetails.getNearbyResults());
+        mParcelableRestaurantDetails.setPlaceDetailsResponses(saveParcelableRestaurantDetails.getPlaceDetailsResponses());
     }
 
     //BOTTOM TOOLBAR\\
@@ -304,18 +335,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         }
         this.drawerLayout.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    /**
-     * Close the NavigationDrawer with the button back
-     */
-    @Override
-    public void onBackPressed() {
-        if (this.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            this.drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
     }
 
     private void retrievesTheRestaurant() {
@@ -463,9 +482,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                     }
 
                     @Override
-                    public void onError(Throwable e) {
-                        Log.e("TAG","On Error"+Log.getStackTraceString(e));
-                    }
+                    public void onError(Throwable e) { Log.e("TAG","On Error"+Log.getStackTraceString(e)); }
 
                     @Override
                     public void onComplete() {

@@ -51,8 +51,10 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
-        holder.nearbyResult = this.nearbyResults.get(position);
-        holder.placeDetailsResponse = this.placeDetailsResponses.get(position);
+        holder.nearbyResult = mParcelableRestaurantDetails.getNearbyResults().get(position);
+        holder.placeDetailsResponse = mParcelableRestaurantDetails.getPlaceDetailsResponses().get(position);
+        //holder.nearbyResult = this.nearbyResults.get(position);
+        //holder.placeDetailsResponse = this.placeDetailsResponses.get(position);
 
         ProcessRestaurantDetails restaurantDetails = new ProcessRestaurantDetails(holder.nearbyResult, holder.placeDetailsResponse, context);
 
@@ -82,7 +84,7 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
 
     @Override
     public int getItemCount() {
-        return nearbyResults.size();
+        return mParcelableRestaurantDetails.getNearbyResults().size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

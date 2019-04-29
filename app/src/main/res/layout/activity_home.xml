@@ -62,7 +62,8 @@
             android:layout_gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:background="@color/quantum_white_100"
             android:visibility="gone"
             card_view:cardCornerRadius="4dp">
