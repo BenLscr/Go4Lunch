@@ -42,9 +42,6 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     private GoogleMap mMap;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 789;
 
-    private List<Result> nearbyResults;
-    private List<PlaceDetailsResponse> placeDetailsResponses;
-
     public static final String INTENT_EXTRAS_RESULT_MAPS = "INTENT_EXTRAS_RESULT_MAPS";
     public static final String INTENT_EXTRAS_PLACEDETAILSRESPONSE_MAPS = "INTENT_EXTRAS_PLACEDETAILSRESPONSE_MAPS";
 
@@ -67,14 +64,8 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.nearbyResults = new ArrayList<>();
-        this.placeDetailsResponses = new ArrayList<>();
         if (getArguments() != null) {
             mParcelableRestaurantDetails = getArguments().getParcelable(ARG_PARCELABLE_RESTAURANTDETAILS);
-            if (mParcelableRestaurantDetails != null) {
-                nearbyResults = mParcelableRestaurantDetails.getNearbyResults();
-                placeDetailsResponses = mParcelableRestaurantDetails.getPlaceDetailsResponses();
-            }
             this.usersList = new ArrayList<>();
             this.usersList = getArguments().getParcelableArrayList(ARG_USERSLIST);
         }
@@ -100,7 +91,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
             LatLng currentLocation = new LatLng(mParcelableRestaurantDetails.getCurrentLat(), mParcelableRestaurantDetails.getCurrentLng());
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
-            for (int i = 0; nearbyResults.size() > i; i++) {
+            for (int i = 0; mParcelableRestaurantDetails.getNearbyResults().size() > i; i++) {
                 this.setMarker(i);
             }
             mMap.setOnMarkerClickListener(this);
@@ -123,12 +114,13 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     }
 
     private void setMarker(int position) {
-        LatLng restaurant = new LatLng(nearbyResults.get(position).getGeometry().getLocation().getLat(), nearbyResults.get(position).getGeometry().getLocation().getLng());
+        LatLng restaurant = new LatLng(mParcelableRestaurantDetails.getNearbyResults().get(position).getGeometry().getLocation().getLat(),
+                mParcelableRestaurantDetails.getNearbyResults().get(position).getGeometry().getLocation().getLng());
         mMap.addMarker(new MarkerOptions().position(restaurant)
                 .icon(BitmapDescriptorFactory.defaultMarker(25)))
                 .setTag(position);
         for (User user : usersList) {
-            if (nearbyResults.get(position).getPlaceId().equals(user.getUserChoicePlaceId())) {
+            if (mParcelableRestaurantDetails.getNearbyResults().get(position).getPlaceId().equals(user.getUserChoicePlaceId())) {
                 mMap.addMarker(new MarkerOptions().position(restaurant)
                         .icon(BitmapDescriptorFactory.defaultMarker(92)))
                         .setTag(position);
@@ -140,15 +132,15 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     public boolean onMarkerClick(Marker marker) {
         int position = (int) marker.getTag();
         Intent intent = new Intent(getActivity(), RestaurantActivity.class);
-        intent.putExtra(INTENT_EXTRAS_RESULT_MAPS, nearbyResults.get(position));
-        intent.putExtra(INTENT_EXTRAS_PLACEDETAILSRESPONSE_MAPS, placeDetailsResponses.get(position));
+        intent.putExtra(INTENT_EXTRAS_RESULT_MAPS, mParcelableRestaurantDetails.getNearbyResults().get(position));
+        intent.putExtra(INTENT_EXTRAS_PLACEDETAILSRESPONSE_MAPS, mParcelableRestaurantDetails.getPlaceDetailsResponses().get(position));
         startActivity(intent);
         return false;
     }
 
     public void notifyFragment() {
         mMap.clear();
-        for (int i = 0; nearbyResults.size() > i; i++) {
+        for (int i = 0; mParcelableRestaurantDetails.getNearbyResults().size() > i; i++) {
             this.setMarker(i);
         }
     }

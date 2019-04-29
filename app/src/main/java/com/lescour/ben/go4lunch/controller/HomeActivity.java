@@ -494,12 +494,13 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private void updateList(NearbyResponse nearbyResponse) {
         mParcelableRestaurantDetails.setNearbyResults(nearbyResponse.getResults());
         for (Result result : mParcelableRestaurantDetails.getNearbyResults()) {
-            this.getPlaceDetails(result.getPlaceId());
+            PlaceDetailsResponse placeDetailsResponse = new PlaceDetailsResponse();
+            this.getPlaceDetails(result.getPlaceId(), placeDetailsResponse);
+            this.getPlacePhotos(result.getPlaceId(), placeDetailsResponse);
         }
     }
 
-    private void getPlaceDetails(String placeId) {
-        PlaceDetailsResponse placeDetailsResponse = new PlaceDetailsResponse();
+    private void getPlaceDetails(String placeId, PlaceDetailsResponse placeDetailsResponse) {
         // Specify the fields to return (in this example all fields are returned).
         List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.OPENING_HOURS, Place.Field.ADDRESS, Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI);
         // Construct a request object, passing the place ID and fields array.
@@ -512,7 +513,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
             placeDetailsResponse.setAddress(place.getAddress());
             placeDetailsResponse.setPhoneNumber(place.getPhoneNumber());
             placeDetailsResponse.setWebsiteUri(place.getWebsiteUri());
-            this.getPlacePhotos(placeId, placeDetailsResponse);
+            //this.getPlacePhotos(placeId, placeDetailsResponse);
         }).addOnFailureListener((exception) -> {
             if (exception instanceof ApiException) {
                 ApiException apiException = (ApiException) exception;
