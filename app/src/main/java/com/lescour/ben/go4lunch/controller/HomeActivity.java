@@ -150,8 +150,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
             mCardView.setVisibility(View.GONE);
             revertParcelableRestaurantDetails();
             fragment.newRestaurantsForFragment(mParcelableRestaurantDetails);
-        } else {
-            //super.onBackPressed();
         }
     }
 
@@ -178,8 +176,10 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_activity_home_search:
-                this.buttonSearch();
-                return true;
+                if (mCardView.getVisibility() == View.GONE) {
+                    this.buttonSearch();
+                    return true;
+                }
             default:
                 return super.onOptionsItemSelected(item);
         }

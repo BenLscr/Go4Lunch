@@ -89,7 +89,7 @@
                     android:tint="@color/quantum_yellow"
                     android:layout_gravity="bottom"
                     android:id="@+id/restaurant_rate_1"
-                    android:src="@drawable/baseline_star_rate_white_24"
+                    android:src="@drawable/baseline_star_rate_orange_24"
                     android:contentDescription="@string/rate_stars"/>
 
                 <ImageView
@@ -98,7 +98,7 @@
                     android:tint="@color/quantum_yellow"
                     android:layout_gravity="bottom"
                     android:id="@+id/restaurant_rate_2"
-                    android:src="@drawable/baseline_star_rate_white_24"
+                    android:src="@drawable/baseline_star_rate_orange_24"
                     android:contentDescription="@string/rate_stars"/>
 
                 <ImageView
@@ -107,7 +107,7 @@
                     android:tint="@color/quantum_yellow"
                     android:layout_gravity="bottom"
                     android:id="@+id/restaurant_rate_3"
-                    android:src="@drawable/baseline_star_rate_white_24"
+                    android:src="@drawable/baseline_star_rate_orange_24"
                     android:contentDescription="@string/rate_stars"/>
 
             </LinearLayout>

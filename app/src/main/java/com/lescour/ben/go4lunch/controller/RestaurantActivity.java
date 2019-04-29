@@ -5,7 +5,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -13,7 +12,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -62,6 +60,7 @@ public class RestaurantActivity extends BaseActivity {
     private Result mResult;
     private PlaceDetailsResponse mPlaceDetailsResponse;
     private ProcessRestaurantDetails mProcessRestaurantDetails;
+    private List<String> userLike;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +98,14 @@ public class RestaurantActivity extends BaseActivity {
         }
         if (user.getUserChoicePlaceId().equals(mResult.getPlaceId())) {
             restaurantChoice.setColorFilter(getResources().getColor(R.color.mainThemeColorValid));
+        }
+        this.userLike = new ArrayList<>();
+        if (user.getUserLike() != null) {
+            userLike.addAll(user.getUserLike());
+            if (userLike.contains(mResult.getPlaceId())) {
+                restaurantLike.setTextColor(getResources().getColor(R.color.mainThemeColorValid));
+                restaurantLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.baseline_star_rate_green_24, 0, 0);
+            }
         }
     }
 
@@ -204,7 +211,22 @@ public class RestaurantActivity extends BaseActivity {
     //LIKE BUTTON\\
     @OnClick(R.id.restaurant_activity_button_like)
     public void likeThisRestaurant() {
+        if (userLike != null && userLike.contains(mResult.getPlaceId())) {
+            restaurantLike.setTextColor(getResources().getColor(R.color.mainThemeColorPrimary));
+            restaurantLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.baseline_star_rate_orange_24, 0, 0);
+            userLike.remove(mResult.getPlaceId());
+            user.setUserLike(userLike);
+        } else {
+            restaurantLike.setTextColor(getResources().getColor(R.color.mainThemeColorValid));
+            restaurantLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.baseline_star_rate_green_24, 0, 0);
+            userLike.add(mResult.getPlaceId());
+            user.setUserLike(userLike);
+        }
+        updateUserLike();
+    }
 
+    private void updateUserLike() {
+        UserHelper.updateLike(user.getUid(), user.getUserLike()).addOnFailureListener(this.onFailureListener());
     }
 
     //WEBSITE BUTTON\\

@@ -3,15 +3,12 @@ package com.lescour.ben.go4lunch.utils;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.lescour.ben.go4lunch.model.firestore.User;
 
-import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * Created by benja on 10/04/2019.
@@ -53,6 +50,11 @@ public class UserHelper {
                 .update("userChoicePlaceId", userChoicePlaceId,
                         "userChoiceRestaurantName", userChoiceRestaurantName,
                         "userChoiceRestaurantAddress", userChoiceRestaurantAddress);
+    }
+
+    public static  Task<Void> updateLike(String uid, List<String> userLike) {
+        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME).document(uid)
+                .update("userLike", userLike);
     }
 
     // --- LISTENER ---

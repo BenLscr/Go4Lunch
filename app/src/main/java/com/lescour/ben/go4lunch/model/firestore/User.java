@@ -3,6 +3,8 @@ package com.lescour.ben.go4lunch.model.firestore;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 /**
@@ -17,6 +19,7 @@ public class User implements Parcelable {
     private String userChoicePlaceId = "";
     private String userChoiceRestaurantName = "";
     private String userChoiceRestaurantAddress = "";
+    private List<String> userLike;
 
     public User () { }
 
@@ -34,6 +37,7 @@ public class User implements Parcelable {
         userChoicePlaceId = in.readString();
         userChoiceRestaurantName = in.readString();
         userChoiceRestaurantAddress = in.readString();
+        userLike = in.createStringArrayList();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -61,6 +65,7 @@ public class User implements Parcelable {
         dest.writeString(userChoicePlaceId);
         dest.writeString(userChoiceRestaurantName);
         dest.writeString(userChoiceRestaurantAddress);
+        dest.writeStringList(userLike);
     }
 
     //GETTER\\
@@ -70,6 +75,7 @@ public class User implements Parcelable {
     public String getUserChoicePlaceId() { return userChoicePlaceId; }
     public String getUserChoiceRestaurantName() { return userChoiceRestaurantName; }
     public String getUserChoiceRestaurantAddress() { return userChoiceRestaurantAddress; }
+    public List<String> getUserLike() { return userLike; }
 
     //SETTER\\
     public void setUid(String uid) { this.uid = uid; }
@@ -78,5 +84,5 @@ public class User implements Parcelable {
     public void setUserChoicePlaceId(String userChoicePlaceId) { this.userChoicePlaceId = userChoicePlaceId; }
     public void setUserChoiceRestaurantName(String userChoiceRestaurantName) { this.userChoiceRestaurantName = userChoiceRestaurantName; }
     public void setUserChoiceRestaurantAddress(String userChoiceRestaurantAddress) { this.userChoiceRestaurantAddress = userChoiceRestaurantAddress; }
-
+    public void setUserLike(List<String> userLike) { this.userLike = userLike; }
 }
