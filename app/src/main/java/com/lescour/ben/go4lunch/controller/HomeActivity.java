@@ -150,7 +150,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
             revertParcelableRestaurantDetails();
             fragment.newRestaurantsForFragment(mParcelableRestaurantDetails);
         } else {
-            super.onBackPressed();
+            finish();
         }
     }
 
@@ -375,6 +375,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         mProgress.dismiss();
+                        Intent intent = new Intent(HomeActivity.this, AuthActivity.class);
+                        startActivity(intent);
                         finish();
                     } else {
                         Toast.makeText(HomeActivity.this, getString(R.string.fetch_failed),
