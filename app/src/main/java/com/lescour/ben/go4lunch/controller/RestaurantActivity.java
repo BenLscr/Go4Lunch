@@ -2,9 +2,11 @@ package com.lescour.ben.go4lunch.controller;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -12,10 +14,18 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.lescour.ben.go4lunch.BuildConfig;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.controller.fragment.WorkmatesListRestaurantFragment;
 import com.lescour.ben.go4lunch.model.details.PlaceDetailsResponse;
@@ -24,6 +34,7 @@ import com.lescour.ben.go4lunch.model.nearby.Result;
 import com.lescour.ben.go4lunch.utils.UserHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -54,6 +65,7 @@ public class RestaurantActivity extends BaseActivity {
     @BindView(R.id.restaurant_activity_button_call) Button restaurantCall;
     @BindView(R.id.restaurant_activity_button_like) Button restaurantLike;
     @BindView(R.id.restaurant_activity_button_website) Button restaurantWebsite;
+    @BindView(R.id.activity_restaurant_image_progress_bar) ProgressBar mProgressBarImageRestaurant;
     @BindView(R.id.activity_restaurant_progress_bar) ProgressBar mProgressBar;
 
     private WorkmatesListRestaurantFragment workmatesListRestaurantFragment;
@@ -61,6 +73,8 @@ public class RestaurantActivity extends BaseActivity {
     private PlaceDetailsResponse mPlaceDetailsResponse;
     private ProcessRestaurantDetails mProcessRestaurantDetails;
     private List<String> userLike;
+
+    private String apiKey = BuildConfig.PLACES_API_KEY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,10 +99,9 @@ public class RestaurantActivity extends BaseActivity {
     }
 
     private void createUi() {
+        mProgressBarImageRestaurant.setVisibility(View.VISIBLE);
         mProgressBar.setVisibility(View.VISIBLE);
-        if (mPlaceDetailsResponse.getBitmap() != null) {
-            restaurantImage.setImageBitmap(mProcessRestaurantDetails.getRestaurantImage());
-        }
+        this.getPlacePhoto(mResult.getPlaceId());
         restaurantName.setText(mProcessRestaurantDetails.getRestaurantName());
         restaurantAddress.setText(mProcessRestaurantDetails.getRestaurantAddress());
         if (mResult.getRating() != null) {
@@ -107,6 +120,40 @@ public class RestaurantActivity extends BaseActivity {
                 restaurantLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.baseline_star_rate_green_24, 0, 0);
             }
         }
+    }
+
+    private void getPlacePhoto(String placeId) {
+        Places.initialize(getApplicationContext(), apiKey);
+        PlacesClient placesClient = Places.createClient(this);
+
+        List<Place.Field> fields = Arrays.asList(Place.Field.PHOTO_METADATAS);
+        FetchPlaceRequest placeRequest = FetchPlaceRequest.builder(placeId, fields).build();
+
+        placesClient.fetchPlace(placeRequest).addOnSuccessListener((response) -> {
+            Place place = response.getPlace();
+
+            if (place.getPhotoMetadatas() != null) {
+                PhotoMetadata photoMetadata = place.getPhotoMetadatas().get(0);
+
+                FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
+                        .setMaxWidth(500)
+                        .setMaxHeight(500)
+                        .build();
+                placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
+                    mProgressBarImageRestaurant.setVisibility(View.GONE);
+                    Bitmap bitmap = fetchPhotoResponse.getBitmap();
+                    restaurantImage.setImageBitmap(bitmap);
+                }).addOnFailureListener((exception) -> {
+                    if (exception instanceof ApiException) {
+                        ApiException apiException = (ApiException) exception;
+                        int statusCode = apiException.getStatusCode();
+                        Log.e("PlacePhotos", "Place not found: " + exception.getMessage());
+                        mProgressBarImageRestaurant.setVisibility(View.GONE);
+                        restaurantImage.setImageDrawable(getResources().getDrawable(R.drawable.go4lunch_ic));
+                    }
+                });
+            }
+        });
     }
 
     private void setFirestoreListener() {

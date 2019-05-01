@@ -11,12 +11,26 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <ImageView
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="280dp"
-            android:scaleType="centerCrop"
-            android:contentDescription="@string/image_restaurant"
-            android:id="@+id/restaurant_activity_image"/>
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/image_restaurant"
+                android:id="@+id/restaurant_activity_image"/>
+
+            <ProgressBar
+                android:id="@+id/activity_restaurant_image_progress_bar"
+                android:layout_width="50dip"
+                android:layout_height="50dip"
+                android:layout_gravity="center"
+                android:visibility="gone"/>
+
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
