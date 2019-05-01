@@ -25,7 +25,7 @@ public class WebViewActivity extends AppCompatActivity {
         if (getIntent().hasExtra(BUNDLE_EXTRA_URL)) {
             restaurantUrl = getIntent().getStringExtra(BUNDLE_EXTRA_URL);
         }
-        configureWebView();
+        this.configureWebView();
     }
 
     @SuppressLint("SetJavaScriptEnabled")

@@ -5,7 +5,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,12 +20,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.controller.RestaurantActivity;
 import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
-import com.lescour.ben.go4lunch.model.details.PlaceDetailsResponse;
 import com.lescour.ben.go4lunch.model.firestore.User;
-import com.lescour.ben.go4lunch.model.nearby.Result;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;

@@ -10,13 +10,8 @@ import android.media.RingtoneManager;
 import android.os.Build;
 import android.util.Log;
 
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
+import com.evernote.android.job.DailyJob;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.RemoteMessage;
-import com.google.gson.Gson;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.controller.HomeActivity;
 import com.lescour.ben.go4lunch.model.firestore.User;
@@ -24,13 +19,17 @@ import com.lescour.ben.go4lunch.model.firestore.User;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
-/**
- * Created by benja on 24/04/2019.
- */
-public class NotificationsService extends FirebaseMessagingService {
+import static android.content.Context.MODE_PRIVATE;
 
+/**
+ * Created by benja on 30/04/2019.
+ */
+public class NotificationJob extends DailyJob {
+
+    public static final String TAG = "MyDailyJob";
     private final int NOTIFICATION_ID = 456;
     private final String NOTIFICATION_TAG = "FIREBASE";
 
@@ -38,18 +37,17 @@ public class NotificationsService extends FirebaseMessagingService {
     private User user;
     private String userUid;
 
+    @NonNull
     @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) {
-        Log.e("tag", "something append");
-        if (remoteMessage.getNotification() != null) {
-            Log.e("tag", "une notif");
-            this.getUserUidInSharedPreferences();
-            this.retrievesUserData();
-        }
+    protected DailyJobResult onRunDailyJob(Params params) {
+        Log.e("JOB_ANDROID", "NOTIFICATION");
+        this.getUserUidInSharedPreferences();
+        this.retrievesUserData();
+        return DailyJobResult.SUCCESS;
     }
 
     private void getUserUidInSharedPreferences() {
-        SharedPreferences mSharedPreferences = getSharedPreferences("currentUser", MODE_PRIVATE);
+        SharedPreferences mSharedPreferences = getContext().getSharedPreferences("currentUser", MODE_PRIVATE);
         userUid = mSharedPreferences.getString("currentUserUid", null);
     }
 
@@ -94,37 +92,37 @@ public class NotificationsService extends FirebaseMessagingService {
                 }
                 i++;
             } while (i != listOfUserWithSameChoice.size());
-            messageBody = user.getUserChoiceRestaurantName() + getString(R.string.located_at) + user.getUserChoiceRestaurantAddress() + getString(R.string.with) + workmatesName.toString();
+            messageBody = user.getUserChoiceRestaurantName() + getContext().getString(R.string.located_at) + user.getUserChoiceRestaurantAddress() + getContext().getString(R.string.with) + workmatesName.toString();
         } else {
-            messageBody = user.getUserChoiceRestaurantName() + getString(R.string.located_at) + user.getUserChoiceRestaurantAddress() + ".";
+            messageBody = user.getUserChoiceRestaurantName() + getContext().getString(R.string.located_at) + user.getUserChoiceRestaurantAddress() + ".";
         }
         this.sendVisualNotification();
     }
 
     private void sendVisualNotification() {
-        Intent intent = new Intent(this, HomeActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        Intent intent = new Intent(getContext(), HomeActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-        inboxStyle.setBigContentTitle(getString(R.string.big_content_title));
+        inboxStyle.setBigContentTitle(getContext().getString(R.string.big_content_title));
         inboxStyle.addLine(messageBody);
 
-        String channelId = getString(R.string.default_notification_channel_id);
+        String channelId = getContext().getString(R.string.default_notification_channel_id);
 
         NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this, channelId)
+                new NotificationCompat.Builder(getContext(), channelId)
                         .setSmallIcon(R.drawable.ic_notifications_black_24dp)
-                        .setContentTitle(getString(R.string.app_name))
-                        .setContentText(getString(R.string.notification_title))
+                        .setContentTitle(getContext().getString(R.string.app_name))
+                        .setContentText(getContext().getString(R.string.notification_title))
                         .setAutoCancel(true)
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                         .setContentIntent(pendingIntent)
                         .setStyle(inboxStyle);
 
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence channelName = getString(R.string.channel_name);
+            CharSequence channelName = getContext().getString(R.string.channel_name);
             int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel mChannel = new NotificationChannel(channelId, channelName, importance);
             notificationManager.createNotificationChannel(mChannel);

@@ -1,6 +1,7 @@
 package com.lescour.ben.go4lunch.controller;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -9,6 +10,7 @@ import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.gson.Gson;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.model.firestore.User;
 import com.lescour.ben.go4lunch.utils.UserHelper;
@@ -101,12 +103,19 @@ public class AuthActivity extends BaseActivity {
                 getCurrentUser().getDisplayName(),
                 (getCurrentUser().getPhotoUrl() != null) ? getCurrentUser().getPhotoUrl().toString() : null);
         UserHelper.createUser(user.getUid(), user).addOnFailureListener(onFailureListener());
-        launchHomeActivity();
+        this.saveUserUidInSharedPref();
+        this.launchHomeActivity();
+    }
+
+    private void saveUserUidInSharedPref() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("currentUser", MODE_PRIVATE);
+        mSharedPreferences.edit().putString("currentUserUid", user.getUid()).apply();
     }
 
     private void launchHomeActivity() {
         Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);
+        finish();
     }
 
 }

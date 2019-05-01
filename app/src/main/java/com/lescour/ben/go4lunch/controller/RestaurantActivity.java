@@ -99,7 +99,7 @@ public class RestaurantActivity extends BaseActivity {
         if (user.getUserChoicePlaceId().equals(mResult.getPlaceId())) {
             restaurantChoice.setColorFilter(getResources().getColor(R.color.mainThemeColorValid));
         }
-        this.userLike = new ArrayList<>();
+        userLike = new ArrayList<>();
         if (user.getUserLike() != null) {
             userLike.addAll(user.getUserLike());
             if (userLike.contains(mResult.getPlaceId())) {
@@ -183,7 +183,7 @@ public class RestaurantActivity extends BaseActivity {
                     ActivityCompat.requestPermissions(this, new String[]{CALL_PHONE}, requestCodeCall);
                 }
             } else {
-                makeCall();
+                this.makeCall();
             }
         } else {
             Toast.makeText(this, getString(R.string.no_phone_number), Toast.LENGTH_LONG).show();
@@ -196,7 +196,7 @@ public class RestaurantActivity extends BaseActivity {
         switch (requestCode) {
             case requestCodeCall: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    makeCall();
+                    this.makeCall();
                 } else {
                     Toast.makeText(this, getString(R.string.not_allowed_to_call), Toast.LENGTH_LONG).show();
                 }
@@ -222,7 +222,7 @@ public class RestaurantActivity extends BaseActivity {
             userLike.add(mResult.getPlaceId());
             user.setUserLike(userLike);
         }
-        updateUserLike();
+        this.updateUserLike();
     }
 
     private void updateUserLike() {

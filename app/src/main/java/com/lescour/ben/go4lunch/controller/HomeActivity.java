@@ -63,7 +63,6 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
@@ -150,8 +149,11 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
             mCardView.setVisibility(View.GONE);
             revertParcelableRestaurantDetails();
             fragment.newRestaurantsForFragment(mParcelableRestaurantDetails);
+        } else {
+            super.onBackPressed();
         }
     }
+
 
     //TOOLBAR\\
     private void configureToolbar() {
@@ -326,6 +328,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                 this.retrievesTheRestaurant();
                 break;
             case R.id.activity_home_drawer_settings:
+                this.launchSettingsActivity();
                 break;
             case R.id.activity_home_drawer_logout:
                 this.signOutUserFromFirebase();
@@ -357,6 +360,11 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         Intent intent = new Intent(HomeActivity.this, RestaurantActivity.class);
         intent.putExtra(INTENT_EXTRA_RESULT, result);
         intent.putExtra(INTENT_EXTRA_PLACEDETAILSRESPONSE, placeDetailsResponse);
+        startActivity(intent);
+    }
+
+    private void launchSettingsActivity() {
+        Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
         startActivity(intent);
     }
 

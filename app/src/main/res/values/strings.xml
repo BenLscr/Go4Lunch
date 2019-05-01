@@ -61,7 +61,7 @@
     //WORKMATES
     <string name="workmate_image">Workmate image</string>
 
-    //PROCESS_RESTAURANT_DETAILS
+    //PROCESS RESTAURANT DETAILS
     <string name="open_24_7">Open 24/7</string>
     <string name="pattern">h.mma</string>
     <string name="open_until">Open until \u0020</string>
@@ -86,5 +86,11 @@
     <string name="channel_name">Go4Lunch Notifications</string>
     <string name="located_at">\u0020 located at \u0020</string>
     <string name="with">\u0020 with \u0020</string>
+
+    //SETTINGS ACTIVITY
+    <string name="button_delete_account">Delete my account</string>
+    <string name="popup_message_confirmation_delete_account">Are you sure you want to delete your account ?</string>
+    <string name="popup_message_choice_yes">Yes</string>
+    <string name="popup_message_choice_no">No</string>
 
 </resources>
