@@ -58,16 +58,6 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParcelableRestaurantDetails = getArguments().getParcelable(ARG_PARCELABLE_RESTAURANTDETAILS);
-            this.usersList = new ArrayList<>();
-            this.usersList = getArguments().getParcelableArrayList(ARG_USERSLIST);
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -124,6 +114,9 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
         }
     }
 
+    /**
+     * Call when a user click on a marker. Start a new activity to see restaurant details.
+     */
     @Override
     public boolean onMarkerClick(Marker marker) {
         int position = (int) marker.getTag();
@@ -134,6 +127,10 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
         return false;
     }
 
+    /**
+     * Clean old markers.
+     * Notify fragment that the data has changed.
+     */
     public void notifyFragment() {
         mMap.clear();
         for (int i = 0; mParcelableRestaurantDetails.getNearbyResults().size() > i; i++) {

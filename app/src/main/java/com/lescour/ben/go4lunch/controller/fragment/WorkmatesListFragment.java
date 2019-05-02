@@ -58,6 +58,9 @@ public class WorkmatesListFragment extends BaseFragment {
         return view;
     }
 
+    /**
+     * Notify fragment that the data has changed.
+     */
     public void notifyFragment() {
         this.mRecyclerViewAdapter.notifyDataSetChanged();
     }

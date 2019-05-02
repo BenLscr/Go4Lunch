@@ -34,12 +34,22 @@ public class ProcessRestaurantDetails {
     private String hoursString, minutesString;
     private int howManyPeople = 0;
 
+    /**
+     * Constructor of ProcessRestaurantDetails.
+     * @param nearbyResult Restaurant from nearby api.
+     * @param placeDetailsResponse Restaurant details from PlaceDetails.
+     * @param context Context of application.
+     */
     public ProcessRestaurantDetails(Result nearbyResult, PlaceDetailsResponse placeDetailsResponse, Context context) {
         this.mResult = nearbyResult;
         this.mPlaceDetailsResponse = placeDetailsResponse;
         this.context = context;
     }
 
+    /**
+     * This method return the name of the restaurant. If the length of the name if too tall, he is cut.
+     * @return The name of restaurant.
+     */
     public String getRestaurantName() {
         if (mResult.getName().length() >= 30) {
             return mResult.getName().substring(0, 30) + "...";
@@ -48,11 +58,20 @@ public class ProcessRestaurantDetails {
         }
     }
 
+    /**
+     * This method get the address of restaurant.
+     * @return Return the address without the city.
+     */
     public String getRestaurantAddress() {
         String address = mPlaceDetailsResponse.getAddress();
         return address.substring(0, address.indexOf(","));
     }
 
+    /**
+     * This method get schedules of the restaurant.
+     * A restaurant can be close, open 24/7 or open with a closing hour.
+     * A restaurant can get no schedules define.
+     */
     public String getRestaurantOpenHours() {
         if (mPlaceDetailsResponse.getOpeningHours() != null) {
             if (mResult.getOpeningHours().getOpenNow()) {
@@ -139,6 +158,10 @@ public class ProcessRestaurantDetails {
         }
     }
 
+    /**
+     * This method calculate the distance between the user and the restaurant.
+     * @return The distance found.
+     */
     public String howFarIsThisRestaurant(Double currentLat, Double currentLng) {
         Location myLocation = new Location("My location");
         myLocation.setLatitude(currentLat);
@@ -151,6 +174,11 @@ public class ProcessRestaurantDetails {
         return String.valueOf(Math.round(myLocation.distanceTo(restaurantLocation)))+ "m";
     }
 
+    /**
+     * This method calculate how many people chose this restaurant.
+     * @param usersList List of workmates.
+     * @return How many people chose this restaurant.
+     */
     public String howManyPeopleChoseThisRestaurant(ArrayList<User> usersList) {
         for (User user : usersList) {
             if (user.getUserChoicePlaceId().equals(mResult.getPlaceId())) {
@@ -160,6 +188,9 @@ public class ProcessRestaurantDetails {
         return "(" + howManyPeople + ")";
     }
 
+    /**
+     * If one or many workmates chose this restaurant, the number is visible.
+     */
     public int therePeopleWhoChoseThisRestaurant() {
         if (howManyPeople != 0) {
             return View.VISIBLE;
@@ -168,6 +199,9 @@ public class ProcessRestaurantDetails {
         }
     }
 
+    /**
+     * If the restaurant have a rate egal or more of 2, a star is add.
+     */
     public int getRestaurantRate1() {
         if (mResult.getRating() >= 2) {
             return View.VISIBLE;
@@ -176,6 +210,9 @@ public class ProcessRestaurantDetails {
         }
     }
 
+    /**
+     * If the restaurant have a rate egal or more of 3, a star is add.
+     */
     public int getRestaurantRate2() {
         if (mResult.getRating() >= 3) {
             return View.VISIBLE;
@@ -184,6 +221,9 @@ public class ProcessRestaurantDetails {
         }
     }
 
+    /**
+     * If the restaurant have a rate egal or more of 4, a star is add.
+     */
     public int getRestaurantRate3() {
         if (mResult.getRating() >= 4) {
             return View.VISIBLE;
@@ -192,6 +232,9 @@ public class ProcessRestaurantDetails {
         }
     }
 
+    /**
+     * @return The image of the restaurant.
+     */
     public Bitmap getRestaurantImage() {
         return mPlaceDetailsResponse.getBitmap();
     }

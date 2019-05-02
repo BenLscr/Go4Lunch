@@ -24,23 +24,4 @@ public class GoogleStreams {
                 .timeout(10, TimeUnit.SECONDS);
     }
 
-    /**public static Observable<DetailsResponse> streamFetchDetailsSearch(String placeId,
-                                                                       String apiKey){
-        GoogleService googleService = GoogleService.retrofit.create(GoogleService.class);
-        return googleService.getDetailsSearch(placeId, apiKey)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .timeout(10, TimeUnit.SECONDS);
-    }
-
-    public static Observable<DetailsResponse> streamFetchNearbySearchAndDetailsSearch(String location,
-                                                                                      int radius,
-                                                                                      String type,
-                                                                                      String apiKey){
-        return streamFetchNearbySearch(location, radius, type, apiKey)
-                .map(NearbyResponse::getResults)
-                .flatMapIterable(results -> results)
-                .flatMap(result -> streamFetchDetailsSearch(result.getPlaceId(), apiKey));
-    }*/
-
 }

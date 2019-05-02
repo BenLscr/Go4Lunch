@@ -69,6 +69,9 @@ public class WorkmatesListRestaurantFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Notify fragment that the data has changed.
+     */
     public void notifyRecyclerView(ArrayList<User> listOfUserWithSameChoice) {
         this.listOfUserWithSameChoice.clear();
         this.listOfUserWithSameChoice.addAll(listOfUserWithSameChoice);

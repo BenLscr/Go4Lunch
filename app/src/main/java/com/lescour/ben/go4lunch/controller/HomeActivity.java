@@ -100,10 +100,10 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private BaseFragment fragment;
     private ProgressDialog mProgress;
 
-    private ArrayList<User> usersList;
-
     private Disposable disposable;
 
+    private List<PlaceDetailsResponse> mPlaceDetailsResponses;
+    private ArrayList<User> usersList;
     private ParcelableRestaurantDetails mParcelableRestaurantDetails;
     private ParcelableRestaurantDetails saveParcelableRestaurantDetails;
     private long MIN_TIME_FOR_UPDATES = 9999999;
@@ -115,8 +115,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private int radius = 1000;
     private String type = "restaurant";
     private String apiKey = BuildConfig.PLACES_API_KEY;
-
-    private List<PlaceDetailsResponse> mPlaceDetailsResponses;
 
     public static final String INTENT_EXTRA_RESULT = "INTENT_EXTRA_RESULT";
     public static final String INTENT_EXTRA_PLACEDETAILSRESPONSE = "INTENT_EXTRA_PLACEDETAILSRESPONSE";
@@ -224,7 +222,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                     .setQuery(query)
                     .build();
 
-
             placesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
                 ArrayList<Result> results = new ArrayList<>();
                 ArrayList<PlaceDetailsResponse> placeDetailsResponses = new ArrayList<>();
@@ -250,6 +247,10 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
+    /**
+     * Call when the user click on the cross of the autocomplete bar.
+     * Hide the autocomplete bar and notify the fragment to be update.
+     */
     @OnClick(R.id.close_autocomplete)
     public void closeAutocomplete() {
         if (mCardView.getVisibility() == View.VISIBLE) {
@@ -305,6 +306,9 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         fragmentTransaction.add(R.id.fragment_container, fragment).commit();
     }
 
+    /**
+     * Call when the user click on a restaurant. Launch a new activity to see details.
+     */
     @Override
     public void onListFragmentInteraction(Result result, PlaceDetailsResponse placeDetailsResponse) {
         this.launchRestaurantActivity(result, placeDetailsResponse);
@@ -326,7 +330,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     /**
-     * When an item is selected. Display the associate fragment in the ViewPager.
+     * Call when an item is selected. Display the associate activity.
      */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -425,7 +429,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         });
     }
 
-    //HTTP REQUEST\\
+    //REQUEST\\
     private void initializePlacesApiClient() {
         // Initialize Places.
         Places.initialize(getApplicationContext(), apiKey);
@@ -438,7 +442,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                //this.checkConnexion(locationManager, this);
+                this.checkConnexion(locationManager, this);
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_FOR_UPDATES, MIN_DISTANCE_FOR_UPDATES, new LocationListener() {
                     @Override
                     public void onLocationChanged(Location location) {
@@ -465,12 +469,15 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
          }
     }
 
+    /**
+     * Call when the user answer for permission. The activity receive a requestCode.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case 0: {
-                getMyCurrentLocation();
+                this.getMyCurrentLocation();
             }
         }
     }
@@ -478,14 +485,10 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private void checkConnexion(LocationManager locationManager, Context context) {
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             new AlertDialog.Builder(context)
-                    .setTitle("GPS not found")  // GPS not found
-                    .setMessage("Want to enable ?") // Want to enable?
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            context.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                        }
-                    })
-                    .setNegativeButton("No", null)
+                    .setTitle(getString(R.string.gps_not_found))
+                    .setMessage(getString(R.string.want_to_enable))
+                    .setPositiveButton(getString(R.string.popup_message_choice_yes), (dialogInterface, i) -> context.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)))
+                    .setNegativeButton(getString(R.string.popup_message_choice_no), null)
                     .show();
         }
     }
@@ -531,15 +534,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
             placeDetailsResponse.setAddress(place.getAddress());
             placeDetailsResponse.setPhoneNumber(place.getPhoneNumber());
             placeDetailsResponse.setWebsiteUri(place.getWebsiteUri());
-            //this.getPlacePhotos(placeId, placeDetailsResponse);
-        }).addOnFailureListener((exception) -> {
-            if (exception instanceof ApiException) {
-                ApiException apiException = (ApiException) exception;
-                int statusCode = apiException.getStatusCode();
-                // Handle error with given status code.
-                Log.e("PlaceDetails", "Place not found: " + exception.getMessage());
-            }
-        });
+        }).addOnFailureListener(this.onFailureListener());
     }
 
     private void getPlacePhotos(String placeId, PlaceDetailsResponse placeDetailsResponse) {
@@ -568,14 +563,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                         mParcelableRestaurantDetails.setPlaceDetailsResponses(mPlaceDetailsResponses);
                         this.setFirestoreListener();
                     }
-                }).addOnFailureListener((exception) -> {
-                    if (exception instanceof ApiException) {
-                        ApiException apiException = (ApiException) exception;
-                        int statusCode = apiException.getStatusCode();
-                        // Handle error with given status code.
-                        Log.e("PlacePhotos", "Place not found: " + exception.getMessage());
-                    }
-                });
+                }).addOnFailureListener(this.onFailureListener());
             }
         });
     }

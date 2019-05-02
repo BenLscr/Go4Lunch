@@ -55,6 +55,11 @@ public class SettingsActivity extends BaseActivity {
     }
 
     //DELETE ACCOUNT BOUTON\\
+
+    /**
+     * Call when the user click on the delete button.
+     * This function delete user information and this account in firebase.
+     */
     @OnClick(R.id.settings_button_delete)
     public void onClickDeleteButton() {
         new AlertDialog.Builder(this)
@@ -83,6 +88,11 @@ public class SettingsActivity extends BaseActivity {
     }
 
     //NOTIFICATION\\
+    /**
+     * Call when the user click on the switch.
+     * If the switch is checked a method to prepare android job is called.
+     * If the switch is unchecked a method is called to disable android job.
+     */
     @OnCheckedChanged(R.id.notification_switch)
     public void onCheckedChangeListener (CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {

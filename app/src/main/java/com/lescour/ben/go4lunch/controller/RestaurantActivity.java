@@ -189,6 +189,11 @@ public class RestaurantActivity extends BaseActivity {
     }
 
     //CHOICE BUTTON\\
+
+    /**
+     * Call when a user click on button to choose a restaurant.
+     * Update the color and the User file if the user select or deselect the restaurant.
+     */
     public void setChoice(View view) {
         mProgressBar.setVisibility(View.VISIBLE);
         if (user.getUserChoicePlaceId().equals("")) {
@@ -222,6 +227,11 @@ public class RestaurantActivity extends BaseActivity {
     //CALL BUTTON\\
     private static final int requestCodeCall = 123;
 
+    /**
+     * Call when the user click on the phone button.
+     * If a number phone is associate at the restaurant, open the user's phone and call.
+     * Or send a message toast.
+     */
     @OnClick(R.id.restaurant_activity_button_call)
     public void callThisRestaurant() {
         if (mPlaceDetailsResponse.getPhoneNumber() != null) {
@@ -237,6 +247,9 @@ public class RestaurantActivity extends BaseActivity {
         }
     }
 
+    /**
+     * Call at the first time the user click on the phone button and answer for the permission.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -256,6 +269,10 @@ public class RestaurantActivity extends BaseActivity {
     }
 
     //LIKE BUTTON\\
+    /**
+     * Call when the user click on the star.
+     * This button work like a memory note to remind the user he like this restaurant.
+     */
     @OnClick(R.id.restaurant_activity_button_like)
     public void likeThisRestaurant() {
         if (userLike != null && userLike.contains(mResult.getPlaceId())) {
@@ -279,6 +296,11 @@ public class RestaurantActivity extends BaseActivity {
     //WEBSITE BUTTON\\
     public static final String BUNDLE_EXTRA_URL = "BUNDLE_EXTRA_URL";
 
+    /**
+     * Call when the user click on the website button.
+     * If a website is associate at the restaurant, open it in a webview.
+     * Or send a message Toast.
+     */
     @OnClick(R.id.restaurant_activity_button_website)
     public void openWebsiteOfThisRestaurant() {
         if (mPlaceDetailsResponse.getWebsiteUri() != null) {

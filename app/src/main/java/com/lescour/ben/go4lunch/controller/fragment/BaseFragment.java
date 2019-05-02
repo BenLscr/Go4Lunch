@@ -27,12 +27,20 @@ public abstract class BaseFragment extends Fragment {
     //CUSTOM\\
     protected abstract void notifyFragment();
 
+    /**
+     * A method to receive a new list of workmates from HomeActivity for notify the current fragment.
+     * @param usersList List of workmates.
+     */
     public void newUsersForFragment(ArrayList<User> usersList) {
         this.usersList.clear();
         this.usersList.addAll(usersList);
         notifyFragment();
     }
 
+    /**
+     * A method to receive a new ParcelableRestaurantDetails from HomeActivity for notify the current fragment.
+     * @param mParcelableRestaurantDetailsAutocomplete Result of autocomplete.
+     */
     public void newRestaurantsForFragment(ParcelableRestaurantDetails mParcelableRestaurantDetailsAutocomplete) {
         this.mParcelableRestaurantDetails = new ParcelableRestaurantDetails();
         this.mParcelableRestaurantDetails = mParcelableRestaurantDetailsAutocomplete;
@@ -40,6 +48,11 @@ public abstract class BaseFragment extends Fragment {
     }
 
     //OVERRIDE\\
+
+    /**
+     * Call at the creation of the fragment.
+     * @param savedInstanceState Bundle who contains extra data for the fragment.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

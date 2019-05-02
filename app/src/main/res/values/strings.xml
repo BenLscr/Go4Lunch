@@ -32,6 +32,10 @@
     <string name="info_no_name_found">No name found</string>
     <string name="no_restaurant_selected">No restaurant selected !</string>
 
+    //POPUP PERMISSION
+    <string name="gps_not_found">GPS not found</string>
+    <string name="want_to_enable">Want to enable ?</string>
+
     //FACEBOOK PURPOSE
     <string name="facebook_application_id" translatable="false">625097174586182</string>
     <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb625097174586182</string>
