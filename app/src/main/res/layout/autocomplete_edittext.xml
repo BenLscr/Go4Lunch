@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -8,6 +8,7 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="start"
         android:src="@drawable/baseline_search_white_24"
         android:tint="@color/quantum_grey"/>
 
@@ -15,9 +16,18 @@
         android:id="@+id/edittext_autocomplete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="@string/search_restaurant"
+        android:layout_gravity="center"
         android:background="@android:color/transparent"
-        android:inputType="text"
-        android:layout_marginStart="35dp"/>
+        android:hint="@string/search_restaurant"
+        android:inputType="text" />
 
-</LinearLayout>
+    <ImageButton
+        android:id="@+id/close_autocomplete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:src="@drawable/baseline_close_black_24"
+        android:background="@color/fui_transparent"
+        android:tint="@color/quantum_grey"/>
+
+</FrameLayout>

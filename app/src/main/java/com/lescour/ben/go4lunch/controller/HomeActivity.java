@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -75,6 +76,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 
@@ -93,6 +95,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     @BindView(R.id.activity_main_progress_bar) ProgressBar mProgressBar;
     @BindView(R.id.card_view) CardView mCardView;
     @BindView(R.id.edittext_autocomplete) EditText mEditText;
+    @BindView(R.id.close_autocomplete) ImageButton mCloseAutocomplete;
 
     private BaseFragment fragment;
     private ProgressDialog mProgress;
@@ -145,10 +148,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     public void onBackPressed() {
         if (this.drawerLayout.isDrawerOpen(GravityCompat.START)) {
             this.drawerLayout.closeDrawer(GravityCompat.START);
-        } else if (mCardView.getVisibility() == View.VISIBLE) {
-            mCardView.setVisibility(View.GONE);
-            revertParcelableRestaurantDetails();
-            fragment.newRestaurantsForFragment(mParcelableRestaurantDetails);
         } else {
             finish();
         }
@@ -248,6 +247,15 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                     Log.e("TAG", "Place not found: " + apiException.getStatusCode());
                 }
             });
+        }
+    }
+
+    @OnClick(R.id.close_autocomplete)
+    public void closeAutocomplete() {
+        if (mCardView.getVisibility() == View.VISIBLE) {
+            mCardView.setVisibility(View.GONE);
+            revertParcelableRestaurantDetails();
+            fragment.newRestaurantsForFragment(mParcelableRestaurantDetails);
         }
     }
 
