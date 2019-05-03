@@ -132,9 +132,11 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
      * Notify fragment that the data has changed.
      */
     public void notifyFragment() {
-        mMap.clear();
-        for (int i = 0; mParcelableRestaurantDetails.getNearbyResults().size() > i; i++) {
-            this.setMarker(i);
+        if (mMap != null) {
+            mMap.clear();
+            for (int i = 0; mParcelableRestaurantDetails.getNearbyResults().size() > i; i++) {
+                this.setMarker(i);
+            }
         }
     }
 
