@@ -1,5 +1,6 @@
 package com.lescour.ben.go4lunch.model;
 
+import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -16,6 +17,7 @@ public class ParcelableRestaurantDetails implements Parcelable {
     private Double currentLat, currentLng;
     private List<Result> nearbyResults;
     private List<PlaceDetailsResponse> placeDetailsResponses;
+    private List<Bitmap> mBitmapList;
 
     public ParcelableRestaurantDetails() {
     }
@@ -33,6 +35,7 @@ public class ParcelableRestaurantDetails implements Parcelable {
         }
         nearbyResults = in.createTypedArrayList(Result.CREATOR);
         placeDetailsResponses = in.createTypedArrayList(PlaceDetailsResponse.CREATOR);
+        mBitmapList = in.createTypedArrayList(Bitmap.CREATOR);
     }
 
     @Override
@@ -51,6 +54,7 @@ public class ParcelableRestaurantDetails implements Parcelable {
         }
         dest.writeTypedList(nearbyResults);
         dest.writeTypedList(placeDetailsResponses);
+        dest.writeTypedList(mBitmapList);
     }
 
     @Override
@@ -102,4 +106,11 @@ public class ParcelableRestaurantDetails implements Parcelable {
         this.placeDetailsResponses = placeDetailsResponses;
     }
 
+    public List<Bitmap> getBitmapList() {
+        return mBitmapList;
+    }
+
+    public void setBitmapList(List<Bitmap> bitmapList) {
+        mBitmapList = bitmapList;
+    }
 }

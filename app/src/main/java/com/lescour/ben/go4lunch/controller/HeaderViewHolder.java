@@ -1,5 +1,6 @@
 package com.lescour.ben.go4lunch.controller;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
@@ -10,6 +11,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.lescour.ben.go4lunch.R;
 
+import androidx.fragment.app.Fragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -24,6 +26,12 @@ public class HeaderViewHolder extends BaseActivity {
 
     private Context context;
     private View view;
+
+    /**
+     * empty constructor
+     */
+    public HeaderViewHolder() {
+    }
 
     /**
      * Constructor of the header of menu drawer.

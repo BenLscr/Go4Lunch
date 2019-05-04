@@ -15,7 +15,7 @@ public class PlaceDetailsResponse implements Parcelable {
     private String name;
     private OpeningHours openingHours;
     private String address;
-    private Bitmap bitmap;
+    //private Bitmap bitmap;
     private Uri websiteUri;
     private String phoneNumber;
 
@@ -26,7 +26,7 @@ public class PlaceDetailsResponse implements Parcelable {
         name = in.readString();
         openingHours = in.readParcelable(OpeningHours.class.getClassLoader());
         address = in.readString();
-        bitmap = in.readParcelable(Bitmap.class.getClassLoader());
+        //bitmap = in.readParcelable(Bitmap.class.getClassLoader());
         websiteUri = in.readParcelable(Uri.class.getClassLoader());
         phoneNumber = in.readString();
     }
@@ -36,7 +36,7 @@ public class PlaceDetailsResponse implements Parcelable {
         dest.writeString(name);
         dest.writeParcelable(openingHours, flags);
         dest.writeString(address);
-        dest.writeParcelable(bitmap, flags);
+        //dest.writeParcelable(bitmap, flags);
         dest.writeParcelable(websiteUri, flags);
         dest.writeString(phoneNumber);
     }
@@ -82,27 +82,19 @@ public class PlaceDetailsResponse implements Parcelable {
         this.address = address;
     }
 
-    public Bitmap getBitmap() {
+    /**public Bitmap getBitmap() {
         return bitmap;
-    }
+    }*/
 
-    public void setBitmap(Bitmap bitmap) {
+    /**public void setBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;
-    }
+    }*/
 
-    public Uri getWebsiteUri() {
-        return websiteUri;
-    }
+    public Uri getWebsiteUri() { return websiteUri; }
 
-    public void setWebsiteUri(Uri websiteUri) {
-        this.websiteUri = websiteUri;
-    }
+    public void setWebsiteUri(Uri websiteUri) { this.websiteUri = websiteUri; }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
+    public String getPhoneNumber() { return phoneNumber; }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 }

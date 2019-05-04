@@ -9,6 +9,8 @@ import com.lescour.ben.go4lunch.model.nearby.Result;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.grpc.Context;
+
 import static org.junit.Assert.*;
 
 /**

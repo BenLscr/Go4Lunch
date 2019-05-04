@@ -1,6 +1,7 @@
 package com.lescour.ben.go4lunch.view;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,16 +27,12 @@ import butterknife.ButterKnife;
 public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<RestaurantRecyclerViewAdapter.ViewHolder> {
 
     private ParcelableRestaurantDetails mParcelableRestaurantDetails;
-    private List<Result> nearbyResults;
-    private List<PlaceDetailsResponse> placeDetailsResponses;
     private ArrayList<User> usersList;
     private Context context;
     private BaseFragment.OnListFragmentInteractionListener mListener;
 
     public RestaurantRecyclerViewAdapter(ParcelableRestaurantDetails mParcelableRestaurantDetails, ArrayList<User> usersList, Context context, BaseFragment.OnListFragmentInteractionListener listener) {
         this.mParcelableRestaurantDetails = mParcelableRestaurantDetails;
-        this.nearbyResults = mParcelableRestaurantDetails.getNearbyResults();
-        this.placeDetailsResponses = mParcelableRestaurantDetails.getPlaceDetailsResponses();
         this.usersList = usersList;
         this.context = context;
         this.mListener = listener;
@@ -53,8 +50,7 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         holder.nearbyResult = mParcelableRestaurantDetails.getNearbyResults().get(position);
         holder.placeDetailsResponse = mParcelableRestaurantDetails.getPlaceDetailsResponses().get(position);
-        //holder.nearbyResult = this.nearbyResults.get(position);
-        //holder.placeDetailsResponse = this.placeDetailsResponses.get(position);
+        holder.mBitmap = mParcelableRestaurantDetails.getBitmapList().get(position);
 
         ProcessRestaurantDetails restaurantDetails = new ProcessRestaurantDetails(holder.nearbyResult, holder.placeDetailsResponse, context);
 
@@ -69,8 +65,8 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
             holder.restaurantRate2.setVisibility(restaurantDetails.getRestaurantRate2());
             holder.restaurantRate3.setVisibility(restaurantDetails.getRestaurantRate3());
         }
-        if (holder.placeDetailsResponse.getBitmap() != null) {
-            holder.restaurantImage.setImageBitmap(restaurantDetails.getRestaurantImage());
+        if (holder.mBitmap != null) {
+            holder.restaurantImage.setImageBitmap(holder.mBitmap);
         }
 
         holder.mView.setOnClickListener(v -> {
@@ -100,6 +96,7 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
         @BindView(R.id.restaurant_image) ImageView restaurantImage;
         public Result nearbyResult;
         public PlaceDetailsResponse placeDetailsResponse;
+        public Bitmap mBitmap;
 
         public ViewHolder(View view) {
             super(view);
