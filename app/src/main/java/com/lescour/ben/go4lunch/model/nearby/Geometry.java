@@ -15,6 +15,10 @@ public class Geometry implements Parcelable {
     @Expose
     private Location location;
 
+    public Geometry(Location location) {
+        this.location = location;
+    }
+
     protected Geometry(Parcel in) {
         location = in.readParcelable(Location.class.getClassLoader());
     }

@@ -18,6 +18,11 @@ public class Location implements Parcelable {
     @Expose
     private Double lng;
 
+    public Location(Double lat, Double lng) {
+        this.lat = lat;
+        this.lng = lng;
+    }
+
     protected Location(Parcel in) {
         if (in.readByte() == 0) {
             lat = null;

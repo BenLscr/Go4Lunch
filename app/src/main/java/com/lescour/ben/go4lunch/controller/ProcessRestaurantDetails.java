@@ -70,10 +70,6 @@ public class ProcessRestaurantDetails {
      */
     public String getRestaurantOpenHours() {
         if (mPlaceDetailsResponse.getOpeningHours() != null) {
-            Log.e("TAG", mPlaceDetailsResponse.getName());
-            Log.e("TAG", mResult.getName());
-            Log.e("TAG", mResult.getOpeningHours().getOpenNow().toString());
-            Log.e("TAG", mPlaceDetailsResponse.getOpeningHours().getPeriods().toString());
             if (mResult.getOpeningHours().getOpenNow()) {
                 if (mPlaceDetailsResponse.getOpeningHours().getPeriods().size() == 1) {
                     return context.getString(R.string.open_24_7);
@@ -171,7 +167,7 @@ public class ProcessRestaurantDetails {
         restaurantLocation.setLatitude(mResult.getGeometry().getLocation().getLat());
         restaurantLocation.setLongitude(mResult.getGeometry().getLocation().getLng());
 
-        return String.valueOf(Math.round(myLocation.distanceTo(restaurantLocation)))+ "m";
+        return Math.round(myLocation.distanceTo(restaurantLocation)) + "m";
     }
 
     /**

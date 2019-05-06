@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
@@ -70,30 +71,23 @@ public class AuthActivity extends BaseActivity {
                 this.retrievesIsData();
             } else { // ERRORS
                 if (response == null) {
-                    //Toast.makeText(this, R.string.error_authentication_canceled, Toast.LENGTH_LONG).show();
-                    //TODO ESSAYER DE REMOVE LE CODE ERROR
-                    Log.e("fail", "annulé");
+                    Toast.makeText(this, R.string.error_authentication_canceled, Toast.LENGTH_LONG).show();
                 } else if (response.getError().getErrorCode() == ErrorCodes.NO_NETWORK) {
-                    //Toast.makeText(this, R.string.error_authentication_canceled, Toast.LENGTH_LONG).show();
-                    Log.e("fail", "no network");
+                    Toast.makeText(this, R.string.error_no_internet, Toast.LENGTH_LONG).show();
                 } else if (response.getError().getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
-                    //Toast.makeText(this, R.string.error_authentication_canceled, Toast.LENGTH_LONG).show();
-                    Log.e("fail", "error inco");
+                    Toast.makeText(this, R.string.error_unknown_error, Toast.LENGTH_LONG).show();
                 }
             }
         }
     }
 
     private void retrievesIsData() {
-        UserHelper.getUser(this.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    user = documentSnapshot.toObject(User.class);
-                    launchHomeActivity();
-                } else {
-                    createUserInFirestore();
-                }
+        UserHelper.getUser(this.getCurrentUser().getUid()).addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                user = documentSnapshot.toObject(User.class);
+                launchHomeActivity();
+            } else {
+                createUserInFirestore();
             }
         });
     }

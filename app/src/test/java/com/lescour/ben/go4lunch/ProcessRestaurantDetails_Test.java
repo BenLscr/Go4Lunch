@@ -1,36 +1,39 @@
 package com.lescour.ben.go4lunch;
 
+import android.content.Context;
 import android.view.View;
 
 import com.lescour.ben.go4lunch.controller.ProcessRestaurantDetails;
+import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
 import com.lescour.ben.go4lunch.model.details.PlaceDetailsResponse;
+import com.lescour.ben.go4lunch.model.nearby.Geometry;
+import com.lescour.ben.go4lunch.model.nearby.Location;
 import com.lescour.ben.go4lunch.model.nearby.Result;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import io.grpc.Context;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
-import static org.junit.Assert.*;
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
- */
 public class ProcessRestaurantDetails_Test {
 
+    private ParcelableRestaurantDetails parcelableRestaurantDetails;
     private Result mResult;
     private PlaceDetailsResponse mPlaceDetailsResponse;
     private ProcessRestaurantDetails mProcessRestaurantDetails;
 
     @Before
     public void setUp() {
+        parcelableRestaurantDetails = new ParcelableRestaurantDetails();
+        parcelableRestaurantDetails.setCurrentLat(49.8778);
+        parcelableRestaurantDetails.setCurrentLng(1.22824);
         mResult = new Result();
         mResult.setRating(3.7);
         mPlaceDetailsResponse = new PlaceDetailsResponse();
         mPlaceDetailsResponse.setAddress("225 Rue Edouard Cannevel, 76510 Saint-Nicolas-d'Aliermont, France");
-        mProcessRestaurantDetails = new ProcessRestaurantDetails(mResult, mPlaceDetailsResponse);
+        mProcessRestaurantDetails = new ProcessRestaurantDetails(mResult, mPlaceDetailsResponse, mock(Context.class));
     }
 
     @Test
@@ -49,6 +52,14 @@ public class ProcessRestaurantDetails_Test {
     public void restaurantAddress_isCorrect() {
         assertEquals("225 Rue Edouard Cannevel", mProcessRestaurantDetails.getRestaurantAddress());
     }
+
+    /**@Test
+    public void restaurantDistance_isCorrect() {
+        Location location = new Location(49.8791513, 1.2210993);
+        Geometry geometry = new Geometry(location);
+        mResult.setGeometry(geometry);
+        assertEquals("536" , mProcessRestaurantDetails.howFarIsThisRestaurant(parcelableRestaurantDetails.getCurrentLat(), parcelableRestaurantDetails.getCurrentLng()));
+    }*/
 
     @Test
     public void restaurantRating1_isCorrect() {
