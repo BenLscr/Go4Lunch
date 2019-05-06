@@ -2,11 +2,11 @@
     <string name="app_name" translatable="false">Go4Lunch</string>
 
     //AUTHENTICATION
-    <string name="logo" translatable="false">logo</string>
+    <string name="logo">logo</string>
     <string name="error_authentication_canceled">Authentification annulée&#8230;</string>
     <string name="error_no_internet">Aucune connexion internet !</string>
     <string name="error_unknown_error">Une erreur inconnue s\'est produite&#8230;</string>
-    <string name="fetch_failed" translatable="false">Fetch Failed</string>
+    <string name="fetch_failed">Fetch Failed</string>
     <string name="your_account_will_be_disconnected">Your account will be disconnected…</string>
     <string name="please_wait">Please wait…</string>
 
@@ -19,9 +19,9 @@
     <string name="search">Search</string>
 
     //MAIN MENU
-    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
-    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
-    <string name="image_restaurant" translatable="false">image_restaurant</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="image_restaurant">image_restaurant</string>
     <string name="your_lunch">YOUR LUNCH</string>
     <string name="settings">SETTINGS</string>
     <string name="logout">LOGOUT</string>
@@ -50,8 +50,8 @@
     <string name="is_it_open">Is it open ?</string>
     <string name="distance">Distance</string>
     <string name="number_of_person">(0)</string>
-    <string name="rate_stars" translatable="false">rate stars</string>
-    <string name="restaurant_image" translatable="false">Restaurant image</string>
+    <string name="rate_stars">rate stars</string>
+    <string name="restaurant_image">Restaurant image</string>
 
     //RESTAURANT ACTIVITY
     <string name="call">call</string>
@@ -60,10 +60,10 @@
     <string name="no_phone_number">No phone number available for this restaurant…</string>
     <string name="not_allowed_to_call">The app was not allowed to call.</string>
     <string name="no_website">No website available for this restaurant…</string>
-    <string name="button_choice" translatable="false">button_choice</string>
+    <string name="button_choice">button_choice</string>
 
     //WORKMATES
-    <string name="workmate_image" translatable="false">Workmate image</string>
+    <string name="workmate_image">Workmate image</string>
 
     //PROCESS RESTAURANT DETAILS
     <string name="open_24_7">Open 24/7</string>

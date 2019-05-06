@@ -47,4 +47,13 @@
     <string name="website">site internet</string>
     <string name="call">appeler</string>
     <string name="want_to_enable">Souhaitez-vous l\'activer ?</string>
+    <string name="fetch_failed">Echec d\'extraction</string>
+    <string name="image_restaurant">image restaurant</string>
+    <string name="button_choice">bouton de choix</string>
+    <string name="logo">logo</string>
+    <string name="navigation_drawer_close">Ferme le tiroir de navigation</string>
+    <string name="navigation_drawer_open">Ouvre le tiroir de navigation</string>
+    <string name="rate_stars">notation en étoiles</string>
+    <string name="restaurant_image">Restaurant image</string>
+    <string name="workmate_image">Image du collègue</string>
 </resources>

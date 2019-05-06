@@ -71,7 +71,6 @@ public class SettingsActivity extends BaseActivity {
             UserHelper.deleteUser(this.getCurrentUser().getUid())
                     .addOnFailureListener(this.onFailureListener());
 
-            //TODO : Re-authenticate
             AuthUI.getInstance()
                     .delete(this)
                     .addOnSuccessListener(this, new OnSuccessListener<Void>() {
