@@ -26,6 +26,12 @@ public class HeaderViewHolder extends BaseActivity {
     private View view;
 
     /**
+     * empty constructor
+     */
+    public HeaderViewHolder() {
+    }
+
+    /**
      * Constructor of the header of menu drawer.
      */
     public HeaderViewHolder(Context context, View view) {

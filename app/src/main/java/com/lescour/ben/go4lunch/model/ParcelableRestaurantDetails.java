@@ -1,5 +1,6 @@
 package com.lescour.ben.go4lunch.model;
 
+import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -16,6 +17,7 @@ public class ParcelableRestaurantDetails implements Parcelable {
     private Double currentLat, currentLng;
     private List<Result> nearbyResults;
     private List<PlaceDetailsResponse> placeDetailsResponses;
+    private List<Bitmap> mBitmapList;
 
     public ParcelableRestaurantDetails() {
     }
@@ -33,6 +35,7 @@ public class ParcelableRestaurantDetails implements Parcelable {
         }
         nearbyResults = in.createTypedArrayList(Result.CREATOR);
         placeDetailsResponses = in.createTypedArrayList(PlaceDetailsResponse.CREATOR);
+        mBitmapList = in.createTypedArrayList(Bitmap.CREATOR);
     }
 
     @Override
@@ -51,6 +54,7 @@ public class ParcelableRestaurantDetails implements Parcelable {
         }
         dest.writeTypedList(nearbyResults);
         dest.writeTypedList(placeDetailsResponses);
+        dest.writeTypedList(mBitmapList);
     }
 
     @Override
@@ -70,36 +74,32 @@ public class ParcelableRestaurantDetails implements Parcelable {
         }
     };
 
+    //GETTER\\
     public Double getCurrentLat() {
         return currentLat;
     }
-
-    public void setCurrentLat(Double currentLat) {
-        this.currentLat = currentLat;
-    }
-
     public Double getCurrentLng() {
         return currentLng;
     }
-
-    public void setCurrentLng(Double currentLng) {
-        this.currentLng = currentLng;
-    }
-
     public List<Result> getNearbyResults() {
         return nearbyResults;
     }
-
-    public void setNearbyResults(List<Result> nearbyResults) {
-        this.nearbyResults = nearbyResults;
-    }
-
     public List<PlaceDetailsResponse> getPlaceDetailsResponses() {
         return placeDetailsResponses;
     }
+    public List<Bitmap> getBitmapList() { return mBitmapList; }
 
-    public void setPlaceDetailsResponses(List<PlaceDetailsResponse> placeDetailsResponses) {
-        this.placeDetailsResponses = placeDetailsResponses;
+    //SETTER\\
+    public void setCurrentLat(Double currentLat) {
+        this.currentLat = currentLat;
     }
+    public void setCurrentLng(Double currentLng) {
+        this.currentLng = currentLng;
+    }
+    public void setNearbyResults(List<Result> nearbyResults) {
+        this.nearbyResults = nearbyResults;
+    }
+    public void setPlaceDetailsResponses(List<PlaceDetailsResponse> placeDetailsResponses) { this.placeDetailsResponses = placeDetailsResponses; }
+    public void setBitmapList(List<Bitmap> bitmapList) { mBitmapList = bitmapList; }
 
 }

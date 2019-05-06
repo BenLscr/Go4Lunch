@@ -1,10 +1,8 @@
 package com.lescour.ben.go4lunch.controller;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.location.Location;
-import android.opengl.Visibility;
+import android.util.Log;
 import android.view.View;
 
 import com.google.android.libraries.places.api.model.DayOfWeek;
@@ -19,8 +17,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-
-import androidx.annotation.Nullable;
 
 /**
  * Created by benja on 26/03/2019.
@@ -74,6 +70,10 @@ public class ProcessRestaurantDetails {
      */
     public String getRestaurantOpenHours() {
         if (mPlaceDetailsResponse.getOpeningHours() != null) {
+            Log.e("TAG", mPlaceDetailsResponse.getName());
+            Log.e("TAG", mResult.getName());
+            Log.e("TAG", mResult.getOpeningHours().getOpenNow().toString());
+            Log.e("TAG", mPlaceDetailsResponse.getOpeningHours().getPeriods().toString());
             if (mResult.getOpeningHours().getOpenNow()) {
                 if (mPlaceDetailsResponse.getOpeningHours().getPeriods().size() == 1) {
                     return context.getString(R.string.open_24_7);
@@ -230,13 +230,6 @@ public class ProcessRestaurantDetails {
         } else {
             return View.GONE;
         }
-    }
-
-    /**
-     * @return The image of the restaurant.
-     */
-    public Bitmap getRestaurantImage() {
-        return mPlaceDetailsResponse.getBitmap();
     }
 
 }

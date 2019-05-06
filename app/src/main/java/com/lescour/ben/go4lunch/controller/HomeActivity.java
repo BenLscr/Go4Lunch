@@ -2,7 +2,6 @@ package com.lescour.ben.go4lunch.controller;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -99,10 +98,12 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private BaseFragment fragment;
     private ProgressDialog mProgress;
+    private ActionBarDrawerToggle toggle;
 
     private Disposable disposable;
 
     private List<PlaceDetailsResponse> mPlaceDetailsResponses;
+    private List<Bitmap> mBitmapList;
     private ArrayList<User> usersList;
     private ParcelableRestaurantDetails mParcelableRestaurantDetails;
     private ParcelableRestaurantDetails saveParcelableRestaurantDetails;
@@ -115,6 +116,9 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private int radius = 1000;
     private String type = "restaurant";
     private String apiKey = BuildConfig.PLACES_API_KEY;
+
+    private int i = 0;
+    private int k = 0;
 
     public static final String INTENT_EXTRA_RESULT = "INTENT_EXTRA_RESULT";
     public static final String INTENT_EXTRA_PLACEDETAILSRESPONSE = "INTENT_EXTRA_PLACEDETAILSRESPONSE";
@@ -186,6 +190,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void buttonSearch() {
         mCardView.setVisibility(View.VISIBLE);
+        toggle.setDrawerIndicatorEnabled(false);
         saveParcelableRestaurantDetails();
         mEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -255,6 +260,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     public void closeAutocomplete() {
         if (mCardView.getVisibility() == View.VISIBLE) {
             mCardView.setVisibility(View.GONE);
+            toggle.setDrawerIndicatorEnabled(true);
             revertParcelableRestaurantDetails();
             fragment.newRestaurantsForFragment(mParcelableRestaurantDetails);
         }
@@ -298,6 +304,12 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private void initFirstFragment() {
         fragment = MapsFragment.newInstance(mParcelableRestaurantDetails, usersList);
         addFragment();
+        for (Result result : mParcelableRestaurantDetails.getNearbyResults()) {
+            Log.e("nearby", result.getName());
+        }
+        for (PlaceDetailsResponse placeDetailsResponse : mParcelableRestaurantDetails.getPlaceDetailsResponses()) {
+            Log.e("placeDetails", placeDetailsResponse.getName());
+        }
     }
 
     private void addFragment() {
@@ -316,7 +328,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     //MAIN MENU\\
     private void configureDrawerLayout() {
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout,
+        toggle = new ActionBarDrawerToggle(this, drawerLayout,
                 toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
@@ -407,25 +419,22 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     //FIRESTORE\\
     private void setFirestoreListener() {
-        UserHelper.listenerUsersCollection().addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (queryDocumentSnapshots != null) {
-                    List<DocumentSnapshot> documentSnapshotList = new ArrayList<>(queryDocumentSnapshots.getDocuments());
-                    usersList = new ArrayList<>();
-                    if (documentSnapshotList.size() != 0) {
-                        for (DocumentSnapshot documentSnapshot : documentSnapshotList) {
-                            usersList.add(documentSnapshot.toObject(User.class));
-                        }
-                    }
-                    if (fragment != null) {
-                        fragment.newUsersForFragment(usersList);
-                    } else {
-                        initFirstFragment();
+        UserHelper.listenerUsersCollection().addSnapshotListener((queryDocumentSnapshots, e) -> {
+            if (queryDocumentSnapshots != null) {
+                List<DocumentSnapshot> documentSnapshotList = new ArrayList<>(queryDocumentSnapshots.getDocuments());
+                usersList = new ArrayList<>();
+                if (documentSnapshotList.size() != 0) {
+                    for (DocumentSnapshot documentSnapshot : documentSnapshotList) {
+                        usersList.add(documentSnapshot.toObject(User.class));
                     }
                 }
-                mProgressBar.setVisibility(View.GONE);
+                if (fragment != null) {
+                    fragment.newUsersForFragment(usersList);
+                } else {
+                    initFirstFragment();
+                }
             }
+            mProgressBar.setVisibility(View.GONE);
         });
     }
 
@@ -447,7 +456,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                     @Override
                     public void onLocationChanged(Location location) {
                         mParcelableRestaurantDetails.setNearbyResults(new ArrayList<>());
-                        mPlaceDetailsResponses = new ArrayList<>();
                         mParcelableRestaurantDetails.setCurrentLat(location.getLatitude());
                         mParcelableRestaurantDetails.setCurrentLng(location.getLongitude());
                         stringLocation = location.getLatitude() + "," + location.getLongitude();
@@ -514,14 +522,12 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void updateList(NearbyResponse nearbyResponse) {
         mParcelableRestaurantDetails.setNearbyResults(nearbyResponse.getResults());
-        for (Result result : mParcelableRestaurantDetails.getNearbyResults()) {
-            PlaceDetailsResponse placeDetailsResponse = new PlaceDetailsResponse();
-            this.getPlaceDetails(result.getPlaceId(), placeDetailsResponse);
-            this.getPlacePhotos(result.getPlaceId(), placeDetailsResponse);
-        }
+        mPlaceDetailsResponses = new ArrayList<>();
+        this.getPlaceDetails(mParcelableRestaurantDetails.getNearbyResults().get(i).getPlaceId());
     }
 
-    private void getPlaceDetails(String placeId, PlaceDetailsResponse placeDetailsResponse) {
+    private void getPlaceDetails(String placeId) {
+        PlaceDetailsResponse placeDetailsResponse = new PlaceDetailsResponse();
         // Specify the fields to return (in this example all fields are returned).
         List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.OPENING_HOURS, Place.Field.ADDRESS, Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI);
         // Construct a request object, passing the place ID and fields array.
@@ -534,38 +540,53 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
             placeDetailsResponse.setAddress(place.getAddress());
             placeDetailsResponse.setPhoneNumber(place.getPhoneNumber());
             placeDetailsResponse.setWebsiteUri(place.getWebsiteUri());
+            mPlaceDetailsResponses.add(placeDetailsResponse);
+            this.everyPlaceDetailsResponsesAreReceived();
         }).addOnFailureListener(this.onFailureListener());
     }
 
-    private void getPlacePhotos(String placeId, PlaceDetailsResponse placeDetailsResponse) {
-        // Specify fields. Requests for photos must always have the PHOTO_METADATAS field.
+    private void everyPlaceDetailsResponsesAreReceived() {
+        if (mParcelableRestaurantDetails.getNearbyResults().size() == mPlaceDetailsResponses.size()) {
+            mParcelableRestaurantDetails.setPlaceDetailsResponses(mPlaceDetailsResponses);
+            mBitmapList = new ArrayList<>();
+            this.getPlacePhotos(mParcelableRestaurantDetails.getNearbyResults().get(k).getPlaceId());
+        } else {
+            i++;
+            this.getPlaceDetails(mParcelableRestaurantDetails.getNearbyResults().get(i).getPlaceId());
+        }
+    }
+
+    private void getPlacePhotos(String placeId) {
         List<Place.Field> fields = Arrays.asList(Place.Field.PHOTO_METADATAS);
-        // Get a Place object (this example uses fetchPlace(), but you can also use findCurrentPlace())
         FetchPlaceRequest placeRequest = FetchPlaceRequest.builder(placeId, fields).build();
 
         placesClient.fetchPlace(placeRequest).addOnSuccessListener((response) -> {
             Place place = response.getPlace();
 
-            // Get the photo metadata.
             if (place.getPhotoMetadatas() != null) {
                 PhotoMetadata photoMetadata = place.getPhotoMetadatas().get(0);
 
-                // Create a FetchPhotoRequest.
                 FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
-                        .setMaxWidth(120) // Optional.
-                        .setMaxHeight(120) // Optional.
+                        .setMaxWidth(120)
+                        .setMaxHeight(120)
                         .build();
                 placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
                     Bitmap bitmap = fetchPhotoResponse.getBitmap();
-                    placeDetailsResponse.setBitmap(bitmap);
-                    mPlaceDetailsResponses.add(placeDetailsResponse);
-                    if (mParcelableRestaurantDetails.getNearbyResults().size() == mPlaceDetailsResponses.size()) {
-                        mParcelableRestaurantDetails.setPlaceDetailsResponses(mPlaceDetailsResponses);
-                        this.setFirestoreListener();
-                    }
+                    mBitmapList.add(bitmap);
+                    this.everyPlacePhotosResponsesAreReceived();
                 }).addOnFailureListener(this.onFailureListener());
             }
         });
+    }
+
+    private void everyPlacePhotosResponsesAreReceived() {
+        if (mParcelableRestaurantDetails.getNearbyResults().size() == mBitmapList.size()) {
+            mParcelableRestaurantDetails.setBitmapList(mBitmapList);
+            this.setFirestoreListener();
+        } else {
+            k++;
+            this.getPlacePhotos(mParcelableRestaurantDetails.getNearbyResults().get(k).getPlaceId());
+        }
     }
 
 }

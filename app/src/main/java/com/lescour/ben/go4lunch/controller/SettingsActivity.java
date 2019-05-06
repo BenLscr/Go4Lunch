@@ -1,13 +1,10 @@
 package com.lescour.ben.go4lunch.controller;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.Switch;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -24,7 +21,6 @@ import com.lescour.ben.go4lunch.utils.UserHelper;
 import java.util.concurrent.TimeUnit;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
@@ -33,6 +29,8 @@ import butterknife.OnClick;
 public class SettingsActivity extends BaseActivity {
 
     @BindView(R.id.settings_user_image) ImageView userImage;
+
+    private NotificationJobCreator mNotificationJobCreator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +53,6 @@ public class SettingsActivity extends BaseActivity {
     }
 
     //DELETE ACCOUNT BOUTON\\
-
     /**
      * Call when the user click on the delete button.
      * This function delete user information and this account in firebase.
@@ -74,6 +71,7 @@ public class SettingsActivity extends BaseActivity {
             UserHelper.deleteUser(this.getCurrentUser().getUid())
                     .addOnFailureListener(this.onFailureListener());
 
+            //TODO : Re-authenticate
             AuthUI.getInstance()
                     .delete(this)
                     .addOnSuccessListener(this, new OnSuccessListener<Void>() {
@@ -105,12 +103,14 @@ public class SettingsActivity extends BaseActivity {
     }
 
     private void prepareAndroidJob() {
-        JobManager.create(this).addJobCreator(new NotificationJobCreator());
-        DailyJob.schedule(new JobRequest.Builder(NotificationJob.TAG), TimeUnit.HOURS.toMillis(12), TimeUnit.HOURS.toMillis(12));
+        mNotificationJobCreator = new NotificationJobCreator();
+        JobManager.create(this).addJobCreator(mNotificationJobCreator);
+        DailyJob.schedule(new JobRequest.Builder(NotificationJob.TAG), TimeUnit.HOURS.toMillis(13), TimeUnit.HOURS.toMillis(13));
     }
 
     private void disableAndroidJob() {
         //TODO : Disable JobManager
+        JobManager.instance().removeJobCreator(mNotificationJobCreator);
     }
 
 }
