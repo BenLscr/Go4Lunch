@@ -102,4 +102,11 @@ public class ParcelableRestaurantDetails implements Parcelable {
     public void setPlaceDetailsResponses(List<PlaceDetailsResponse> placeDetailsResponses) { this.placeDetailsResponses = placeDetailsResponses; }
     public void setBitmapList(List<Bitmap> bitmapList) { mBitmapList = bitmapList; }
 
+    public List<Bitmap> getBitmapList() {
+        return mBitmapList;
+    }
+
+    public void setBitmapList(List<Bitmap> bitmapList) {
+        mBitmapList = bitmapList;
+    }
 }
