@@ -35,6 +35,8 @@
     //POPUP PERMISSION
     <string name="gps_not_found">GPS not found</string>
     <string name="want_to_enable">Want to enable ?</string>
+    <string name="popup_message_choice_yes">Yes</string>
+    <string name="popup_message_choice_no">No</string>
 
     //FACEBOOK PURPOSE
     <string name="facebook_application_id" translatable="false">625097174586182</string>
@@ -94,7 +96,6 @@
     //SETTINGS ACTIVITY
     <string name="button_delete_account">Delete my account</string>
     <string name="popup_message_confirmation_delete_account">Are you sure you want to delete your account ?</string>
-    <string name="popup_message_choice_yes">Yes</string>
-    <string name="popup_message_choice_no">No</string>
+    <string name="notification_text">Daily reminder of your choice.\nIf you have selected a restaurant.</string>
 
 </resources>

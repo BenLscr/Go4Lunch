@@ -304,12 +304,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private void initFirstFragment() {
         fragment = MapsFragment.newInstance(mParcelableRestaurantDetails, usersList);
         addFragment();
-        for (Result result : mParcelableRestaurantDetails.getNearbyResults()) {
-            Log.e("nearby", result.getName());
-        }
-        for (PlaceDetailsResponse placeDetailsResponse : mParcelableRestaurantDetails.getPlaceDetailsResponses()) {
-            Log.e("placeDetails", placeDetailsResponse.getName());
-        }
     }
 
     private void addFragment() {

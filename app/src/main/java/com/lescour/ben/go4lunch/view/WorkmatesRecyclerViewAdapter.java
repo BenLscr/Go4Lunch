@@ -54,7 +54,7 @@ public class WorkmatesRecyclerViewAdapter extends BaseRecyclerViewAdapterWorkmat
         if (holder.user.getUserUrlImage() != null) {
             glide.load(holder.user.getUserUrlImage()).apply(RequestOptions.circleCropTransform()).into(holder.workmateImage);
         } else {
-            holder.workmateImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.baseline_account_circle_white_24));
+            holder.workmateImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.baseline_account_circle_grey_24));
         }
 
         holder.mView.setOnClickListener(v -> {

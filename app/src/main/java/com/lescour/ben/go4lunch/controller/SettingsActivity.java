@@ -73,13 +73,10 @@ public class SettingsActivity extends BaseActivity {
 
             AuthUI.getInstance()
                     .delete(this)
-                    .addOnSuccessListener(this, new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Intent intent = new Intent(SettingsActivity.this, AuthActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }
+                    .addOnSuccessListener(this, aVoid -> {
+                        Intent intent = new Intent(SettingsActivity.this, AuthActivity.class);
+                        startActivity(intent);
+                        finish();
                     });
         }
     }
@@ -108,7 +105,6 @@ public class SettingsActivity extends BaseActivity {
     }
 
     private void disableAndroidJob() {
-        //TODO : Disable JobManager
         JobManager.instance().removeJobCreator(mNotificationJobCreator);
     }
 

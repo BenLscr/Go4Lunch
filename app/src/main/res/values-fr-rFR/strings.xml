@@ -56,4 +56,5 @@
     <string name="rate_stars">notation en étoiles</string>
     <string name="restaurant_image">Restaurant image</string>
     <string name="workmate_image">Image du collègue</string>
+    <string name="notification_text">Rappel journalier de votre choix.\nSi vous avez sélectionné un restaurant.</string>
 </resources>

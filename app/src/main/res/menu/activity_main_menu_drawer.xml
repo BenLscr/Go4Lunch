@@ -3,31 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <item android:title="">
+    <group android:checkableBehavior="single">
 
-        <menu>
+        <item
+            android:id="@+id/activity_home_drawer_your_lunch"
+            android:title="@string/your_lunch"
+            android:icon="@drawable/baseline_restaurant_menu_white_24"/>
 
-            <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/activity_home_drawer_settings"
+            android:title="@string/settings"
+            android:icon="@drawable/baseline_settings_white_24"/>
 
-                <item
-                    android:id="@+id/activity_home_drawer_your_lunch"
-                    android:title="@string/your_lunch"
-                    android:icon="@drawable/baseline_restaurant_menu_white_24"/>
+        <item
+            android:id="@+id/activity_home_drawer_logout"
+            android:title="@string/logout"
+            android:icon="@drawable/baseline_power_settings_new_white_24"/>
 
-                <item
-                    android:id="@+id/activity_home_drawer_settings"
-                    android:title="@string/settings"
-                    android:icon="@drawable/baseline_settings_white_24"/>
-
-                <item
-                    android:id="@+id/activity_home_drawer_logout"
-                    android:title="@string/logout"
-                    android:icon="@drawable/baseline_power_settings_new_white_24"/>
-
-            </group>
-
-        </menu>
-
-    </item>
+    </group>
 
 </menu>
