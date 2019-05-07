@@ -282,20 +282,20 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
             = item -> {
         if (fragment != null) {
             getSupportFragmentManager().beginTransaction().remove(fragment).commit();
-        }
-        switch (item.getItemId()) {
-            case R.id.navigation_map:
-                fragment = MapsFragment.newInstance(mParcelableRestaurantDetails, usersList);
-                addFragment();
-                return true;
-            case R.id.navigation_list_restaurant:
-                fragment = RestaurantListFragment.newInstance(mParcelableRestaurantDetails, usersList);
-                addFragment();
-                return true;
-            case R.id.navigation_workmates:
-                fragment = WorkmatesListFragment.newInstance(mParcelableRestaurantDetails, usersList);
-                addFragment();
-                return true;
+            switch (item.getItemId()) {
+                case R.id.navigation_map:
+                    fragment = MapsFragment.newInstance(mParcelableRestaurantDetails, usersList);
+                    addFragment();
+                    return true;
+                case R.id.navigation_list_restaurant:
+                    fragment = RestaurantListFragment.newInstance(mParcelableRestaurantDetails, usersList);
+                    addFragment();
+                    return true;
+                case R.id.navigation_workmates:
+                    fragment = WorkmatesListFragment.newInstance(mParcelableRestaurantDetails, usersList);
+                    addFragment();
+                    return true;
+            }
         }
         return false;
     };
