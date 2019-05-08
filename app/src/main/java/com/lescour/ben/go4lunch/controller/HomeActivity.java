@@ -59,6 +59,7 @@ import com.lescour.ben.go4lunch.utils.UserHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -177,15 +178,13 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_activity_home_search:
-                if (mCardView.getVisibility() == View.GONE) {
-                    this.buttonSearch();
-                    return true;
-                }
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.menu_activity_home_search) {
+            if (mCardView.getVisibility() == View.GONE) {
+                this.buttonSearch();
+                return true;
+            }
         }
+        return super.onOptionsItemSelected(item);
     }
 
     private void buttonSearch() {
@@ -552,7 +551,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void getPlacePhotos(String placeId) {
-        List<Place.Field> fields = Arrays.asList(Place.Field.PHOTO_METADATAS);
+        List<Place.Field> fields = Collections.singletonList(Place.Field.PHOTO_METADATAS);
         FetchPlaceRequest placeRequest = FetchPlaceRequest.builder(placeId, fields).build();
 
         placesClient.fetchPlace(placeRequest).addOnSuccessListener((response) -> {

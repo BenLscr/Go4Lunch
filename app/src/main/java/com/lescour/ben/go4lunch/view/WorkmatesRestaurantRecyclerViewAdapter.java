@@ -1,7 +1,9 @@
 package com.lescour.ben.go4lunch.view;
 
 import android.content.Context;
-import android.content.res.Resources;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
@@ -9,9 +11,6 @@ import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.model.firestore.User;
 
 import java.util.ArrayList;
-
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 
 public class WorkmatesRestaurantRecyclerViewAdapter extends BaseRecyclerViewAdapterWorkmates {
 

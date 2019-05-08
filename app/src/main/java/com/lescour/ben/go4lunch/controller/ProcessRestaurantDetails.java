@@ -2,7 +2,6 @@ package com.lescour.ben.go4lunch.controller;
 
 import android.content.Context;
 import android.location.Location;
-import android.util.Log;
 import android.view.View;
 
 import com.google.android.libraries.places.api.model.DayOfWeek;
@@ -17,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Created by benja on 26/03/2019.
@@ -110,15 +110,17 @@ public class ProcessRestaurantDetails {
                     boolean bDay = false;
                     DayOfWeek dayFound;
                     do {
-                        dayFound = mPlaceDetailsResponse.getOpeningHours().getPeriods().get(i).getClose().getDay();
-                        if (!day.equals(dayFound.toString())) {
-                            bDay = true;
-                            if (currentHours > hours) {
+                        dayFound = Objects.requireNonNull(mPlaceDetailsResponse.getOpeningHours().getPeriods().get(i).getClose()).getDay();
+                        if (day != null) {
+                            if (!day.equals(dayFound.toString())) {
+                                bDay = true;
+                                if (currentHours > hours) {
+                                    i++;
+                                }
+                                retrievesHoursAndMinutes(i);
+                            } else {
                                 i++;
                             }
-                            retrievesHoursAndMinutes(i);
-                        } else {
-                            i++;
                         }
                     } while (!bDay);
 
@@ -140,8 +142,8 @@ public class ProcessRestaurantDetails {
     }
 
     private void retrievesHoursAndMinutes(int i) {
-        hours = mPlaceDetailsResponse.getOpeningHours().getPeriods().get(i).getClose().getTime().getHours();
-        int minutes = mPlaceDetailsResponse.getOpeningHours().getPeriods().get(i).getClose().getTime().getMinutes();
+        hours = Objects.requireNonNull(mPlaceDetailsResponse.getOpeningHours().getPeriods().get(i).getClose()).getTime().getHours();
+        int minutes = Objects.requireNonNull(mPlaceDetailsResponse.getOpeningHours().getPeriods().get(i).getClose()).getTime().getMinutes();
         SimpleDateFormat formatHours = new SimpleDateFormat("HH", Locale.getDefault());
         SimpleDateFormat formatMinutes = new SimpleDateFormat("mm", Locale.getDefault());
         try {

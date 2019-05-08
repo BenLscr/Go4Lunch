@@ -17,6 +17,7 @@ import com.lescour.ben.go4lunch.model.firestore.User;
 import com.lescour.ben.go4lunch.utils.UserHelper;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class AuthActivity extends BaseActivity {
 
@@ -72,7 +73,7 @@ public class AuthActivity extends BaseActivity {
             } else { // ERRORS
                 if (response == null) {
                     Toast.makeText(this, R.string.error_authentication_canceled, Toast.LENGTH_LONG).show();
-                } else if (response.getError().getErrorCode() == ErrorCodes.NO_NETWORK) {
+                } else if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.NO_NETWORK) {
                     Toast.makeText(this, R.string.error_no_internet, Toast.LENGTH_LONG).show();
                 } else if (response.getError().getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
                     Toast.makeText(this, R.string.error_unknown_error, Toast.LENGTH_LONG).show();

@@ -35,6 +35,7 @@ import com.lescour.ben.go4lunch.utils.UserHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -126,7 +127,7 @@ public class RestaurantActivity extends BaseActivity {
         Places.initialize(getApplicationContext(), apiKey);
         PlacesClient placesClient = Places.createClient(this);
 
-        List<Place.Field> fields = Arrays.asList(Place.Field.PHOTO_METADATAS);
+        List<Place.Field> fields = Collections.singletonList(Place.Field.PHOTO_METADATAS);
         FetchPlaceRequest placeRequest = FetchPlaceRequest.builder(placeId, fields).build();
 
         placesClient.fetchPlace(placeRequest).addOnSuccessListener((response) -> {
@@ -157,27 +158,24 @@ public class RestaurantActivity extends BaseActivity {
     }
 
     private void setFirestoreListener() {
-        UserHelper.listenerUsersWhoHaveSameChoice(mResult.getPlaceId()).addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (queryDocumentSnapshots != null) {
-                    List<DocumentSnapshot> listOfWorkmatesWithSameChoice = new ArrayList<>(queryDocumentSnapshots.getDocuments());
-                    ArrayList<User> listOfUserWithSameChoice = new ArrayList<>();
-                    if (listOfWorkmatesWithSameChoice.size() != 0) {
-                        int i = 0;
-                        do {
-                            listOfUserWithSameChoice.add(listOfWorkmatesWithSameChoice.get(i).toObject(User.class));
-                            i++;
-                        } while (listOfUserWithSameChoice.size() != listOfWorkmatesWithSameChoice.size());
-                    }
-                    if (workmatesListRestaurantFragment != null) {
-                        workmatesListRestaurantFragment.notifyRecyclerView(listOfUserWithSameChoice);
-                    } else {
-                        addFragment(listOfUserWithSameChoice);
-                    }
+        UserHelper.listenerUsersWhoHaveSameChoice(mResult.getPlaceId()).addSnapshotListener((queryDocumentSnapshots, e) -> {
+            if (queryDocumentSnapshots != null) {
+                List<DocumentSnapshot> listOfWorkmatesWithSameChoice = new ArrayList<>(queryDocumentSnapshots.getDocuments());
+                ArrayList<User> listOfUserWithSameChoice = new ArrayList<>();
+                if (listOfWorkmatesWithSameChoice.size() != 0) {
+                    int i = 0;
+                    do {
+                        listOfUserWithSameChoice.add(listOfWorkmatesWithSameChoice.get(i).toObject(User.class));
+                        i++;
+                    } while (listOfUserWithSameChoice.size() != listOfWorkmatesWithSameChoice.size());
                 }
-                mProgressBar.setVisibility(View.GONE);
+                if (workmatesListRestaurantFragment != null) {
+                    workmatesListRestaurantFragment.notifyRecyclerView(listOfUserWithSameChoice);
+                } else {
+                    addFragment(listOfUserWithSameChoice);
+                }
             }
+            mProgressBar.setVisibility(View.GONE);
         });
     }
 

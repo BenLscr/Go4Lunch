@@ -8,6 +8,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.controller.ProcessRestaurantDetails;
 import com.lescour.ben.go4lunch.controller.fragment.BaseFragment;
@@ -17,10 +20,7 @@ import com.lescour.ben.go4lunch.model.firestore.User;
 import com.lescour.ben.go4lunch.model.nearby.Result;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
