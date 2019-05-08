@@ -102,7 +102,7 @@ public class AuthActivity extends BaseActivity {
     }
 
     private void saveUserUidInSharedPref() {
-        SharedPreferences mSharedPreferences = getSharedPreferences("currentUser", MODE_PRIVATE);
+        SharedPreferences mSharedPreferences = getSharedPreferences("go4lunch", MODE_PRIVATE);
         mSharedPreferences.edit().putString("currentUserUid", user.getUid()).apply();
     }
 

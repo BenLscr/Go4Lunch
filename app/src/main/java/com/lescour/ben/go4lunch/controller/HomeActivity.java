@@ -466,7 +466,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                     public void onProviderDisabled(String provider) { }
                 });
             } else {
-                ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, 0);
+                ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, 159);
             }
          }
     }
@@ -478,7 +478,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
-            case 0: {
+            case 159: {
                 this.getMyCurrentLocation();
             }
         }

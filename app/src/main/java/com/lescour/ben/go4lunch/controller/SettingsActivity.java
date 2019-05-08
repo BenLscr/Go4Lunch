@@ -1,24 +1,17 @@
 package com.lescour.ben.go4lunch.controller;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.evernote.android.job.DailyJob;
-import com.evernote.android.job.JobManager;
-import com.evernote.android.job.JobRequest;
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.lescour.ben.go4lunch.R;
-import com.lescour.ben.go4lunch.utils.NotificationJob;
-import com.lescour.ben.go4lunch.utils.NotificationJobCreator;
 import com.lescour.ben.go4lunch.utils.UserHelper;
-
-import java.util.concurrent.TimeUnit;
 
 import androidx.appcompat.app.AlertDialog;
 import butterknife.BindView;
@@ -29,19 +22,20 @@ import butterknife.OnClick;
 public class SettingsActivity extends BaseActivity {
 
     @BindView(R.id.settings_user_image) ImageView userImage;
+    @BindView(R.id.notification_switch) Switch notificationSwitch;
 
-    private NotificationJobCreator mNotificationJobCreator;
+    private SharedPreferences mSharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         ButterKnife.bind(this);
-        updateUserImage();
+        updateUi();
     }
 
     //USER IMAGE\\
-    private void updateUserImage() {
+    private void updateUi() {
         if (this.getCurrentUser() != null) {
             if (this.getCurrentUser().getPhotoUrl() != null) {
                 Glide.with(this)
@@ -49,6 +43,11 @@ public class SettingsActivity extends BaseActivity {
                         .apply(RequestOptions.circleCropTransform())
                         .into(userImage);
             }
+        }
+        mSharedPreferences = getSharedPreferences("go4lunch", MODE_PRIVATE);
+        boolean notificationBoolean = mSharedPreferences.getBoolean("notificationBoolean", false);
+        if (notificationBoolean) {
+            notificationSwitch.setChecked(true);
         }
     }
 
@@ -84,28 +83,24 @@ public class SettingsActivity extends BaseActivity {
     //NOTIFICATION\\
     /**
      * Call when the user click on the switch.
-     * If the switch is checked a method to prepare android job is called.
-     * If the switch is unchecked a method is called to disable android job.
+     * If the switch is checked or unchecked a boolean is saved in shared preferences to indicate that
+     * the user wants to receive notifications or not.
      */
     @OnCheckedChanged(R.id.notification_switch)
     public void onCheckedChangeListener (CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
-            Log.e("tag", "do something");
             this.prepareAndroidJob();
         } else {
-            Log.e("tag", "do an other thing");
             this.disableAndroidJob();
         }
     }
 
     private void prepareAndroidJob() {
-        mNotificationJobCreator = new NotificationJobCreator();
-        JobManager.create(this).addJobCreator(mNotificationJobCreator);
-        DailyJob.schedule(new JobRequest.Builder(NotificationJob.TAG), TimeUnit.HOURS.toMillis(13), TimeUnit.HOURS.toMillis(13));
+        mSharedPreferences.edit().putBoolean("notificationBoolean", true).apply();
     }
 
     private void disableAndroidJob() {
-        JobManager.instance().removeJobCreator(mNotificationJobCreator);
+        mSharedPreferences.edit().putBoolean("notificationBoolean", false).apply();
     }
 
 }

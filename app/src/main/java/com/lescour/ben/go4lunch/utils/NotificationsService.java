@@ -37,20 +37,24 @@ public class NotificationsService extends FirebaseMessagingService {
     private String messageBody;
     private User user;
     private String userUid;
+    private boolean notificationBoolean;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        Log.e("tag", "something append");
+        Log.e("notif", "il ce passe un truc");
         if (remoteMessage.getNotification() != null) {
-            Log.e("tag", "une notif");
             this.getUserUidInSharedPreferences();
-            this.retrievesUserData();
+            if (notificationBoolean) {
+                Log.e("notif", "créer notif");
+                this.retrievesUserData();
+            }
         }
     }
 
     private void getUserUidInSharedPreferences() {
-        SharedPreferences mSharedPreferences = getSharedPreferences("currentUser", MODE_PRIVATE);
+        SharedPreferences mSharedPreferences = getSharedPreferences("go4lunch", MODE_PRIVATE);
         userUid = mSharedPreferences.getString("currentUserUid", null);
+        notificationBoolean = mSharedPreferences.getBoolean("notificationBoolean", false);
     }
 
     private void retrievesUserData() {
@@ -105,9 +109,8 @@ public class NotificationsService extends FirebaseMessagingService {
         Intent intent = new Intent(this, HomeActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
-        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-        inboxStyle.setBigContentTitle(getString(R.string.big_content_title));
-        inboxStyle.addLine(messageBody);
+        NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
+        bigTextStyle.bigText(messageBody);
 
         String channelId = getString(R.string.default_notification_channel_id);
 
@@ -119,7 +122,7 @@ public class NotificationsService extends FirebaseMessagingService {
                         .setAutoCancel(true)
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                         .setContentIntent(pendingIntent)
-                        .setStyle(inboxStyle);
+                        .setStyle(bigTextStyle);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 

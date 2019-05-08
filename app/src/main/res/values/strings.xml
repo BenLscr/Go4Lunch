@@ -87,7 +87,7 @@
 
     //NOTIFICATION
     <string name="big_content_title">Your choice for this lunch</string>
-    <string name="notification_title" translatable="false">Notification title</string>
+    <string name="notification_title">Your choice for this lunch</string>
     <string name="default_notification_channel_id" translatable="false">default notification channel id</string>
     <string name="channel_name" translatable="false">Go4Lunch Notifications</string>
     <string name="located_at">\u0020 located at \u0020</string>
