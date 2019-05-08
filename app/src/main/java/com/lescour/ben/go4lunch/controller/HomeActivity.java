@@ -313,7 +313,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     /**
-     * Call when the user click on a restaurant. Launch a new activity to see details.
+     * Call when the user click on a restaurant or a workmate. Launch a new activity to see
+     * restaurant details.
      */
     @Override
     public void onListFragmentInteraction(Result result, PlaceDetailsResponse placeDetailsResponse) {

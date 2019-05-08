@@ -61,15 +61,17 @@ public class WorkmatesRecyclerViewAdapter extends BaseRecyclerViewAdapterWorkmat
             if (null != mListener) {
                 // Notify the active callbacks interface (the activity, if the
                 // fragment is attached to one) that an item has been selected.
-                int j = 0;
-                Result result;
-                PlaceDetailsResponse placeDetailsResponse;
-                do {
-                    result = mParcelableRestaurantDetails.getNearbyResults().get(j);
-                    placeDetailsResponse = mParcelableRestaurantDetails.getPlaceDetailsResponses().get(j);
-                    j++;
-                } while (!result.getPlaceId().equals(holder.user.getUserChoicePlaceId()));
-                mListener.onListFragmentInteraction(result, placeDetailsResponse);
+                if (!holder.user.getUserChoicePlaceId().equals("")) {
+                    int j = 0;
+                    Result result;
+                    PlaceDetailsResponse placeDetailsResponse;
+                    do {
+                        result = mParcelableRestaurantDetails.getNearbyResults().get(j);
+                        placeDetailsResponse = mParcelableRestaurantDetails.getPlaceDetailsResponses().get(j);
+                        j++;
+                    } while (!result.getPlaceId().equals(holder.user.getUserChoicePlaceId()));
+                    mListener.onListFragmentInteraction(result, placeDetailsResponse);
+                }
             }
         });
     }
