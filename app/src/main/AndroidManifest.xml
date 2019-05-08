@@ -60,7 +60,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="MAPS_API_KEY" />
+            android:value="@string/MAPS_API_KEY" />
         <!-- NOTIFICATION SERVICE -->
         <service android:name=".utils.NotificationsService">
             <intent-filter>
