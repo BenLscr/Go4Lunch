@@ -27,7 +27,7 @@
     <string name="not_allowed_to_call">L\'application n\'a pas été autorisé à appeler…</string>
     <string name="no_website">Aucune site disponible pour ce restaurant…</string>
     <string name="open_24_7">Ouvert 24/7</string>
-    <string name="pattern">HH.mm</string>
+    <string name="pattern">HH\'H\'mm</string>
     <string name="open_until">Ouvert jusqu\'à\u0020</string>
     <string name="currently_closed">Actuellement fermé</string>
     <string name="no_schedules_defined">Pas d\'horaires définis</string>

@@ -111,13 +111,13 @@ public class RestaurantActivity extends BaseActivity {
             restaurantRate3.setVisibility(mProcessRestaurantDetails.getRestaurantRate3());
         }
         if (user.getUserChoicePlaceId().equals(mResult.getPlaceId())) {
-            restaurantChoice.setColorFilter(getResources().getColor(R.color.mainThemeColorValid));
+            restaurantChoice.setColorFilter(getResources().getColor(R.color.mainThemeColorAccent));
         }
         userLike = new ArrayList<>();
         if (user.getUserLike() != null) {
             userLike.addAll(user.getUserLike());
             if (userLike.contains(mResult.getPlaceId())) {
-                restaurantLike.setTextColor(getResources().getColor(R.color.mainThemeColorValid));
+                restaurantLike.setTextColor(getResources().getColor(R.color.mainThemeColorAccent));
                 restaurantLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.baseline_star_rate_green_24, 0, 0);
             }
         }
@@ -200,14 +200,14 @@ public class RestaurantActivity extends BaseActivity {
             String address = mPlaceDetailsResponse.getAddress();
             String addressCut = address.substring(0, address.indexOf(","));
             user.setUserChoiceRestaurantAddress(addressCut);
-            restaurantChoice.setColorFilter(getResources().getColor(R.color.mainThemeColorValid));
+            restaurantChoice.setColorFilter(getResources().getColor(R.color.mainThemeColorAccent));
         } else if (!user.getUserChoicePlaceId().equals("") && !user.getUserChoicePlaceId().equals(mResult.getPlaceId())) {
             user.setUserChoicePlaceId(mResult.getPlaceId());
             user.setUserChoiceRestaurantName(mResult.getName());
             String address = mPlaceDetailsResponse.getAddress();
             String addressCut = address.substring(0, address.indexOf(","));
             user.setUserChoiceRestaurantAddress(addressCut);
-            restaurantChoice.setColorFilter(getResources().getColor(R.color.mainThemeColorValid));
+            restaurantChoice.setColorFilter(getResources().getColor(R.color.mainThemeColorAccent));
         } else {
             user.setUserChoicePlaceId("");
             user.setUserChoiceRestaurantName("");
@@ -279,7 +279,7 @@ public class RestaurantActivity extends BaseActivity {
             userLike.remove(mResult.getPlaceId());
             user.setUserLike(userLike);
         } else {
-            restaurantLike.setTextColor(getResources().getColor(R.color.mainThemeColorValid));
+            restaurantLike.setTextColor(getResources().getColor(R.color.mainThemeColorAccent));
             restaurantLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.baseline_star_rate_green_24, 0, 0);
             userLike.add(mResult.getPlaceId());
             user.setUserLike(userLike);

@@ -41,11 +41,9 @@ public class NotificationsService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        Log.e("notif", "il ce passe un truc");
         if (remoteMessage.getNotification() != null) {
             this.getUserUidInSharedPreferences();
             if (notificationBoolean) {
-                Log.e("notif", "créer notif");
                 this.retrievesUserData();
             }
         }
