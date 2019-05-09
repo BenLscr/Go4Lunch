@@ -58,4 +58,5 @@
     <string name="workmate_image">Image du collègue</string>
     <string name="notification_text">Rappel journalier de votre choix.\nSi vous avez sélectionné un restaurant.</string>
     <string name="notification_title">Votre choix pour ce midi</string>
+    <string name="this_restaurant_isnt_in_your_area">Ce restaurant n\'est pas dans votre zone.</string>
 </resources>

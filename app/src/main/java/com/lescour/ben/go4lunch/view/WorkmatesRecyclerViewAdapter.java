@@ -1,6 +1,7 @@
 package com.lescour.ben.go4lunch.view;
 
 import android.content.Context;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -59,7 +60,14 @@ public class WorkmatesRecyclerViewAdapter extends BaseRecyclerViewAdapterWorkmat
             if (null != mListener) {
                 // Notify the active callbacks interface (the activity, if the
                 // fragment is attached to one) that an item has been selected.
-                if (!holder.user.getUserChoicePlaceId().equals("")) {
+                boolean restaurantInThisArea = false;
+                for (Result result : mParcelableRestaurantDetails.getNearbyResults()) {
+                    if (result.getPlaceId().equals(holder.user.getUserChoicePlaceId())) {
+                        restaurantInThisArea = true;
+                        break;
+                    }
+                }
+                if (restaurantInThisArea && !holder.user.getUserChoicePlaceId().equals("")) {
                     int j = 0;
                     Result result;
                     PlaceDetailsResponse placeDetailsResponse;
@@ -69,6 +77,8 @@ public class WorkmatesRecyclerViewAdapter extends BaseRecyclerViewAdapterWorkmat
                         j++;
                     } while (!result.getPlaceId().equals(holder.user.getUserChoicePlaceId()));
                     mListener.onListFragmentInteraction(result, placeDetailsResponse);
+                } else if (!restaurantInThisArea && !holder.user.getUserChoicePlaceId().equals("")) {
+                    Toast.makeText(context, context.getString(R.string.this_restaurant_isnt_in_your_area), Toast.LENGTH_LONG).show();
                 }
             }
         });

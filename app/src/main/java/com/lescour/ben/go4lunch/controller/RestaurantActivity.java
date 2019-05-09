@@ -3,6 +3,7 @@ package com.lescour.ben.go4lunch.controller;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -144,15 +145,11 @@ public class RestaurantActivity extends BaseActivity {
                     mProgressBarImageRestaurant.setVisibility(View.GONE);
                     Bitmap bitmap = fetchPhotoResponse.getBitmap();
                     restaurantImage.setImageBitmap(bitmap);
-                }).addOnFailureListener((exception) -> {
-                    if (exception instanceof ApiException) {
-                        ApiException apiException = (ApiException) exception;
-                        int statusCode = apiException.getStatusCode();
-                        Log.e("PlacePhotos", "Place not found: " + exception.getMessage());
-                        mProgressBarImageRestaurant.setVisibility(View.GONE);
-                        restaurantImage.setImageDrawable(getResources().getDrawable(R.drawable.go4lunch_ic));
-                    }
-                });
+                }).addOnFailureListener(this.onFailureListener());
+            } else {
+                mProgressBarImageRestaurant.setVisibility(View.GONE);
+                Drawable drawable = getResources().getDrawable(R.drawable.go4lunch_ic);
+                restaurantImage.setImageDrawable(drawable);
             }
         });
     }

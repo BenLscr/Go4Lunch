@@ -65,9 +65,8 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
             holder.restaurantRate2.setVisibility(restaurantDetails.getRestaurantRate2());
             holder.restaurantRate3.setVisibility(restaurantDetails.getRestaurantRate3());
         }
-        if (holder.mBitmap != null) {
-            holder.restaurantImage.setImageBitmap(holder.mBitmap);
-        }
+        holder.restaurantImage.setImageBitmap(holder.mBitmap);
+
 
         holder.mView.setOnClickListener(v -> {
             if (null != mListener) {
