@@ -34,7 +34,8 @@ public class RestaurantListFragment extends BaseFragment {
     public RestaurantListFragment() {
     }
 
-    public static RestaurantListFragment newInstance(ParcelableRestaurantDetails mParcelableRestaurantDetails, ArrayList<User> usersList) {
+    public static RestaurantListFragment newInstance(ParcelableRestaurantDetails mParcelableRestaurantDetails,
+                                                     ArrayList<User> usersList) {
         RestaurantListFragment fragment = new RestaurantListFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_PARCELABLE_RESTAURANTDETAILS, mParcelableRestaurantDetails);
@@ -52,7 +53,8 @@ public class RestaurantListFragment extends BaseFragment {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            this.mRecyclerViewAdapter = new RestaurantRecyclerViewAdapter(this.mParcelableRestaurantDetails, this.usersList, context, mListener);
+            this.mRecyclerViewAdapter = new RestaurantRecyclerViewAdapter(this.mParcelableRestaurantDetails,
+                    this.usersList, context, mListener);
             recyclerView.setAdapter(this.mRecyclerViewAdapter);
         }
         return view;

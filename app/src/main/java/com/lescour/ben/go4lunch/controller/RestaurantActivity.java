@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -15,7 +14,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.ApiException;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
@@ -23,9 +26,6 @@ import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.lescour.ben.go4lunch.BuildConfig;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.controller.fragment.WorkmatesListRestaurantFragment;
@@ -35,16 +35,9 @@ import com.lescour.ben.go4lunch.model.nearby.Result;
 import com.lescour.ben.go4lunch.utils.UserHelper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -90,14 +83,17 @@ public class RestaurantActivity extends BaseActivity {
     }
 
     private void retrievesIntent() {
-        if (getIntent().hasExtra(INTENT_EXTRA_RESULT) && getIntent().hasExtra(INTENT_EXTRA_PLACEDETAILSRESPONSE)) {
+        if (getIntent().hasExtra(INTENT_EXTRA_RESULT) && getIntent()
+                .hasExtra(INTENT_EXTRA_PLACEDETAILSRESPONSE)) {
             mResult = getIntent().getParcelableExtra(INTENT_EXTRA_RESULT);
             mPlaceDetailsResponse = getIntent().getParcelableExtra(INTENT_EXTRA_PLACEDETAILSRESPONSE);
-        } else if (getIntent().hasExtra(INTENT_EXTRAS_RESULT_MAPS) && getIntent().hasExtra(INTENT_EXTRAS_PLACEDETAILSRESPONSE_MAPS)) {
+        } else if (getIntent().hasExtra(INTENT_EXTRAS_RESULT_MAPS) && getIntent()
+                .hasExtra(INTENT_EXTRAS_PLACEDETAILSRESPONSE_MAPS)) {
             mResult = getIntent().getParcelableExtra(INTENT_EXTRAS_RESULT_MAPS);
             mPlaceDetailsResponse = getIntent().getParcelableExtra(INTENT_EXTRAS_PLACEDETAILSRESPONSE_MAPS);
         }
-        mProcessRestaurantDetails = new ProcessRestaurantDetails(mResult, mPlaceDetailsResponse, getApplicationContext());
+        mProcessRestaurantDetails = new ProcessRestaurantDetails(mResult,
+                mPlaceDetailsResponse, getApplicationContext());
     }
 
     private void createUi() {
@@ -119,7 +115,8 @@ public class RestaurantActivity extends BaseActivity {
             userLike.addAll(user.getUserLike());
             if (userLike.contains(mResult.getPlaceId())) {
                 restaurantLike.setTextColor(getResources().getColor(R.color.mainThemeColorAccent));
-                restaurantLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.baseline_star_rate_green_24, 0, 0);
+                restaurantLike.setCompoundDrawablesWithIntrinsicBounds(0,
+                        R.drawable.baseline_star_rate_green_24, 0, 0);
             }
         }
     }
@@ -155,9 +152,11 @@ public class RestaurantActivity extends BaseActivity {
     }
 
     private void setFirestoreListener() {
-        UserHelper.listenerUsersWhoHaveSameChoice(mResult.getPlaceId()).addSnapshotListener((queryDocumentSnapshots, e) -> {
+        UserHelper.listenerUsersWhoHaveSameChoice(mResult.getPlaceId())
+                .addSnapshotListener((queryDocumentSnapshots, e) -> {
             if (queryDocumentSnapshots != null) {
-                List<DocumentSnapshot> listOfWorkmatesWithSameChoice = new ArrayList<>(queryDocumentSnapshots.getDocuments());
+                List<DocumentSnapshot> listOfWorkmatesWithSameChoice =
+                        new ArrayList<>(queryDocumentSnapshots.getDocuments());
                 ArrayList<User> listOfUserWithSameChoice = new ArrayList<>();
                 if (listOfWorkmatesWithSameChoice.size() != 0) {
                     int i = 0;
@@ -184,7 +183,6 @@ public class RestaurantActivity extends BaseActivity {
     }
 
     //CHOICE BUTTON\\
-
     /**
      * Call when a user click on button to choose a restaurant.
      * Update the color and the User file if the user select or deselect the restaurant.
@@ -198,7 +196,8 @@ public class RestaurantActivity extends BaseActivity {
             String addressCut = address.substring(0, address.indexOf(","));
             user.setUserChoiceRestaurantAddress(addressCut);
             restaurantChoice.setColorFilter(getResources().getColor(R.color.mainThemeColorAccent));
-        } else if (!user.getUserChoicePlaceId().equals("") && !user.getUserChoicePlaceId().equals(mResult.getPlaceId())) {
+        } else if (!user.getUserChoicePlaceId().equals("") && !user.getUserChoicePlaceId()
+                .equals(mResult.getPlaceId())) {
             user.setUserChoicePlaceId(mResult.getPlaceId());
             user.setUserChoiceRestaurantName(mResult.getName());
             String address = mPlaceDetailsResponse.getAddress();
@@ -215,7 +214,8 @@ public class RestaurantActivity extends BaseActivity {
     }
 
     private void updateUserChoice() {
-        UserHelper.updateChoice(user.getUid(), user.getUserChoicePlaceId(), user.getUserChoiceRestaurantName(), user.getUserChoiceRestaurantAddress())
+        UserHelper.updateChoice(user.getUid(), user.getUserChoicePlaceId(),
+                user.getUserChoiceRestaurantName(), user.getUserChoiceRestaurantAddress())
                 .addOnFailureListener(this.onFailureListener());
     }
 
@@ -232,13 +232,15 @@ public class RestaurantActivity extends BaseActivity {
         if (mPlaceDetailsResponse.getPhoneNumber() != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (checkSelfPermission(CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this, new String[]{CALL_PHONE}, requestCodeCall);
+                    ActivityCompat.requestPermissions(this, new String[]{CALL_PHONE},
+                            requestCodeCall);
                 }
             } else {
                 this.makeCall();
             }
         } else {
-            Toast.makeText(this, getString(R.string.no_phone_number), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.no_phone_number),
+                    Toast.LENGTH_LONG).show();
         }
     }
 
@@ -246,7 +248,8 @@ public class RestaurantActivity extends BaseActivity {
      * Call at the first time the user click on the phone button and answer for the permission.
      */
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case requestCodeCall: {
@@ -272,12 +275,14 @@ public class RestaurantActivity extends BaseActivity {
     public void likeThisRestaurant() {
         if (userLike != null && userLike.contains(mResult.getPlaceId())) {
             restaurantLike.setTextColor(getResources().getColor(R.color.mainThemeColorPrimary));
-            restaurantLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.baseline_star_rate_orange_24, 0, 0);
+            restaurantLike.setCompoundDrawablesWithIntrinsicBounds(0,
+                    R.drawable.baseline_star_rate_orange_24, 0, 0);
             userLike.remove(mResult.getPlaceId());
             user.setUserLike(userLike);
         } else {
             restaurantLike.setTextColor(getResources().getColor(R.color.mainThemeColorAccent));
-            restaurantLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.baseline_star_rate_green_24, 0, 0);
+            restaurantLike.setCompoundDrawablesWithIntrinsicBounds(0,
+                    R.drawable.baseline_star_rate_green_24, 0, 0);
             userLike.add(mResult.getPlaceId());
             user.setUserLike(userLike);
         }

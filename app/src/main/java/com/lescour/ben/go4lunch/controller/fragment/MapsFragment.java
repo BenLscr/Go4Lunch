@@ -49,7 +49,8 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     public MapsFragment() {
     }
 
-    public static MapsFragment newInstance(ParcelableRestaurantDetails mParcelableRestaurantDetails, ArrayList<User> usersList) {
+    public static MapsFragment newInstance(ParcelableRestaurantDetails mParcelableRestaurantDetails,
+                                           ArrayList<User> usersList) {
         MapsFragment fragment = new MapsFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_PARCELABLE_RESTAURANTDETAILS, mParcelableRestaurantDetails);
@@ -73,17 +74,20 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()),
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
-            LatLng currentLocation = new LatLng(mParcelableRestaurantDetails.getCurrentLat(), mParcelableRestaurantDetails.getCurrentLng());
+            LatLng currentLocation = new LatLng(mParcelableRestaurantDetails.getCurrentLat(),
+                    mParcelableRestaurantDetails.getCurrentLng());
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
             for (int i = 0; mParcelableRestaurantDetails.getNearbyResults().size() > i; i++) {
                 this.setMarker(i);
             }
             mMap.setOnMarkerClickListener(this);
         } else {
-            ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()),
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
     }
 
@@ -97,7 +101,8 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     }
 
     private void setMarker(int position) {
-        LatLng restaurant = new LatLng(mParcelableRestaurantDetails.getNearbyResults().get(position).getGeometry().getLocation().getLat(),
+        LatLng restaurant = new LatLng(mParcelableRestaurantDetails.getNearbyResults()
+                .get(position).getGeometry().getLocation().getLat(),
                 mParcelableRestaurantDetails.getNearbyResults().get(position).getGeometry().getLocation().getLng());
         mMap.addMarker(new MarkerOptions().position(restaurant)
                 .icon(BitmapDescriptorFactory.defaultMarker(25)))

@@ -35,7 +35,8 @@ public class WorkmatesListFragment extends BaseFragment {
     public WorkmatesListFragment() {
     }
 
-    public static WorkmatesListFragment newInstance(ParcelableRestaurantDetails mParcelableRestaurantDetails, ArrayList<User> usersList) {
+    public static WorkmatesListFragment newInstance(ParcelableRestaurantDetails mParcelableRestaurantDetails,
+                                                    ArrayList<User> usersList) {
         WorkmatesListFragment fragment = new WorkmatesListFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_PARCELABLE_RESTAURANTDETAILS, mParcelableRestaurantDetails);
@@ -53,7 +54,8 @@ public class WorkmatesListFragment extends BaseFragment {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            this.mRecyclerViewAdapter = new WorkmatesRecyclerViewAdapter(mParcelableRestaurantDetails, usersList, mListener, Glide.with(this), context);
+            this.mRecyclerViewAdapter = new WorkmatesRecyclerViewAdapter(mParcelableRestaurantDetails,
+                    usersList, mListener, Glide.with(this), context);
             recyclerView.setAdapter(this.mRecyclerViewAdapter);
         }
         return view;

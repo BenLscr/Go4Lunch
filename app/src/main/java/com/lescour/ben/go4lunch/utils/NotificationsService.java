@@ -96,16 +96,19 @@ public class NotificationsService extends FirebaseMessagingService {
                 }
                 i++;
             } while (i != listOfUserWithSameChoice.size());
-            messageBody = user.getUserChoiceRestaurantName() + getString(R.string.located_at) + user.getUserChoiceRestaurantAddress() + getString(R.string.with) + workmatesName.toString();
+            messageBody = user.getUserChoiceRestaurantName() + getString(R.string.located_at) +
+                    user.getUserChoiceRestaurantAddress() + getString(R.string.with) + workmatesName.toString();
         } else {
-            messageBody = user.getUserChoiceRestaurantName() + getString(R.string.located_at) + user.getUserChoiceRestaurantAddress() + ".";
+            messageBody = user.getUserChoiceRestaurantName() + getString(R.string.located_at) +
+                    user.getUserChoiceRestaurantAddress() + ".";
         }
         this.sendVisualNotification();
     }
 
     private void sendVisualNotification() {
         Intent intent = new Intent(this, HomeActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+                intent, PendingIntent.FLAG_ONE_SHOT);
 
         NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
         bigTextStyle.bigText(messageBody);
@@ -122,7 +125,8 @@ public class NotificationsService extends FirebaseMessagingService {
                         .setContentIntent(pendingIntent)
                         .setStyle(bigTextStyle);
 
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence channelName = getString(R.string.channel_name);

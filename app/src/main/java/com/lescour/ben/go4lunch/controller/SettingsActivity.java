@@ -89,17 +89,17 @@ public class SettingsActivity extends BaseActivity {
     @OnCheckedChanged(R.id.notification_switch)
     public void onCheckedChangeListener (CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
-            this.prepareAndroidJob();
+            this.setNotificationsTrueInSharedPreferences();
         } else {
-            this.disableAndroidJob();
+            this.setNotificationsFalseInSharedPreferences();
         }
     }
 
-    private void prepareAndroidJob() {
+    private void setNotificationsTrueInSharedPreferences() {
         mSharedPreferences.edit().putBoolean("notificationBoolean", true).apply();
     }
 
-    private void disableAndroidJob() {
+    private void setNotificationsFalseInSharedPreferences() {
         mSharedPreferences.edit().putBoolean("notificationBoolean", false).apply();
     }
 

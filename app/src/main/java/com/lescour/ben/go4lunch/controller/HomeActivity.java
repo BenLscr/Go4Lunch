@@ -26,9 +26,6 @@ import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
@@ -38,15 +35,11 @@ import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
-import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.maps.android.SphericalUtil;
 import com.lescour.ben.go4lunch.BuildConfig;
 import com.lescour.ben.go4lunch.R;
@@ -66,8 +59,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import javax.annotation.Nullable;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -234,18 +225,21 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
             placesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
                 ArrayList<Result> results = new ArrayList<>();
                 ArrayList<PlaceDetailsResponse> placeDetailsResponses = new ArrayList<>();
+                ArrayList<Bitmap> bitmapList = new ArrayList<>();
                 for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
                     int z = 0;
                     do {
                         if (saveParcelableRestaurantDetails.getNearbyResults().get(z).getPlaceId().equals(prediction.getPlaceId())) {
                             results.add(saveParcelableRestaurantDetails.getNearbyResults().get(z));
                             placeDetailsResponses.add(saveParcelableRestaurantDetails.getPlaceDetailsResponses().get(z));
+                            bitmapList.add(saveParcelableRestaurantDetails.getBitmapList().get(z));
                         }
                         z++;
                     } while (saveParcelableRestaurantDetails.getNearbyResults().size() != z);
                 }
                 mParcelableRestaurantDetails.setNearbyResults(results);
                 mParcelableRestaurantDetails.setPlaceDetailsResponses(placeDetailsResponses);
+                mParcelableRestaurantDetails.setBitmapList(bitmapList);
                 fragment.newRestaurantsForFragment(mParcelableRestaurantDetails);
             }).addOnFailureListener((exception) -> {
                 if (exception instanceof ApiException) {
@@ -274,11 +268,13 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         saveParcelableRestaurantDetails = new ParcelableRestaurantDetails();
         saveParcelableRestaurantDetails.setNearbyResults(mParcelableRestaurantDetails.getNearbyResults());
         saveParcelableRestaurantDetails.setPlaceDetailsResponses(mParcelableRestaurantDetails.getPlaceDetailsResponses());
+        saveParcelableRestaurantDetails.setBitmapList(mParcelableRestaurantDetails.getBitmapList());
     }
 
     private void revertParcelableRestaurantDetails() {
         mParcelableRestaurantDetails.setNearbyResults(saveParcelableRestaurantDetails.getNearbyResults());
         mParcelableRestaurantDetails.setPlaceDetailsResponses(saveParcelableRestaurantDetails.getPlaceDetailsResponses());
+        mParcelableRestaurantDetails.setBitmapList(saveParcelableRestaurantDetails.getBitmapList());
     }
 
     //BOTTOM TOOLBAR\\
@@ -451,7 +447,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 this.checkConnexion(locationManager, this);
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_FOR_UPDATES, MIN_DISTANCE_FOR_UPDATES, new LocationListener() {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_FOR_UPDATES,
+                        MIN_DISTANCE_FOR_UPDATES, new LocationListener() {
                     @Override
                     public void onLocationChanged(Location location) {
                         mParcelableRestaurantDetails.setNearbyResults(new ArrayList<>());
@@ -494,7 +491,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
             new AlertDialog.Builder(context)
                     .setTitle(getString(R.string.gps_not_found))
                     .setMessage(getString(R.string.want_to_enable))
-                    .setPositiveButton(getString(R.string.popup_message_choice_yes), (dialogInterface, i) -> context.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)))
+                    .setPositiveButton(getString(R.string.popup_message_choice_yes), (dialogInterface, i) ->
+                            context.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)))
                     .setNegativeButton(getString(R.string.popup_message_choice_no), null)
                     .show();
         }
@@ -528,7 +526,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private void getPlaceDetails(String placeId) {
         PlaceDetailsResponse placeDetailsResponse = new PlaceDetailsResponse();
         // Specify the fields to return (in this example all fields are returned).
-        List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.OPENING_HOURS, Place.Field.ADDRESS, Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI);
+        List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.OPENING_HOURS,
+                Place.Field.ADDRESS, Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI);
         // Construct a request object, passing the place ID and fields array.
         FetchPlaceRequest request = FetchPlaceRequest.builder(placeId, placeFields).build();
 

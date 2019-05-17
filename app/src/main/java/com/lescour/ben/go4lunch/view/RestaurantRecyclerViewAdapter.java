@@ -31,7 +31,10 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
     private Context context;
     private BaseFragment.OnListFragmentInteractionListener mListener;
 
-    public RestaurantRecyclerViewAdapter(ParcelableRestaurantDetails mParcelableRestaurantDetails, ArrayList<User> usersList, Context context, BaseFragment.OnListFragmentInteractionListener listener) {
+    public RestaurantRecyclerViewAdapter(ParcelableRestaurantDetails mParcelableRestaurantDetails,
+                                         ArrayList<User> usersList,
+                                         Context context,
+                                         BaseFragment.OnListFragmentInteractionListener listener) {
         this.mParcelableRestaurantDetails = mParcelableRestaurantDetails;
         this.usersList = usersList;
         this.context = context;
@@ -52,12 +55,15 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
         holder.placeDetailsResponse = mParcelableRestaurantDetails.getPlaceDetailsResponses().get(position);
         holder.mBitmap = mParcelableRestaurantDetails.getBitmapList().get(position);
 
-        ProcessRestaurantDetails restaurantDetails = new ProcessRestaurantDetails(holder.nearbyResult, holder.placeDetailsResponse, context);
+        ProcessRestaurantDetails restaurantDetails = new ProcessRestaurantDetails(holder.nearbyResult,
+                holder.placeDetailsResponse, context);
 
         holder.restaurantName.setText(restaurantDetails.getRestaurantName());
         holder.restaurantAddress.setText(restaurantDetails.getRestaurantAddress());
         holder.restaurantOpenHours.setText(restaurantDetails.getRestaurantOpenHours());
-        holder.restaurantDistance.setText(restaurantDetails.howFarIsThisRestaurant(mParcelableRestaurantDetails.getCurrentLat(), mParcelableRestaurantDetails.getCurrentLng()));
+        holder.restaurantDistance.setText(restaurantDetails.howFarIsThisRestaurant(
+                mParcelableRestaurantDetails.getCurrentLat(),
+                mParcelableRestaurantDetails.getCurrentLng()));
         holder.restaurantNumberOfPerson.setText(restaurantDetails.howManyPeopleChoseThisRestaurant(usersList));
         holder.restaurantNumberOfPerson.setVisibility(restaurantDetails.therePeopleWhoChoseThisRestaurant());
         if (holder.nearbyResult.getRating() != null) {
@@ -66,7 +72,6 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
             holder.restaurantRate3.setVisibility(restaurantDetails.getRestaurantRate3());
         }
         holder.restaurantImage.setImageBitmap(holder.mBitmap);
-
 
         holder.mView.setOnClickListener(v -> {
             if (null != mListener) {
