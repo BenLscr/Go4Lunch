@@ -19,3 +19,10 @@ This project use :
   - Robolectric
   - Dagger
   
+  ## Screenshot
+  ![screenshot_authentification](https://github.com/BenLscr/Go4Lunch/blob/master/images/screenshot_authentification.png?raw_true) 
+  ![screenshot_drawer_menu](https://github.com/BenLscr/Go4Lunch/blob/master/images/screenshot_drawer_menu.png?raw_true) 
+  ![screenshot_drawer_map](https://github.com/BenLscr/Go4Lunch/blob/master/images/screenshot_map.png?raw_true) 
+  ![screenshot_drawer_restaurant_list](https://github.com/BenLscr/Go4Lunch/blob/master/images/screenshot_restaurant_list.png?raw_true) 
+  ![screenshot_drawer_workmate_list](https://github.com/BenLscr/Go4Lunch/blob/master/images/screenshot_workmate_list.png?raw_true) 
+  ![screenshot_drawer_restaurant](https://github.com/BenLscr/Go4Lunch/blob/master/images/screenshot_restaurant.png?raw_true) 
