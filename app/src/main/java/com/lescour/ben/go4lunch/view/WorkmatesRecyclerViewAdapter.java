@@ -1,10 +1,12 @@
 package com.lescour.ben.go4lunch.view;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
@@ -45,6 +47,7 @@ public class WorkmatesRecyclerViewAdapter extends BaseRecyclerViewAdapterWorkmat
             String workmateChoice = holder.user.getUserName() + context.getString(R.string.hasnt_decided_yet);
             holder.workmateText.setText(workmateChoice);
             holder.workmateText.setTextColor(ContextCompat.getColor(context, R.color.quantum_grey));
+            holder.workmateImage.setColorFilter(ContextCompat.getColor(context, R.color.quantum_grey));
         } else {
             String workmateChoice = holder.user.getUserName() + context.getString(R.string. wants_to_eat_at) + holder.user.getUserChoiceRestaurantName() + ".";
             holder.workmateText.setText(workmateChoice);
@@ -52,8 +55,6 @@ public class WorkmatesRecyclerViewAdapter extends BaseRecyclerViewAdapterWorkmat
 
         if (holder.user.getUserUrlImage() != null) {
             glide.load(holder.user.getUserUrlImage()).apply(RequestOptions.circleCropTransform()).into(holder.workmateImage);
-        } else {
-            holder.workmateImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.baseline_account_circle_grey_24));
         }
 
         holder.mView.setOnClickListener(v -> {

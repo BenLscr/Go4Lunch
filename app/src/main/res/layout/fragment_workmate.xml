@@ -2,16 +2,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_marginStart="15dp"
     android:layout_marginTop="10dp"
     android:layout_marginBottom="10dp">
 
     <ImageView
+        android:id="@+id/workmate_image"
         android:layout_width="76dp"
         android:layout_height="76dp"
-        android:src="@drawable/baseline_account_circle_grey_24"
-        android:id="@+id/workmate_image"
+        app:srcCompat="@drawable/baseline_account_circle_24"
         android:contentDescription="@string/workmate_image"/>
 
     <TextView

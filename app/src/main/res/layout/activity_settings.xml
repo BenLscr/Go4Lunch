@@ -18,7 +18,7 @@
             android:layout_height="150dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/settings_user_image_margin"
-            android:src="@drawable/baseline_account_circle_grey_24"
+            app:srcCompat="@drawable/baseline_account_circle_24"
             android:contentDescription="@string/user_image"/>
 
         <Button
