@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.lescour.ben.go4lunch.R;
@@ -71,7 +72,12 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
             holder.restaurantRate2.setVisibility(restaurantDetails.getRestaurantRate2());
             holder.restaurantRate3.setVisibility(restaurantDetails.getRestaurantRate3());
         }
-        holder.restaurantImage.setImageBitmap(holder.mBitmap);
+        if (holder.mBitmap != null) {
+            holder.restaurantImage.setImageBitmap(holder.mBitmap);
+        } else {
+            holder.restaurantImage.setImageResource(R.drawable.baseline_restaurant_menu_24);
+            holder.restaurantImage.setColorFilter(ContextCompat.getColor(context, R.color.quantum_grey));
+        }
 
         holder.mView.setOnClickListener(v -> {
             if (null != mListener) {

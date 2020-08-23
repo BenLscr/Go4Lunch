@@ -84,7 +84,7 @@
     <string name="is_joining">\u0020 is joining !</string>
 
     //AUTOCOMPLETE
-    <string name="search_restaurant">Search Restaurant</string>
+    <string name="filter_by_name">Filter by name</string>
 
     //NOTIFICATION
     <string name="big_content_title">Your choice for this lunch</string>

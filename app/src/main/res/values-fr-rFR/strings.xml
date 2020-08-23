@@ -34,7 +34,7 @@
     <string name="hasnt_decided_yet">\u0020n\'a pas encore décidé.</string>
     <string name="wants_to_eat_at">"\u0020veut manger à "</string>
     <string name="is_joining">"\u0020se joint !"</string>
-    <string name="search_restaurant">Rechercher un restaurant</string>
+    <string name="filter_by_name">Filtrer par nom</string>
     <string name="big_content_title">Votre choix pour ce midi</string>
     <string name="located_at">"\u0020situé au\u0020"</string>
     <string name="with">\u0020avec\u0020</string>

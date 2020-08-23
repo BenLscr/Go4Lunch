@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -144,8 +145,9 @@ public class RestaurantActivity extends BaseActivity {
                 }).addOnFailureListener(this.onFailureListener());
             } else {
                 mProgressBarImageRestaurant.setVisibility(View.GONE);
-                Drawable drawable = getResources().getDrawable(R.drawable.go4lunch_ic);
+                Drawable drawable = getResources().getDrawable(R.drawable.baseline_restaurant_menu_24);
                 restaurantImage.setImageDrawable(drawable);
+                restaurantImage.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.quantum_grey));
             }
         });
     }

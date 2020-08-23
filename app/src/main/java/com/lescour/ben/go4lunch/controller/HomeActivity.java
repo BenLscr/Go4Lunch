@@ -574,8 +574,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                     this.everyPlacePhotosResponsesAreReceived();
                 }).addOnFailureListener(this.onFailureListener());
             } else {
-                Bitmap bitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.baseline_restaurant_menu_24);
-                mBitmapList.add(bitmap);
+                mBitmapList.add(null);
                 this.everyPlacePhotosResponsesAreReceived();
             }
         });
