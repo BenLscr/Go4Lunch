@@ -68,12 +68,12 @@
                 android:layout_gravity="end">
 
                 <TextView
+                    android:id="@+id/restaurant_number_of_person"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/number_of_person"
-                    android:drawableStart="@drawable/baseline_perm_identity_black_24"
                     android:layout_gravity="center_vertical"
-                    android:id="@+id/restaurant_number_of_person"/>
+                    android:drawableStart="@drawable/baseline_perm_identity_24"
+                    android:text="@string/number_of_person" />
 
             </LinearLayout>
 
@@ -89,7 +89,7 @@
                     android:tint="@color/quantum_yellow"
                     android:layout_gravity="bottom"
                     android:id="@+id/restaurant_rate_1"
-                    android:src="@drawable/baseline_star_rate_orange_24"
+                    app:srcCompat="@drawable/baseline_star_24"
                     android:contentDescription="@string/rate_stars"/>
 
                 <ImageView
@@ -98,7 +98,7 @@
                     android:tint="@color/quantum_yellow"
                     android:layout_gravity="bottom"
                     android:id="@+id/restaurant_rate_2"
-                    android:src="@drawable/baseline_star_rate_orange_24"
+                    app:srcCompat="@drawable/baseline_star_24"
                     android:contentDescription="@string/rate_stars"/>
 
                 <ImageView
@@ -107,7 +107,7 @@
                     android:tint="@color/quantum_yellow"
                     android:layout_gravity="bottom"
                     android:id="@+id/restaurant_rate_3"
-                    android:src="@drawable/baseline_star_rate_orange_24"
+                    app:srcCompat="@drawable/baseline_star_24"
                     android:contentDescription="@string/rate_stars"/>
 
             </LinearLayout>
@@ -115,11 +115,11 @@
         </FrameLayout>
 
         <ImageView
+            android:id="@+id/restaurant_image"
             android:layout_width="76dp"
             android:layout_height="76dp"
-            app:srcCompat="@drawable/baseline_restaurant_menu_grey_24"
+            app:srcCompat="@drawable/baseline_restaurant_menu_24"
             android:scaleType="centerCrop"
-            android:id="@+id/restaurant_image"
             android:contentDescription="@string/restaurant_image"/>
 
     </LinearLayout>

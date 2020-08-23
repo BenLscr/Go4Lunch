@@ -3,6 +3,7 @@ package com.lescour.ben.go4lunch.controller;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -114,9 +115,7 @@ public class RestaurantActivity extends BaseActivity {
         if (user.getUserLike() != null) {
             userLike.addAll(user.getUserLike());
             if (userLike.contains(mResult.getPlaceId())) {
-                restaurantLike.setTextColor(getResources().getColor(R.color.mainThemeColorAccent));
-                restaurantLike.setCompoundDrawablesWithIntrinsicBounds(0,
-                        R.drawable.baseline_star_rate_green_24, 0, 0);
+                changeColorOfTheButtonLike(getResources().getColor(R.color.mainThemeColorAccent));
             }
         }
     }
@@ -274,19 +273,24 @@ public class RestaurantActivity extends BaseActivity {
     @OnClick(R.id.restaurant_activity_button_like)
     public void likeThisRestaurant() {
         if (userLike != null && userLike.contains(mResult.getPlaceId())) {
-            restaurantLike.setTextColor(getResources().getColor(R.color.mainThemeColorPrimary));
-            restaurantLike.setCompoundDrawablesWithIntrinsicBounds(0,
-                    R.drawable.baseline_star_rate_orange_24, 0, 0);
+            changeColorOfTheButtonLike(getResources().getColor(R.color.mainThemeColorPrimary));
             userLike.remove(mResult.getPlaceId());
-            user.setUserLike(userLike);
         } else {
-            restaurantLike.setTextColor(getResources().getColor(R.color.mainThemeColorAccent));
-            restaurantLike.setCompoundDrawablesWithIntrinsicBounds(0,
-                    R.drawable.baseline_star_rate_green_24, 0, 0);
+            changeColorOfTheButtonLike(getResources().getColor(R.color.mainThemeColorAccent));
             userLike.add(mResult.getPlaceId());
-            user.setUserLike(userLike);
         }
+        user.setUserLike(userLike);
         this.updateUserLike();
+    }
+
+    private void changeColorOfTheButtonLike(int color) {
+        restaurantLike.setTextColor(color);
+        Drawable[] drawables = restaurantLike.getCompoundDrawables();
+        for (Drawable drawable : drawables) {
+            if (drawable != null) {
+                drawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+            }
+        }
     }
 
     private void updateUserLike() {

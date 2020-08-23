@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -9,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:src="@drawable/baseline_search_white_24"
+        app:srcCompat="@drawable/baseline_search_24"
         android:tint="@color/quantum_grey"/>
 
     <EditText
@@ -26,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:src="@drawable/baseline_close_black_24"
+        app:srcCompat="@drawable/baseline_close_24"
         android:background="@color/fui_transparent"
         android:tint="@color/quantum_grey"/>
 

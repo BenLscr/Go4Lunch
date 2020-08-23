@@ -44,7 +44,7 @@
     <string name="popup_message_choice_no">Non</string>
     <string name="map_view">Carte</string>
     <string name="like">j\'aime</string>
-    <string name="website">site internet</string>
+    <string name="website">website</string>
     <string name="call">appeler</string>
     <string name="want_to_enable">Souhaitez-vous l\'activer ?</string>
     <string name="fetch_failed">Echec d\'extraction</string>
