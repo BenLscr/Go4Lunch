@@ -1,12 +1,10 @@
 package com.lescour.ben.go4lunch.view;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import androidx.core.widget.ImageViewCompat;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
@@ -27,13 +25,10 @@ public class WorkmatesRecyclerViewAdapter extends BaseRecyclerViewAdapterWorkmat
     private RequestManager glide;
     private Context context;
 
-    public WorkmatesRecyclerViewAdapter(ParcelableRestaurantDetails mParcelableRestaurantDetails,
-                                        ArrayList<User> usersList,
-                                        BaseFragment.OnListFragmentInteractionListener listener,
+    public WorkmatesRecyclerViewAdapter(BaseFragment.OnListFragmentInteractionListener listener,
                                         RequestManager glide,
                                         Context context) {
-        this.mParcelableRestaurantDetails = mParcelableRestaurantDetails;
-        this.usersList = usersList;
+        this.usersList =  new ArrayList<>();
         this.mListener = listener;
         this.glide = glide;
         this.context = context;
@@ -47,9 +42,11 @@ public class WorkmatesRecyclerViewAdapter extends BaseRecyclerViewAdapterWorkmat
             String workmateChoice = holder.user.getUserName() + context.getString(R.string.hasnt_decided_yet);
             holder.workmateText.setText(workmateChoice);
             holder.workmateText.setTextColor(ContextCompat.getColor(context, R.color.quantum_grey));
-            holder.workmateImage.setColorFilter(ContextCompat.getColor(context, R.color.quantum_grey));
+            if (holder.user.getUserUrlImage() == null) {
+                holder.workmateImage.setColorFilter(ContextCompat.getColor(context, R.color.quantum_grey));
+            }
         } else {
-            String workmateChoice = holder.user.getUserName() + context.getString(R.string. wants_to_eat_at) + holder.user.getUserChoiceRestaurantName() + ".";
+            String workmateChoice = holder.user.getUserName() + context.getString(R.string.wants_to_eat_at) + holder.user.getUserChoiceRestaurantName() + ".";
             holder.workmateText.setText(workmateChoice);
         }
 
@@ -83,6 +80,14 @@ public class WorkmatesRecyclerViewAdapter extends BaseRecyclerViewAdapterWorkmat
                 }
             }
         });
+    }
+
+    public void updateResources(ParcelableRestaurantDetails mParcelableRestaurantDetails,
+                                ArrayList<User> usersList) {
+        this.mParcelableRestaurantDetails = mParcelableRestaurantDetails;
+        this.usersList.clear();
+        this.usersList.addAll(usersList);
+        notifyDataSetChanged();
     }
 
     @Override

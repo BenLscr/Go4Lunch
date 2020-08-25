@@ -32,7 +32,7 @@
     <string name="currently_closed">Actuellement fermé</string>
     <string name="no_schedules_defined">Pas d\'horaires définis</string>
     <string name="hasnt_decided_yet">\u0020n\'a pas encore décidé.</string>
-    <string name="wants_to_eat_at">"\u0020veut manger à "</string>
+    <string name="wants_to_eat_at">"\u0020veut manger à\u0020"</string>
     <string name="is_joining">"\u0020se joint !"</string>
     <string name="filter_by_name">Filtrer par nom</string>
     <string name="big_content_title">Votre choix pour ce midi</string>

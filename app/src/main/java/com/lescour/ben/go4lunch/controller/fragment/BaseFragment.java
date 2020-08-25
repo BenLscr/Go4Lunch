@@ -3,36 +3,52 @@ package com.lescour.ben.go4lunch.controller.fragment;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+
+import com.lescour.ben.go4lunch.controller.HomeActivity;
 import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
 import com.lescour.ben.go4lunch.model.details.PlaceDetailsResponse;
 import com.lescour.ben.go4lunch.model.firestore.User;
 import com.lescour.ben.go4lunch.model.nearby.Result;
 
 import java.util.ArrayList;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+import java.util.Objects;
 
 /**
  * Created by benja on 16/04/2019.
  */
 public abstract class BaseFragment extends Fragment {
 
-    static final String ARG_PARCELABLE_RESTAURANTDETAILS = "PARCELABLE_RESTAURANTDETAILS";
-    static final String ARG_USERSLIST = "USERSLIST";
-
-    OnListFragmentInteractionListener mListener;
-    ParcelableRestaurantDetails mParcelableRestaurantDetails;
-    ArrayList<User> usersList;
+    protected OnListFragmentInteractionListener mListener;
+    protected Double currentLat;
+    protected Double currentLng;
+    protected ParcelableRestaurantDetails mParcelableRestaurantDetails;
+    protected ArrayList<User> usersList;
 
     //CUSTOM\\
     protected abstract void notifyFragment();
+    protected abstract void updateWithPosition();
 
-    /**
-     * A method to receive a new list of workmates from HomeActivity for notify the current fragment.
-     * @param usersList List of workmates.
-     */
-    public void newUsersForFragment(ArrayList<User> usersList) {
+    protected void recoversData() {
+        ((HomeActivity) Objects.requireNonNull(getActivity())).recoversData();
+    }
+
+    public void setPosition(Double currentLat, Double currentLng) {
+        if (this.currentLat == null && this.currentLng == null) {
+            this.currentLat = currentLat;
+            this.currentLng = currentLng;
+            updateWithPosition();
+        }
+    }
+
+    public void shareDataToFragment(Double currentLat,
+                                    Double currentLng,
+                                    ParcelableRestaurantDetails mParcelableRestaurantDetails,
+                                    ArrayList<User> usersList) {
+        setPosition(currentLat, currentLng);
+        this.mParcelableRestaurantDetails = new ParcelableRestaurantDetails();
+        this.mParcelableRestaurantDetails = mParcelableRestaurantDetails;
         this.usersList.clear();
         this.usersList.addAll(usersList);
         notifyFragment();
@@ -57,11 +73,7 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParcelableRestaurantDetails = getArguments().getParcelable(ARG_PARCELABLE_RESTAURANTDETAILS);
-            this.usersList = new ArrayList<>();
-            this.usersList = getArguments().getParcelableArrayList(ARG_USERSLIST);
-        }
+        this.usersList = new ArrayList<>();
     }
 
     @Override

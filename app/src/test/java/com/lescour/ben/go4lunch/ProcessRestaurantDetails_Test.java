@@ -27,8 +27,8 @@ public class ProcessRestaurantDetails_Test {
     @Before
     public void setUp() {
         parcelableRestaurantDetails = new ParcelableRestaurantDetails();
-        parcelableRestaurantDetails.setCurrentLat(49.8778);
-        parcelableRestaurantDetails.setCurrentLng(1.22824);
+        /*parcelableRestaurantDetails.setCurrentLat(49.8778);
+        parcelableRestaurantDetails.setCurrentLng(1.22824);*/
         mResult = new Result();
         mResult.setRating(3.7);
         mPlaceDetailsResponse = new PlaceDetailsResponse();

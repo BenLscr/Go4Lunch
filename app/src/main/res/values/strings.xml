@@ -75,13 +75,13 @@
     <string name="no_schedules_defined">No schedules defined</string>
 
     //WORKMATES FRAGMENT
-    <string name="hasnt_decided_yet">\u0020 hasn\'t decided yet.</string>
-    <string name="wants_to_eat_at">\u0020 wants to eat at \u0020</string>
+    <string name="hasnt_decided_yet">\u0020hasn\'t decided yet.</string>
+    <string name="wants_to_eat_at">\u0020wants to eat at\u0020</string>
     <string name="text_example" translatable="false">text example</string>
     <string name="this_restaurant_isnt_in_your_area">This restaurant isn\'t in your area.</string>
 
     //WORKMATES RESTAURANT ACTIVITY
-    <string name="is_joining">\u0020 is joining !</string>
+    <string name="is_joining">\u0020is joining !</string>
 
     //AUTOCOMPLETE
     <string name="filter_by_name">Filter by name</string>

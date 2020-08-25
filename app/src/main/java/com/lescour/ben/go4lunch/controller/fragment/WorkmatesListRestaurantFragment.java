@@ -6,17 +6,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.model.firestore.User;
 import com.lescour.ben.go4lunch.view.WorkmatesRestaurantRecyclerViewAdapter;
 
 import java.util.ArrayList;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * A fragment representing a list of Items.
@@ -25,20 +25,19 @@ import androidx.recyclerview.widget.RecyclerView;
 public class WorkmatesListRestaurantFragment extends Fragment {
 
     private ArrayList<User> listOfUserWithSameChoice;
-    private static final String ARG_LISTOF_USERS = "LISTOF_USERS";
-    private RecyclerView.Adapter mRecyclerViewAdapter;
+    private static final String ARG_LIST_OF_USERS = "LISTOF_USERS";
+    private WorkmatesRestaurantRecyclerViewAdapter mRecyclerViewAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public WorkmatesListRestaurantFragment() {
-    }
+    public WorkmatesListRestaurantFragment() { }
 
     public static WorkmatesListRestaurantFragment newInstance(ArrayList<User> listOfUserWithSameChoice) {
         WorkmatesListRestaurantFragment fragment = new WorkmatesListRestaurantFragment();
         Bundle args = new Bundle();
-        args.putParcelableArrayList(ARG_LISTOF_USERS, listOfUserWithSameChoice);
+        args.putParcelableArrayList(ARG_LIST_OF_USERS, listOfUserWithSameChoice);
         fragment.setArguments(args);
         return fragment;
     }
@@ -49,7 +48,7 @@ public class WorkmatesListRestaurantFragment extends Fragment {
 
         if (getArguments() != null) {
             this.listOfUserWithSameChoice = new ArrayList<>();
-            this.listOfUserWithSameChoice = getArguments().getParcelableArrayList(ARG_LISTOF_USERS);
+            this.listOfUserWithSameChoice = getArguments().getParcelableArrayList(ARG_LIST_OF_USERS);
         }
     }
 

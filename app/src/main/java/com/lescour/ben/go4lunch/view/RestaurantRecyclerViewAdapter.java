@@ -27,17 +27,16 @@ import butterknife.ButterKnife;
 
 public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<RestaurantRecyclerViewAdapter.ViewHolder> {
 
+    private Double currentLat;
+    private Double currentLng;
     private ParcelableRestaurantDetails mParcelableRestaurantDetails;
     private ArrayList<User> usersList;
     private Context context;
     private BaseFragment.OnListFragmentInteractionListener mListener;
 
-    public RestaurantRecyclerViewAdapter(ParcelableRestaurantDetails mParcelableRestaurantDetails,
-                                         ArrayList<User> usersList,
-                                         Context context,
+    public RestaurantRecyclerViewAdapter(Context context,
                                          BaseFragment.OnListFragmentInteractionListener listener) {
-        this.mParcelableRestaurantDetails = mParcelableRestaurantDetails;
-        this.usersList = usersList;
+        this.usersList = new ArrayList<>();
         this.context = context;
         this.mListener = listener;
     }
@@ -63,8 +62,8 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
         holder.restaurantAddress.setText(restaurantDetails.getRestaurantAddress());
         holder.restaurantOpenHours.setText(restaurantDetails.getRestaurantOpenHours());
         holder.restaurantDistance.setText(restaurantDetails.howFarIsThisRestaurant(
-                mParcelableRestaurantDetails.getCurrentLat(),
-                mParcelableRestaurantDetails.getCurrentLng()));
+                currentLat,
+                currentLng));
         holder.restaurantNumberOfPerson.setText(restaurantDetails.howManyPeopleChoseThisRestaurant(usersList));
         holder.restaurantNumberOfPerson.setVisibility(restaurantDetails.therePeopleWhoChoseThisRestaurant());
         if (holder.nearbyResult.getRating() != null) {
@@ -90,7 +89,24 @@ public class RestaurantRecyclerViewAdapter extends RecyclerView.Adapter<Restaura
 
     @Override
     public int getItemCount() {
-        return mParcelableRestaurantDetails.getNearbyResults().size();
+        if (mParcelableRestaurantDetails != null) {
+            return mParcelableRestaurantDetails.getNearbyResults().size();
+        } else {
+            return 0;
+        }
+    }
+
+    public void updateResources(Double currentLat,
+                                Double currentLng,
+                                ParcelableRestaurantDetails mParcelableRestaurantDetails,
+                                ArrayList<User> usersList
+                                ) {
+        this.currentLat = currentLat;
+        this.currentLng = currentLng;
+        this.mParcelableRestaurantDetails = mParcelableRestaurantDetails;
+        this.usersList.clear();
+        this.usersList.addAll(usersList);
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

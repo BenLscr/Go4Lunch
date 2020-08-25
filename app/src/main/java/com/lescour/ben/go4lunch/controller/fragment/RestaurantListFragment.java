@@ -6,16 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.lescour.ben.go4lunch.R;
-import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
-import com.lescour.ben.go4lunch.model.firestore.User;
-import com.lescour.ben.go4lunch.view.RestaurantRecyclerViewAdapter;
-
-import java.util.ArrayList;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.lescour.ben.go4lunch.R;
+import com.lescour.ben.go4lunch.view.RestaurantRecyclerViewAdapter;
 
 /**
  * A fragment representing a list of Items.
@@ -25,23 +21,16 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 public class RestaurantListFragment extends BaseFragment {
 
-    private RecyclerView.Adapter mRecyclerViewAdapter;
+    private RestaurantRecyclerViewAdapter mRecyclerViewAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public RestaurantListFragment() {
-    }
+    public RestaurantListFragment() { }
 
-    public static RestaurantListFragment newInstance(ParcelableRestaurantDetails mParcelableRestaurantDetails,
-                                                     ArrayList<User> usersList) {
-        RestaurantListFragment fragment = new RestaurantListFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_PARCELABLE_RESTAURANTDETAILS, mParcelableRestaurantDetails);
-        args.putParcelableArrayList(ARG_USERSLIST, usersList);
-        fragment.setArguments(args);
-        return fragment;
+    public static RestaurantListFragment newInstance() {
+        return new RestaurantListFragment();
     }
 
     @Override
@@ -53,18 +42,35 @@ public class RestaurantListFragment extends BaseFragment {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            this.mRecyclerViewAdapter = new RestaurantRecyclerViewAdapter(this.mParcelableRestaurantDetails,
-                    this.usersList, context, mListener);
+            this.mRecyclerViewAdapter = new RestaurantRecyclerViewAdapter(context, mListener);
             recyclerView.setAdapter(this.mRecyclerViewAdapter);
         }
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        recoversData();
+    }
+
     /**
      * Notify fragment that the data has changed.
      */
-    public void notifyFragment() {
-        this.mRecyclerViewAdapter.notifyDataSetChanged();
+    @Override
+    protected void notifyFragment() {
+        if (currentLat != null
+                && currentLng != null
+                && mParcelableRestaurantDetails != null
+                && !usersList.isEmpty()) {
+            this.mRecyclerViewAdapter.updateResources(currentLat,
+                    currentLng,
+                    mParcelableRestaurantDetails,
+                    usersList);
+        }
     }
+
+    @Override
+    protected void updateWithPosition() { }
 
 }

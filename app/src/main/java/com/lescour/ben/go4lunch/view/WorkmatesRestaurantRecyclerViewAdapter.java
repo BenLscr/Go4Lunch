@@ -18,7 +18,9 @@ public class WorkmatesRestaurantRecyclerViewAdapter extends BaseRecyclerViewAdap
     private RequestManager glide;
     private Context context;
 
-    public WorkmatesRestaurantRecyclerViewAdapter(ArrayList<User> listOfUserWithSameChoice, RequestManager glide, Context context) {
+    public WorkmatesRestaurantRecyclerViewAdapter(ArrayList<User> listOfUserWithSameChoice,
+                                                  RequestManager glide,
+                                                  Context context) {
         this.listOfUserWithSameChoice = listOfUserWithSameChoice;
         this.glide = glide;
         this.context = context;

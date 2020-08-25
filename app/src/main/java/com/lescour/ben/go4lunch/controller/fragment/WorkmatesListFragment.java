@@ -6,17 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
-import com.lescour.ben.go4lunch.R;
-import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
-import com.lescour.ben.go4lunch.model.firestore.User;
-import com.lescour.ben.go4lunch.view.WorkmatesRecyclerViewAdapter;
-
-import java.util.ArrayList;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+import com.lescour.ben.go4lunch.R;
+import com.lescour.ben.go4lunch.view.WorkmatesRecyclerViewAdapter;
 
 /**
  * A fragment representing a list of Items.
@@ -26,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 public class WorkmatesListFragment extends BaseFragment {
 
-    private RecyclerView.Adapter mRecyclerViewAdapter;
+    private WorkmatesRecyclerViewAdapter mRecyclerViewAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -35,14 +31,8 @@ public class WorkmatesListFragment extends BaseFragment {
     public WorkmatesListFragment() {
     }
 
-    public static WorkmatesListFragment newInstance(ParcelableRestaurantDetails mParcelableRestaurantDetails,
-                                                    ArrayList<User> usersList) {
-        WorkmatesListFragment fragment = new WorkmatesListFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_PARCELABLE_RESTAURANTDETAILS, mParcelableRestaurantDetails);
-        args.putParcelableArrayList(ARG_USERSLIST, usersList);
-        fragment.setArguments(args);
-        return fragment;
+    public static WorkmatesListFragment newInstance() {
+        return new WorkmatesListFragment();
     }
 
     @Override
@@ -54,18 +44,32 @@ public class WorkmatesListFragment extends BaseFragment {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            this.mRecyclerViewAdapter = new WorkmatesRecyclerViewAdapter(mParcelableRestaurantDetails,
-                    usersList, mListener, Glide.with(this), context);
+            this.mRecyclerViewAdapter = new WorkmatesRecyclerViewAdapter(mListener,
+                    Glide.with(this),
+                    context);
             recyclerView.setAdapter(this.mRecyclerViewAdapter);
         }
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        recoversData();
+    }
+
     /**
      * Notify fragment that the data has changed.
      */
-    public void notifyFragment() {
-        this.mRecyclerViewAdapter.notifyDataSetChanged();
+    @Override
+    protected void notifyFragment() {
+        if (mParcelableRestaurantDetails != null
+                && !usersList.isEmpty()) {
+            mRecyclerViewAdapter.updateResources(mParcelableRestaurantDetails, usersList);
+        }
     }
+
+    @Override
+    protected void updateWithPosition() { }
 
 }

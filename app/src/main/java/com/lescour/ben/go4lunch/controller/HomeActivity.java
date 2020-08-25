@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -22,6 +21,17 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.api.ApiException;
@@ -60,16 +70,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
-import androidx.core.app.ActivityCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -99,6 +99,9 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private Disposable disposable;
 
+    private Boolean allDataAreAvailable = false ;
+    private Double currentLat;
+    private Double currentLng;
     private List<PlaceDetailsResponse> mPlaceDetailsResponses;
     private List<Bitmap> mBitmapList;
     private ArrayList<User> usersList;
@@ -134,6 +137,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         this.configureNavigationView();
 
         this.initProgressDialog();
+
+        this.initMapsFragment();
 
         mProgressBar.setVisibility(View.VISIBLE);
         this.initializePlacesApiClient();
@@ -205,7 +210,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
             fragment.newRestaurantsForFragment(mParcelableRestaurantDetails);
         } else {
             double distanceFromCenterToCorner = radius * Math.sqrt(2.0);
-            LatLng center = new LatLng(mParcelableRestaurantDetails.getCurrentLat(), mParcelableRestaurantDetails.getCurrentLng());
+            LatLng center = new LatLng(currentLat, currentLng);
             LatLng southwestCorner = SphericalUtil.computeOffset(center, distanceFromCenterToCorner, 225.0);
             LatLng northeastCorner = SphericalUtil.computeOffset(center, distanceFromCenterToCorner, 45.0);
             // Create a new token for the autocomplete session. Pass this to FindAutocompletePredictionsRequest,
@@ -282,27 +287,26 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
             = item -> {
         if (fragment != null) {
             getSupportFragmentManager().beginTransaction().remove(fragment).commit();
-            switch (item.getItemId()) {
-                case R.id.navigation_map:
-                    fragment = MapsFragment.newInstance(mParcelableRestaurantDetails, usersList);
-                    addFragment();
-                    return true;
-                case R.id.navigation_list_restaurant:
-                    fragment = RestaurantListFragment.newInstance(mParcelableRestaurantDetails, usersList);
-                    addFragment();
-                    return true;
-                case R.id.navigation_workmates:
-                    fragment = WorkmatesListFragment.newInstance(mParcelableRestaurantDetails, usersList);
-                    addFragment();
-                    return true;
-            }
+        }
+        switch (item.getItemId()) {
+            case R.id.navigation_map:
+                initMapsFragment();
+                return true;
+            case R.id.navigation_list_restaurant:
+                fragment = RestaurantListFragment.newInstance();
+                addFragment();
+                return true;
+            case R.id.navigation_workmates:
+                fragment = WorkmatesListFragment.newInstance();
+                addFragment();
+                return true;
         }
         return false;
     };
 
     //FRAGMENT\\
-    private void initFirstFragment() {
-        fragment = MapsFragment.newInstance(mParcelableRestaurantDetails, usersList);
+    private void initMapsFragment() {
+        fragment = MapsFragment.newInstance();
         addFragment();
     }
 
@@ -310,6 +314,12 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.fragment_container, fragment).commit();
+    }
+
+    public void recoversData() {
+        if (allDataAreAvailable ) {
+            fragment.shareDataToFragment(currentLat, currentLng, mParcelableRestaurantDetails, usersList);
+        }
     }
 
     /**
@@ -362,6 +372,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private void retrievesTheRestaurant() {
         if (user.getUserChoicePlaceId().equals("")) {
             Toast.makeText(this, getString(R.string.no_restaurant_selected), Toast.LENGTH_LONG).show();
+        } else if (!allDataAreAvailable){
+            // todo attendez que les restaurants soient trouvés
         } else {
             Result result;
             PlaceDetailsResponse placeDetailsResponse;
@@ -371,6 +383,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                 placeDetailsResponse = mParcelableRestaurantDetails.getPlaceDetailsResponses().get(l);
                 l++;
             } while (!result.getPlaceId().equals(user.getUserChoicePlaceId()));
+            // todo si le résultat n'est pas dans la zone géographique il faut prévenir
             this.launchRestaurantActivity(result, placeDetailsResponse);
         }
     }
@@ -423,11 +436,9 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                         usersList.add(documentSnapshot.toObject(User.class));
                     }
                 }
-                if (fragment != null) {
-                    fragment.newUsersForFragment(usersList);
-                } else {
-                    initFirstFragment();
-                }
+                //fragment.newUsersForFragment(usersList);
+                allDataAreAvailable = true;
+                recoversData();
             }
             mProgressBar.setVisibility(View.GONE);
         });
@@ -452,8 +463,9 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                     @Override
                     public void onLocationChanged(Location location) {
                         mParcelableRestaurantDetails.setNearbyResults(new ArrayList<>());
-                        mParcelableRestaurantDetails.setCurrentLat(location.getLatitude());
-                        mParcelableRestaurantDetails.setCurrentLng(location.getLongitude());
+                        currentLat = location.getLatitude();
+                        currentLng = location.getLongitude();
+                        fragment.setPosition(currentLat, currentLng);
                         stringLocation = location.getLatitude() + "," + location.getLongitude();
                         executeHttpRequestWithRetrofit_NearbySearch();
                     }

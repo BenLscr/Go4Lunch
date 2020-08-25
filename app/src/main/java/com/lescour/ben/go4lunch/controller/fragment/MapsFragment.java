@@ -19,10 +19,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.lescour.ben.go4lunch.R;
 import com.lescour.ben.go4lunch.controller.RestaurantActivity;
-import com.lescour.ben.go4lunch.model.ParcelableRestaurantDetails;
 import com.lescour.ben.go4lunch.model.firestore.User;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
@@ -49,18 +47,13 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     public MapsFragment() {
     }
 
-    public static MapsFragment newInstance(ParcelableRestaurantDetails mParcelableRestaurantDetails,
-                                           ArrayList<User> usersList) {
-        MapsFragment fragment = new MapsFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_PARCELABLE_RESTAURANTDETAILS, mParcelableRestaurantDetails);
-        args.putParcelableArrayList(ARG_USERSLIST, usersList);
-        fragment.setArguments(args);
-        return fragment;
+    public static MapsFragment newInstance() {
+        return new MapsFragment();
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_maps, container, false);
@@ -74,20 +67,27 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()),
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(true);
-            LatLng currentLocation = new LatLng(mParcelableRestaurantDetails.getCurrentLat(),
-                    mParcelableRestaurantDetails.getCurrentLng());
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
-            for (int i = 0; mParcelableRestaurantDetails.getNearbyResults().size() > i; i++) {
-                this.setMarker(i);
-            }
-            mMap.setOnMarkerClickListener(this);
+        mMap.setOnMarkerClickListener(this);
+        if (currentLat != null && currentLng != null) {
+            updateWithPosition();
         } else {
-            ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()),
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            recoversData();
+        }
+    }
+
+    @Override
+    protected void updateWithPosition() {
+        if (mMap != null) {
+            if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()),
+                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                mMap.setMyLocationEnabled(true);
+                mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                LatLng currentLocation = new LatLng(currentLat, currentLng);
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
+            } else {
+                ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()),
+                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            }
         }
     }
 
@@ -100,20 +100,23 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
         }
     }
 
-    private void setMarker(int position) {
-        LatLng restaurant = new LatLng(mParcelableRestaurantDetails.getNearbyResults()
-                .get(position).getGeometry().getLocation().getLat(),
-                mParcelableRestaurantDetails.getNearbyResults().get(position).getGeometry().getLocation().getLng());
-        mMap.addMarker(new MarkerOptions().position(restaurant)
-                .icon(BitmapDescriptorFactory.defaultMarker(25)))
-                .setTag(position);
-        for (User user : usersList) {
-            if (mParcelableRestaurantDetails.getNearbyResults().get(position).getPlaceId().equals(user.getUserChoicePlaceId())) {
-                mMap.addMarker(new MarkerOptions().position(restaurant)
-                        .icon(BitmapDescriptorFactory.defaultMarker(92)))
-                        .setTag(position);
+    private void setMarker() {
+        for (int position = 0; mParcelableRestaurantDetails.getNearbyResults().size() > position; position++) {
+            LatLng restaurant = new LatLng(mParcelableRestaurantDetails.getNearbyResults()
+                    .get(position).getGeometry().getLocation().getLat(),
+                    mParcelableRestaurantDetails.getNearbyResults().get(position).getGeometry().getLocation().getLng());
+            mMap.addMarker(new MarkerOptions().position(restaurant)
+                    .icon(BitmapDescriptorFactory.defaultMarker(25)))
+                    .setTag(position);
+            for (User user : usersList) {
+                if (mParcelableRestaurantDetails.getNearbyResults().get(position).getPlaceId().equals(user.getUserChoicePlaceId())) {
+                    mMap.addMarker(new MarkerOptions().position(restaurant)
+                            .icon(BitmapDescriptorFactory.defaultMarker(92)))
+                            .setTag(position);
+                }
             }
         }
+
     }
 
     /**
@@ -133,12 +136,11 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
      * Clean old markers.
      * Notify fragment that the data has changed.
      */
-    public void notifyFragment() {
+    @Override
+    protected void notifyFragment() {
         if (mMap != null) {
             mMap.clear();
-            for (int i = 0; mParcelableRestaurantDetails.getNearbyResults().size() > i; i++) {
-                this.setMarker(i);
-            }
+            setMarker();
         }
     }
 
