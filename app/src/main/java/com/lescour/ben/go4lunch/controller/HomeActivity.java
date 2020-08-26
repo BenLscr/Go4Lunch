@@ -376,18 +376,15 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
             Toast.makeText(this, getString(R.string.restaurants_not_load), Toast.LENGTH_LONG).show();
         } else {
             Result result;
-            PlaceDetailsResponse placeDetailsResponse;
-            int l = 0;
-            do {
-                result = mParcelableRestaurantDetails.getNearbyResults().get(l);
-                placeDetailsResponse = mParcelableRestaurantDetails.getPlaceDetailsResponses().get(l);
-                l++;
-            } while (l != mParcelableRestaurantDetails.getNearbyResults().size() && !result.getPlaceId().equals(user.getUserChoicePlaceId()));
-            if (result.getPlaceId().equals(user.getUserChoicePlaceId())) {
-                this.launchRestaurantActivity(result, placeDetailsResponse);
-            } else {
-                Toast.makeText(this, getString(R.string.choice_not_in_area), Toast.LENGTH_LONG).show();
+            for (int i = 0; i < mParcelableRestaurantDetails.getNearbyResults().size(); i++) {
+                result = mParcelableRestaurantDetails.getNearbyResults().get(i);
+                if (result.getPlaceId().equals(user.getUserChoicePlaceId())) {
+                    PlaceDetailsResponse placeDetailsResponse = mParcelableRestaurantDetails.getPlaceDetailsResponses().get(i);
+                    this.launchRestaurantActivity(result, placeDetailsResponse);
+                    return;
+                }
             }
+            Toast.makeText(this, getString(R.string.choice_not_in_area), Toast.LENGTH_LONG).show();
         }
     }
 
