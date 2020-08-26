@@ -31,6 +31,8 @@
     <string name="info_no_email_found">No email found</string>
     <string name="info_no_name_found">No name found</string>
     <string name="no_restaurant_selected">No restaurant selected !</string>
+    <string name="restaurants_not_load">Wait until we run all the restaurants around you.</string>
+    <string name="choice_not_in_area">You have took a restaurant in an other area.</string>
 
     //POPUP PERMISSION
     <string name="gps_not_found">GPS not found</string>

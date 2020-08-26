@@ -17,6 +17,8 @@
     <string name="info_no_email_found">Aucune address email trouvée</string>
     <string name="info_no_name_found">Aucun nom d\'utilisateur trouvé</string>
     <string name="no_restaurant_selected">Aucun restaurant sélectionné</string>
+    <string name="restaurants_not_load">Attendez que nous chargions tout les restaurants au tour de vous.</string>
+    <string name="choice_not_in_area">Vous avez choisis un restaurant qui n\'est pas dans votre zone actuelle.</string>
     <string name="gps_not_found">signal GPS introuvable</string>
     <string name="restaurant">Restaurant</string>
     <string name="address">Adresse</string>

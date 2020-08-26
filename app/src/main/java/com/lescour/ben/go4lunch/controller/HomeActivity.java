@@ -373,7 +373,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         if (user.getUserChoicePlaceId().equals("")) {
             Toast.makeText(this, getString(R.string.no_restaurant_selected), Toast.LENGTH_LONG).show();
         } else if (!allDataAreAvailable){
-            // todo attendez que les restaurants soient trouvés
+            Toast.makeText(this, getString(R.string.restaurants_not_load), Toast.LENGTH_LONG).show();
         } else {
             Result result;
             PlaceDetailsResponse placeDetailsResponse;
@@ -382,9 +382,12 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                 result = mParcelableRestaurantDetails.getNearbyResults().get(l);
                 placeDetailsResponse = mParcelableRestaurantDetails.getPlaceDetailsResponses().get(l);
                 l++;
-            } while (!result.getPlaceId().equals(user.getUserChoicePlaceId()));
-            // todo si le résultat n'est pas dans la zone géographique il faut prévenir
-            this.launchRestaurantActivity(result, placeDetailsResponse);
+            } while (l != mParcelableRestaurantDetails.getNearbyResults().size() && !result.getPlaceId().equals(user.getUserChoicePlaceId()));
+            if (result.getPlaceId().equals(user.getUserChoicePlaceId())) {
+                this.launchRestaurantActivity(result, placeDetailsResponse);
+            } else {
+                Toast.makeText(this, "You have took a restaurant in an other area.", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
