@@ -38,6 +38,8 @@ public class WorkmatesRecyclerViewAdapter extends BaseRecyclerViewAdapterWorkmat
     public void onBindViewHolder(@NonNull final ViewHolderWorkmates holder, int position) {
         holder.user = usersList.get(position);
 
+        holder.workmateImage.clearColorFilter();
+
         if (holder.user.getUserChoicePlaceId().equals("")) {
             String workmateChoice = holder.user.getUserName() + context.getString(R.string.hasnt_decided_yet);
             holder.workmateText.setText(workmateChoice);

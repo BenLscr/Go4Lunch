@@ -386,7 +386,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
             if (result.getPlaceId().equals(user.getUserChoicePlaceId())) {
                 this.launchRestaurantActivity(result, placeDetailsResponse);
             } else {
-                Toast.makeText(this, "You have took a restaurant in an other area.", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.choice_not_in_area), Toast.LENGTH_LONG).show();
             }
         }
     }
