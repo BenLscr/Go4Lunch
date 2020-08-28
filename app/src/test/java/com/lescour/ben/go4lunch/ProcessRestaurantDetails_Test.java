@@ -19,16 +19,16 @@ import static org.mockito.Mockito.mock;
 
 public class ProcessRestaurantDetails_Test {
 
-    private ParcelableRestaurantDetails parcelableRestaurantDetails;
+    private Double currentLat;
+    private Double currentLng;
     private Result mResult;
     private PlaceDetailsResponse mPlaceDetailsResponse;
     private ProcessRestaurantDetails mProcessRestaurantDetails;
 
     @Before
     public void setUp() {
-        parcelableRestaurantDetails = new ParcelableRestaurantDetails();
-        /*parcelableRestaurantDetails.setCurrentLat(49.8778);
-        parcelableRestaurantDetails.setCurrentLng(1.22824);*/
+        currentLat = 49.8778;
+        currentLng = 1.22824;
         mResult = new Result();
         mResult.setRating(3.7);
         mPlaceDetailsResponse = new PlaceDetailsResponse();
