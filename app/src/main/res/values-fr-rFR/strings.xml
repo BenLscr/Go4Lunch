@@ -61,4 +61,6 @@
     <string name="notification_text">Rappel journalier de votre choix.\nSi vous avez sélectionné un restaurant.</string>
     <string name="notification_title">Votre choix pour ce midi</string>
     <string name="this_restaurant_isnt_in_your_area">Ce restaurant n\'est pas dans votre zone.</string>
+    <string name="new_restaurants_found">De nouveaux restaurants ont été trouvés. Nous les chargeons pour vous.</string>
+    <string name="how_many_restaurants_found">\u0020restaurants trouvés.</string>
 </resources>

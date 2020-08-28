@@ -553,6 +553,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void checkIfNewRestaurantNeedToBeShow(NearbyResponse nearbyResponse) {
         if (!mParcelableRestaurantDetails.getNearbyResults().equals(nearbyResponse.getResults())) {
+            Toast.makeText(this, getString(R.string.new_restaurants_found), Toast.LENGTH_LONG).show();
             mParcelableRestaurantDetails.setNearbyResults(nearbyResponse.getResults());
             mPlaceDetailsResponses = new ArrayList<>();
             i = 0;
@@ -620,6 +621,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void everyPlacePhotosResponsesAreReceived() {
         if (mParcelableRestaurantDetails.getNearbyResults().size() == mBitmapList.size()) {
+            String infoForUser = k+1+getString(R.string.how_many_restaurants_found);
+            Toast.makeText(this, infoForUser, Toast.LENGTH_LONG).show();
             mParcelableRestaurantDetails.setBitmapList(mBitmapList);
             if (!isRestaurantsListIsReady) {
                 isRestaurantsListIsReady = true;

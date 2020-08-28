@@ -33,6 +33,8 @@
     <string name="no_restaurant_selected">No restaurant selected !</string>
     <string name="restaurants_not_load">Wait until we run all the restaurants around you.</string>
     <string name="choice_not_in_area">You have took a restaurant in an other area.</string>
+    <string name="new_restaurants_found">New restaurants have been found. We are loading them for you.</string>
+    <string name="how_many_restaurants_found">\u0020restaurants found.</string>
 
     //POPUP PERMISSION
     <string name="gps_not_found">GPS not found</string>
