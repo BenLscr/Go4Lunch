@@ -11,13 +11,15 @@ This project use :
   - Facebook Login
   - Twitter Login
   - Glide
+  - Google Maps
   - Google Places
   - Google Nearby
+  - Google Places Details
+  - Google Places Photos
   - Retrofit
   - RxJava
   - Mockito
   - Robolectric
-  - Dagger
   
   ## Screenshot
   ![screenshot_authentification](https://github.com/BenLscr/Go4Lunch/blob/master/images/screenshot_authentification.png?raw_true) 
