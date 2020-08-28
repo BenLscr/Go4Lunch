@@ -99,7 +99,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private Disposable disposable;
 
-    private Boolean allDataAreAvailable = false ;
+    private Boolean isUsersListIsReady = false ;
+    private Boolean isRestaurantsListIsReady = false ;
     private Double currentLat;
     private Double currentLng;
     private List<PlaceDetailsResponse> mPlaceDetailsResponses;
@@ -107,8 +108,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private ArrayList<User> usersList;
     private ParcelableRestaurantDetails mParcelableRestaurantDetails;
     private ParcelableRestaurantDetails saveParcelableRestaurantDetails;
-    private long MIN_TIME_FOR_UPDATES = 9999999;
-    private long MIN_DISTANCE_FOR_UPDATES = 200;
+    private long MIN_TIME_FOR_UPDATES = 10000;
+    private long MIN_DISTANCE_FOR_UPDATES = 50;
 
     private PlacesClient placesClient;
 
@@ -117,8 +118,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private String type = "restaurant";
     private String apiKey = BuildConfig.PLACES_API_KEY;
 
-    private int i = 0;
-    private int k = 0;
+    private int i;
+    private int k;
 
     public static final String INTENT_EXTRA_RESULT = "INTENT_EXTRA_RESULT";
     public static final String INTENT_EXTRA_PLACEDETAILSRESPONSE = "INTENT_EXTRA_PLACEDETAILSRESPONSE";
@@ -143,6 +144,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         mProgressBar.setVisibility(View.VISIBLE);
         this.initializePlacesApiClient();
         this.getMyCurrentLocation();
+        this.setFirestoreListener();
     }
 
     /**
@@ -207,7 +209,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private void searchRestaurant(String query) {
         if (query.equals("")) {
             revertParcelableRestaurantDetails();
-            fragment.newRestaurantsForFragment(mParcelableRestaurantDetails);
+            fragment.setParcelableRestaurantDetails(mParcelableRestaurantDetails);
         } else {
             double distanceFromCenterToCorner = radius * Math.sqrt(2.0);
             LatLng center = new LatLng(currentLat, currentLng);
@@ -245,7 +247,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                 mParcelableRestaurantDetails.setNearbyResults(results);
                 mParcelableRestaurantDetails.setPlaceDetailsResponses(placeDetailsResponses);
                 mParcelableRestaurantDetails.setBitmapList(bitmapList);
-                fragment.newRestaurantsForFragment(mParcelableRestaurantDetails);
+                fragment.setParcelableRestaurantDetails(mParcelableRestaurantDetails);
             }).addOnFailureListener((exception) -> {
                 if (exception instanceof ApiException) {
                     ApiException apiException = (ApiException) exception;
@@ -265,7 +267,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
             mCardView.setVisibility(View.GONE);
             toggle.setDrawerIndicatorEnabled(true);
             revertParcelableRestaurantDetails();
-            fragment.newRestaurantsForFragment(mParcelableRestaurantDetails);
+            fragment.setParcelableRestaurantDetails(mParcelableRestaurantDetails);
         }
     }
 
@@ -317,7 +319,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     public void recoversData() {
-        if (allDataAreAvailable ) {
+        if (isUsersListIsReady && isRestaurantsListIsReady) {
             fragment.shareDataToFragment(currentLat, currentLng, mParcelableRestaurantDetails, usersList);
         }
     }
@@ -372,7 +374,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private void retrievesTheRestaurant() {
         if (user.getUserChoicePlaceId().equals("")) {
             Toast.makeText(this, getString(R.string.no_restaurant_selected), Toast.LENGTH_LONG).show();
-        } else if (!allDataAreAvailable){
+        } else if (!isRestaurantsListIsReady && !isUsersListIsReady){
             Toast.makeText(this, getString(R.string.restaurants_not_load), Toast.LENGTH_LONG).show();
         } else {
             Result result;
@@ -436,9 +438,12 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                         usersList.add(documentSnapshot.toObject(User.class));
                     }
                 }
-                //fragment.newUsersForFragment(usersList);
-                allDataAreAvailable = true;
-                recoversData();
+                if (!isUsersListIsReady) {
+                    isUsersListIsReady = true;
+                    recoversData();
+                } else {
+                    fragment.setUsersList(usersList);
+                }
             }
             mProgressBar.setVisibility(View.GONE);
         });
@@ -462,12 +467,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                         MIN_DISTANCE_FOR_UPDATES, new LocationListener() {
                     @Override
                     public void onLocationChanged(Location location) {
-                        mParcelableRestaurantDetails.setNearbyResults(new ArrayList<>());
-                        currentLat = location.getLatitude();
-                        currentLng = location.getLongitude();
-                        fragment.setPosition(currentLat, currentLng);
-                        stringLocation = location.getLatitude() + "," + location.getLongitude();
-                        executeHttpRequestWithRetrofit_NearbySearch();
+                        checkIfLocationHaveChanged(location);
                     }
 
                     @Override
@@ -483,6 +483,28 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                 ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, 159);
             }
          }
+    }
+
+    private void checkIfLocationHaveChanged(Location location) {
+        if (this.currentLat == null || this.currentLng == null) {
+            saveNewLocationAndShareItToTheFragment(location.getLatitude(), location.getLongitude());
+            prepareParcelableRestaurantDetailsAndExecuteNearbySearch();
+        } else if (!this.currentLat.equals(location.getLatitude()) || !this.currentLng.equals(location.getLongitude())) {
+            saveNewLocationAndShareItToTheFragment(location.getLatitude(), location.getLongitude());
+            prepareParcelableRestaurantDetailsAndExecuteNearbySearch();
+        }
+    }
+
+    private void saveNewLocationAndShareItToTheFragment(Double newLat, Double newLng) {
+        currentLat = newLat;
+        currentLng = newLng;
+        stringLocation = currentLat + "," + currentLng;
+        fragment.setPosition(currentLat, currentLng);
+    }
+
+    private void prepareParcelableRestaurantDetailsAndExecuteNearbySearch() {
+        mParcelableRestaurantDetails.setNearbyResults(new ArrayList<>());
+        executeHttpRequestWithRetrofit_NearbySearch();
     }
 
     /**
@@ -516,7 +538,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                     @Override
                     public void onNext(NearbyResponse nearbyResponse) {
                         Log.e("TAG","On Next");
-                        updateList(nearbyResponse);
+                        checkIfNewRestaurantNeedToBeShow(nearbyResponse);
                     }
 
                     @Override
@@ -529,10 +551,13 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                 });
     }
 
-    private void updateList(NearbyResponse nearbyResponse) {
-        mParcelableRestaurantDetails.setNearbyResults(nearbyResponse.getResults());
-        mPlaceDetailsResponses = new ArrayList<>();
-        this.getPlaceDetails(mParcelableRestaurantDetails.getNearbyResults().get(i).getPlaceId());
+    private void checkIfNewRestaurantNeedToBeShow(NearbyResponse nearbyResponse) {
+        if (!mParcelableRestaurantDetails.getNearbyResults().equals(nearbyResponse.getResults())) {
+            mParcelableRestaurantDetails.setNearbyResults(nearbyResponse.getResults());
+            mPlaceDetailsResponses = new ArrayList<>();
+            i = 0;
+            this.getPlaceDetails(mParcelableRestaurantDetails.getNearbyResults().get(i).getPlaceId());
+        }
     }
 
     private void getPlaceDetails(String placeId) {
@@ -559,6 +584,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         if (mParcelableRestaurantDetails.getNearbyResults().size() == mPlaceDetailsResponses.size()) {
             mParcelableRestaurantDetails.setPlaceDetailsResponses(mPlaceDetailsResponses);
             mBitmapList = new ArrayList<>();
+            k = 0;
             this.getPlacePhotos(mParcelableRestaurantDetails.getNearbyResults().get(k).getPlaceId());
         } else {
             i++;
@@ -595,7 +621,12 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private void everyPlacePhotosResponsesAreReceived() {
         if (mParcelableRestaurantDetails.getNearbyResults().size() == mBitmapList.size()) {
             mParcelableRestaurantDetails.setBitmapList(mBitmapList);
-            this.setFirestoreListener();
+            if (!isRestaurantsListIsReady) {
+                isRestaurantsListIsReady = true;
+                recoversData();
+            } else {
+                fragment.setParcelableRestaurantDetails(mParcelableRestaurantDetails);
+            }
         } else {
             k++;
             this.getPlacePhotos(mParcelableRestaurantDetails.getNearbyResults().get(k).getPlaceId());

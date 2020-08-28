@@ -35,11 +35,9 @@ public abstract class BaseFragment extends Fragment {
     }
 
     public void setPosition(Double currentLat, Double currentLng) {
-        if (this.currentLat == null && this.currentLng == null) {
-            this.currentLat = currentLat;
-            this.currentLng = currentLng;
-            updateWithPosition();
-        }
+        this.currentLat = currentLat;
+        this.currentLng = currentLng;
+        updateWithPosition();
     }
 
     public void shareDataToFragment(Double currentLat,
@@ -58,9 +56,15 @@ public abstract class BaseFragment extends Fragment {
      * A method to receive a new ParcelableRestaurantDetails from HomeActivity for notify the current fragment.
      * @param mParcelableRestaurantDetailsAutocomplete Result of autocomplete.
      */
-    public void newRestaurantsForFragment(ParcelableRestaurantDetails mParcelableRestaurantDetailsAutocomplete) {
+    public void setParcelableRestaurantDetails(ParcelableRestaurantDetails mParcelableRestaurantDetailsAutocomplete) {
         this.mParcelableRestaurantDetails = new ParcelableRestaurantDetails();
         this.mParcelableRestaurantDetails = mParcelableRestaurantDetailsAutocomplete;
+        notifyFragment();
+    }
+
+    public void setUsersList(ArrayList<User> usersList) {
+        this.usersList.clear();
+        this.usersList.addAll(usersList);
         notifyFragment();
     }
 

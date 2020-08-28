@@ -59,10 +59,7 @@ public class RestaurantListFragment extends BaseFragment {
      */
     @Override
     protected void notifyFragment() {
-        if (currentLat != null
-                && currentLng != null
-                && mParcelableRestaurantDetails != null
-                && !usersList.isEmpty()) {
+        if (mParcelableRestaurantDetails != null && !usersList.isEmpty()) {
             this.mRecyclerViewAdapter.updateResources(currentLat,
                     currentLng,
                     mParcelableRestaurantDetails,
